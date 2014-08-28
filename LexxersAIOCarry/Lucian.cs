@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LexxersAIOCarry;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	class Lucian : Champion
 	{

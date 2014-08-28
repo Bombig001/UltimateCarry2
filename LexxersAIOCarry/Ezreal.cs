@@ -1,9 +1,10 @@
 ﻿using System;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LexxersAIOCarry;
 using Color = System.Drawing.Color;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	class Ezreal : Champion
 	{

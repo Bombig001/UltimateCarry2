@@ -36,6 +36,9 @@ namespace LexxersAIOCarry
 				case "Ezreal":
 					Champion = new Ezreal();
 					break;
+				case "Gnar":
+					Champion = new Gnar();
+					break;
 				case "Lucian":
 					Champion = new Lucian();
 					break;
