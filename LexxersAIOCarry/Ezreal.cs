@@ -35,7 +35,7 @@ namespace LexxersAIOCarry
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
-			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useR_TeamFight", "Use R").SetValue(false));
+			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useR_TeamFight", "Use R").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("minimumRRange_Teamfight", "R Range min.").SetValue(new Slider(500, 900, 0)));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("minimumRHit_Teamfight", "R Will Hit min.").SetValue(new Slider(2, 5, 1)));
 
@@ -82,8 +82,6 @@ namespace LexxersAIOCarry
 
 		private void Game_OnGameUpdate(EventArgs args)
 		{
-
-
 			switch(Program.Orbwalker.ActiveMode)
 			{
 				case Orbwalking.OrbwalkingMode.Combo:
@@ -108,7 +106,7 @@ namespace LexxersAIOCarry
 					}
 					break;
 				case Orbwalking.OrbwalkingMode.LastHit:
-					if(Program.Menu.Item("UseQ_LastHit").GetValue<bool>())
+					if(Program.Menu.Item("useQ_LastHit").GetValue<bool>())
 						CastQMinion();
 					break;
 			}

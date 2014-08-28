@@ -1,12 +1,13 @@
 ﻿using System;
 using LeagueSharp;
 using LeagueSharp.Common;
+using UltimateCarry;
 
 namespace LexxersAIOCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 15;
+		public const int LocalVersion = 16;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -37,6 +38,9 @@ namespace LexxersAIOCarry
 					break;
 				case "Lucian":
 					Champion = new Lucian();
+					break;
+				case "Zed":
+					Champion = new Zed();
 					break;
 				default:
 					Champion = new Champion();
