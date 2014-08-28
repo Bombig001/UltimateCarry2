@@ -7,7 +7,7 @@ namespace LexxersAIOCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 16;
+		public const int LocalVersion = 17;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
