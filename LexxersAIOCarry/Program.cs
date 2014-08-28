@@ -6,7 +6,7 @@ namespace LexxersAIOCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 14;
+		public const int LocalVersion = 15;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -19,6 +19,7 @@ namespace LexxersAIOCarry
 
 		private static void Game_OnGameLoad(EventArgs args)
 		{
+			AutoUpdater.InitializeUpdater();
 			Menu = new Menu("UltimateCarry", "UltimateCarry", true);
 
 			var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");

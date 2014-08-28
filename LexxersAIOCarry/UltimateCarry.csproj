@@ -92,7 +92,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "C:\Users\Lexxer\Desktop\LeagueSharp\lsharp\Assemblies"</PostBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "C:\Users\Lexxer\Desktop\LeagueSharp\lsharp\Assemblies"
+copy /y "$(TargetPath)" "C:\Users\Lexxer\Documents\GitHub\Leage-Sharp"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
