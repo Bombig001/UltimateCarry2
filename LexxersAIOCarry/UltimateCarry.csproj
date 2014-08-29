@@ -61,6 +61,7 @@
     <Compile Include="Ezreal.cs" />
     <Compile Include="Gnar.cs" />
     <Compile Include="HTMLColor.cs" />
+    <Compile Include="LeeSin.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="PotionManager.cs" />
     <Compile Include="Program.cs" />
@@ -123,6 +124,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Overlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LayerDemo1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

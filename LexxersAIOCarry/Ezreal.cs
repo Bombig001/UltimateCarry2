@@ -62,10 +62,11 @@ namespace UltimateCarry
 
 			// Currently Dissabled couse need Remake
 			// var baseult = new BaseUlt();
+		
 			var potionManager = new PotionManager();
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 1200);
 			Q.SetSkillshot(0.25f, 60f, 2000f, true, SkillshotType.SkillshotLine);
@@ -81,7 +82,7 @@ namespace UltimateCarry
 
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{

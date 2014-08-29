@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LexxersAIOCarry;
@@ -13,19 +12,19 @@ namespace UltimateCarry
 {
 	class Gnar : Champion
 	{
-		public static Spell Q_mini;
-		public static Spell Q_mega;
-		public static Spell W_mega;
-		public static Spell E_mini;
-		public static Spell E_mega;
-		public static Spell R_mega;
+		public static Spell QMini;
+		public static Spell QMega;
+		public static Spell WMega;
+		public static Spell EMini;
+		public static Spell EMega;
+		public static Spell RMega;
 
 		public static Spell Q;
 		public static Spell W;
 		public static Spell E;
 		public static Spell R;
 
-		public static string Transform_Soon = "gnartransformsoon";
+		public static string TransformSoon = "gnartransformsoon";
 		public static string Transformed = "gnartransform";
 		public static int GnarState = 1;
 
@@ -80,26 +79,26 @@ namespace UltimateCarry
 
 		private void LoadSpells()
 		{
-			Q_mini = new Spell(SpellSlot.Q, 1100);
-			Q_mini.SetSkillshot(0.066f, 50f, 1200f, true, SkillshotType.SkillshotLine);
+			QMini = new Spell(SpellSlot.Q, 1100);
+			QMini.SetSkillshot(0.066f, 60f, 1400f, true, SkillshotType.SkillshotLine);
 
-			Q_mega = new Spell(SpellSlot.Q, 1100);
-			Q_mega.SetSkillshot(0.066f, 70f, 1200f, true, SkillshotType.SkillshotLine);
+			QMega = new Spell(SpellSlot.Q, 1100);
+			QMega.SetSkillshot(0.60f, 90f, 2100, true, SkillshotType.SkillshotLine);
 			
-			W_mega = new Spell(SpellSlot.W,525);
-			W_mega.SetSkillshot(0.25f,80f,1200,false,SkillshotType.SkillshotLine);
+			WMega = new Spell(SpellSlot.W,525);
+			WMega.SetSkillshot(0.25f,80f,1200,false,SkillshotType.SkillshotLine);
 
-			E_mini = new Spell(SpellSlot.E,475);
-			E_mini.SetSkillshot(0.695f, 150f, float.MaxValue, false, SkillshotType.SkillshotCircle );
+			EMini = new Spell(SpellSlot.E,475);
+			EMini.SetSkillshot(0.695f, 150f, float.MaxValue, false, SkillshotType.SkillshotCircle );
 
-			E_mega = new Spell(SpellSlot.E, 475);
-			E_mega.SetSkillshot(0.695f, 350f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+			EMega = new Spell(SpellSlot.E, 475);
+			EMega.SetSkillshot(0.695f, 350f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
-			R_mega = new Spell(SpellSlot.R, 1);
-			R_mega.SetSkillshot(0.066f, 400f, 1400f, false, SkillshotType.SkillshotCircle);
+			RMega = new Spell(SpellSlot.R, 1);
+			RMega.SetSkillshot(0.066f, 400f, 1400f, false, SkillshotType.SkillshotCircle);
 
-			W = W_mega;
-			R = R_mega;
+			W = WMega;
+			R = RMega;
 		}
 
 		private void Game_OnGameUpdate(EventArgs args)
@@ -108,12 +107,12 @@ namespace UltimateCarry
 			switch (GnarState)
 			{
 				case 1:
-					Q = Q_mini;
-					E = E_mini;
+					Q = QMini;
+					E = EMini;
 					break;
 				default:
-					Q = Q_mega;
-					E = E_mega;
+					Q = QMega;
+					E = EMega;
 					break;
 			}
 
@@ -209,20 +208,20 @@ namespace UltimateCarry
 				return;
 
 			if(Program.Menu.Item("Draw_Q").GetValue<bool>())
-				if(Q_mini.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, Q_mini.Range, Q_mini.IsReady() ? Color.Green : Color.Red);
+				if(QMini.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, QMini.Range, QMini.IsReady() ? Color.Green : Color.Red);
 
 			if(Program.Menu.Item("Draw_W").GetValue<bool>())
-				if(W_mega.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, W_mega.Range, W_mega.IsReady() ? Color.Green : Color.Red);
+				if(WMega.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, WMega.Range, WMega.IsReady() ? Color.Green : Color.Red);
 
 			if(Program.Menu.Item("Draw_E").GetValue<bool>())
-				if(E_mega.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, E_mega.Range, E_mega.IsReady() ? Color.Green : Color.Red);
+				if(EMega.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, EMega.Range, EMega.IsReady() ? Color.Green : Color.Red);
 
 			if(Program.Menu.Item("Draw_R").GetValue<bool>())
-				if(R_mega.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, R_mega.Width, R_mega.IsReady() ? Color.Green : Color.Red);
+				if(RMega.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, RMega.Width, RMega.IsReady() ? Color.Green : Color.Red);
 		}
 
 		private static void CastQEnemy()
@@ -234,6 +233,13 @@ namespace UltimateCarry
 				return;
 			if(target.IsValidTarget(Q.Range) && Q.GetPrediction(target).Hitchance >= HitChance.High)
 				Q.Cast(target, Packets());
+			if (Q.GetPrediction(target).Hitchance == HitChance.Collision)
+			{
+				var qCollision = Q.GetPrediction(target).CollisionObjects;
+				if ((!qCollision.Exists(Coll => Coll.Distance(target) > 180 && GnarState == 1)) || (!qCollision.Exists(Coll => Coll.Distance(target) > 100 )))
+					Q.Cast(target.Position , Packets());
+			}
+				
 		}
 
 		private static void CastQMinion()
@@ -303,26 +309,13 @@ namespace UltimateCarry
 			if(target.IsValidTarget(Q.Range) && E.GetPrediction(target).Hitchance >= HitChance.High)
 				E.Cast(target, Packets());
 		}
-		//private static void CastREnemy()
-		//{
-		//	if(!R_mega.IsReady())
-		//		return;
-		//	var minRange = Program.Menu.Item("minimumRRange_Teamfight").GetValue<Slider>().Value;
-		//	var minHit = Program.Menu.Item("minimumRHit_Teamfight").GetValue<Slider>().Value;
-
-		//	var target = SimpleTs.GetTarget(2000, SimpleTs.DamageType.Physical);
-		//	if(target == null)
-		//		return;
-		//	if(target.Distance(ObjectManager.Player) >= minRange)
-		//		R_mega.CastIfWillHit(target, minHit - 1, Packets());
-		//}
 
 		private static void CheckState()
 		{
 			var tempState = 1;
 			foreach(var buff in ObjectManager.Player.Buffs)
 			{
-				if(buff.Name == Transform_Soon)
+				if(buff.Name == TransformSoon)
 					tempState = 2;
 				if(buff.Name == Transformed)
 					tempState = 3;

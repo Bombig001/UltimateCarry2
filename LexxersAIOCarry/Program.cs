@@ -1,13 +1,13 @@
 ﻿using System;
 using LeagueSharp;
 using LeagueSharp.Common;
-using UltimateCarry;
+using LexxersAIOCarry;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 17;
+		public const int LocalVersion = 18;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;

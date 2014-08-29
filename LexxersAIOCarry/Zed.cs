@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -16,18 +15,18 @@ namespace UltimateCarry
 		public static Spell E;
 		public static Spell R;
 
-		public static Obj_AI_Minion Clone_W = null;
-		public static bool Clone_W_Created = false;
-		public static bool Clone_W_Found = false;
-		public static int Clone_W_Tick = 0;
-		public static int W_Cast_Tick = 0;
+		public static Obj_AI_Minion CloneW = null;
+		public static bool CloneWCreated = false;
+		public static bool CloneWFound = false;
+		public static int CloneWTick = 0;
+		public static int WCastTick = 0;
 
-		public static Obj_AI_Minion Clone_R = null;
-		public static bool Clone_R_Created = false;
-		public static bool Clone_R_Found = false;
-		public static int Clone_R_Tick = 0;
-		public static int R_Cast_Tick = 0;
-		public static Vector3 Clone_R_nearPosition;
+		public static Obj_AI_Minion CloneR = null;
+		public static bool CloneRCreated = false;
+		public static bool CloneRFound = false;
+		public static int CloneRTick = 0;
+		public static int RCastTick = 0;
+		public static Vector3 CloneRNearPosition;
 
 		public static int Delay = 300;
 		public static int DelayTick = 0;
@@ -100,23 +99,23 @@ namespace UltimateCarry
 		private void Game_OnGameUpdate(EventArgs args)
 		{
 
-			if(Clone_W_Created && !Clone_W_Found)
+			if(CloneWCreated && !CloneWFound)
 				SearchForClone("W");
-			if(Clone_R_Created && !Clone_R_Found)
+			if(CloneRCreated && !CloneRFound)
 				SearchForClone("R");
 
-			if(Clone_W != null && (Clone_W_Tick < Environment.TickCount - 4000))
+			if(CloneW != null && (CloneWTick < Environment.TickCount - 4000))
 			{
-				Clone_W = null;
-				Clone_W_Created = false;
-				Clone_W_Found = false;
+				CloneW = null;
+				CloneWCreated = false;
+				CloneWFound = false;
 			}
 
-			if(Clone_R != null && (Clone_R_Tick < Environment.TickCount - 6000))
+			if(CloneR != null && (CloneRTick < Environment.TickCount - 6000))
 			{
-				Clone_R = null;
-				Clone_R_Created = false;
-				Clone_R_Found = false;
+				CloneR = null;
+				CloneRCreated = false;
+				CloneRFound = false;
 			}
 
 			switch(Program.Orbwalker.ActiveMode)
@@ -185,16 +184,16 @@ namespace UltimateCarry
 					return;
 				}
 
-			if(Clone_W != null)
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+			if(CloneW != null)
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(CloneW.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					Q.Cast(hero.Position, Packets());
 					return;
 				}
 
-			if(Clone_R == null )
+			if(CloneR == null )
 				return;
-			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(CloneR.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				Q.Cast(hero.Position, Packets());
 		}
 
@@ -244,7 +243,7 @@ namespace UltimateCarry
 			if(IsTeleportToClone("W") && follow)
 			{
 				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth || ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth > 5)
-					if(Clone_W.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
+					if(CloneW.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
 						W.Cast();
 			}
 		}
@@ -263,15 +262,15 @@ namespace UltimateCarry
 					E.Cast();
 					return;
 				}
-				if(Clone_W != null)
-					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(Clone_W.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+				if(CloneW != null)
+					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 					{
 						E.Cast();
 						return;
 					}
 
-				if(Clone_R != null )
-					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(Clone_R.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+				if(CloneR != null )
+					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 					{
 						E.Cast();
 						return;
@@ -280,11 +279,11 @@ namespace UltimateCarry
 			if (Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear) 
 				return;
 			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.NotAlly);
-			foreach(var Minion in allMinions)
+			foreach(var minion in allMinions)
 			{
-				if(Minion != null)
-					if(Minion.IsValidTarget(E.Range))
-						if((DamageLib.getDmg(Minion, DamageLib.SpellType.E) > Minion.Health) || (DamageLib.getDmg(Minion, DamageLib.SpellType.E) + 100 < Minion.Health))
+				if(minion != null)
+					if(minion.IsValidTarget(E.Range))
+						if((DamageLib.getDmg(minion, DamageLib.SpellType.E) > minion.Health) || (DamageLib.getDmg(minion, DamageLib.SpellType.E) + 100 < minion.Health))
 							E.Cast();
 			}
 		}
@@ -310,7 +309,7 @@ namespace UltimateCarry
 			}
 			else
 				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth)
-					if(Clone_R.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
+					if(CloneR.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
 						R.Cast();
 		}
 
@@ -319,12 +318,12 @@ namespace UltimateCarry
 			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 
-		private static bool IsTeleportToClone(string Spell)
+		private static bool IsTeleportToClone(string spell)
 		{
-			if (Spell == "W")
+			if (spell == "W")
 				if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2")
 					return true;
-			if (Spell != "R") 
+			if (spell != "R") 
 				return false;
 			return ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
 		}
@@ -334,9 +333,9 @@ namespace UltimateCarry
 			return energy <= ObjectManager.Player.Mana;
 		}
 
-		private static float GetCost(SpellSlot Spell)
+		private static float GetCost(SpellSlot spell)
 		{
-			return ObjectManager.Player.Spellbook.GetSpell(Spell).ManaCost;
+			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost;
 		}
 
 		private static void SearchForClone(string p)
@@ -344,22 +343,22 @@ namespace UltimateCarry
 			Obj_AI_Minion shadow;
 			if(p != null && p == "W")
 			{
-				shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => (hero.Name == "Shadow" && hero.IsAlly && (hero != Clone_R)));
+				shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => (hero.Name == "Shadow" && hero.IsAlly && (hero != CloneR)));
 				if(shadow != null)
 				{
-					Clone_W = shadow;
-					Clone_W_Found = true;
-					Clone_W_Tick = Environment.TickCount;
+					CloneW = shadow;
+					CloneWFound = true;
+					CloneWTick = Environment.TickCount;
 				}
 			}
 			if (p == null || p != "R") 
 				return;
-			shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => ((hero.ServerPosition.Distance(Clone_R_nearPosition)) < 50) && hero.Name == "Shadow" && hero.IsAlly && hero != Clone_W);
+			shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => ((hero.ServerPosition.Distance(CloneRNearPosition)) < 50) && hero.Name == "Shadow" && hero.IsAlly && hero != CloneW);
 			if (shadow == null) 
 				return;
-			Clone_R = shadow;
-			Clone_R_Found = true;
-			Clone_R_Tick = Environment.TickCount;
+			CloneR = shadow;
+			CloneRFound = true;
+			CloneRTick = Environment.TickCount;
 		}
 
 		private static void OnSpellCast(GameObject sender, EventArgs args)
@@ -369,11 +368,11 @@ namespace UltimateCarry
 			var name = spell.SData.Name;
 
 			if(unit == ObjectManager.Player.Name && name == "ZedShadowDashMissile")
-				Clone_W_Created = true;
+				CloneWCreated = true;
 			if(unit == ObjectManager.Player.Name && name == "ZedUltMissile")
 			{
-				Clone_R_Created = true;
-				Clone_R_nearPosition = ObjectManager.Player.ServerPosition;
+				CloneRCreated = true;
+				CloneRNearPosition = ObjectManager.Player.ServerPosition;
 			}
 		}
 	}

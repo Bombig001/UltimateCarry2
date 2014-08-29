@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using LeagueSharp.Common;
-using LeagueSharp;
 using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	internal class PotionManager
 	{

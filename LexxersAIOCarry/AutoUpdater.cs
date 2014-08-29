@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using LexxersAIOCarry;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	class AutoUpdater
 	{
