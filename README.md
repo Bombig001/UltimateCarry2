@@ -12,10 +12,6 @@ Included Champions
 * Ezreal
 * Lucian
 * Zed
-
-
-Currently Dissabled Champions
-=============================
 * Gnar
 
 
