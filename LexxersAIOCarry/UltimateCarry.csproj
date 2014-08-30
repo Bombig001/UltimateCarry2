@@ -62,6 +62,7 @@
     <Compile Include="Gnar.cs" />
     <Compile Include="HTMLColor.cs" />
     <Compile Include="Lucian.cs" />
+    <Compile Include="Morgana.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="PotionManager.cs" />
     <Compile Include="Program.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry;
 using Color = System.Drawing.Color;
 
 namespace UltimateCarry
@@ -25,7 +24,7 @@ namespace UltimateCarry
 			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
 			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
 			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));

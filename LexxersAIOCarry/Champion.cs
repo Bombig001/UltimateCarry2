@@ -1,6 +1,4 @@
-﻿using LeagueSharp;
-
-namespace LexxersAIOCarry
+﻿namespace UltimateCarry
 {
 	class Champion
 	{

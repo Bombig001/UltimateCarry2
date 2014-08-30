@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Runtime.Hosting;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -18,7 +11,7 @@ namespace UltimateCarry
 		public Render.Sprite HUD;
 		public Overlay()
 		{
-			if (Drawing.Width != 1920 || Drawing.Height != 1080)
+			if(Drawing.Width != 1920 || Drawing.Height != 1080 || Utility.Map.GetMap() != Utility.Map.MapType.SummonersRift)
 				return;
 			Program.Menu.AddSubMenu(new Menu("HUD", "HUD"));
 			Program.Menu.SubMenu("HUD").AddItem(new MenuItem("showHud", "Show HUD").SetValue(true));

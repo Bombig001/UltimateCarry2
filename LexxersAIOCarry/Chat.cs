@@ -1,6 +1,7 @@
 ﻿using LeagueSharp;
+using LexxersAIOCarry;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	public static class Chat
 	{

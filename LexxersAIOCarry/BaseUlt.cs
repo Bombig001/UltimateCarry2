@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry.Annotations;
 using SharpDX;
-using System.IO;
-using UltimateCarry;
 using Collision = LeagueSharp.Common.Collision;
 using Color = System.Drawing.Color;
 
-namespace LexxersAIOCarry
+namespace UltimateCarry
 {
 	class PlayerInfo
 	{

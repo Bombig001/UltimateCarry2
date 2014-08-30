@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry;
 
 namespace UltimateCarry
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using LexxersAIOCarry;
 
 namespace UltimateCarry
 {
@@ -34,7 +33,7 @@ namespace UltimateCarry
 				if (myUpdater.Update())
 				{
 					Chat.Print("UltimateCarry is Updateed, Reload Please.");
-					UltimateCarry.Properties.Settings.Default.Reset();
+					Properties.Settings.Default.Reset();
 				}
 			}
 			else

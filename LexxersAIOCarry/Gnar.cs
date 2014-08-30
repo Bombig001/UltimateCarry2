@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -237,7 +235,7 @@ namespace UltimateCarry
 			if (Q.GetPrediction(target).Hitchance == HitChance.Collision)
 			{
 				var qCollision = Q.GetPrediction(target).CollisionObjects;
-				if ((!qCollision.Exists(Coll => Coll.Distance(target) > 180 && GnarState == 1)) || (!qCollision.Exists(Coll => Coll.Distance(target) > 100 )))
+				if ((!qCollision.Exists(coll => coll.Distance(target) > 180 && GnarState == 1)) || (!qCollision.Exists(coll => coll.Distance(target) > 100 )))
 					Q.Cast(target.Position , Packets());
 			}
 				
