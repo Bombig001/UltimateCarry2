@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 20;
+		public const int LocalVersion = 21;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -43,6 +43,9 @@ namespace UltimateCarry
 					break;
 				case "Morgana":
 					Champion = new Morgana();
+					break;
+				case "Teemo":
+					Champion = new Teemo();
 					break;
 				case "Zed":
 					Champion = new Zed();

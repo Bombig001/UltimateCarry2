@@ -102,7 +102,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
