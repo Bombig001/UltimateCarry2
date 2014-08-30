@@ -10,14 +10,16 @@ Included Champions
 ==================
 
 * Ezreal
-* Lucian
-* Zed
 * Gnar
+* Lucian
+* Morgana
+* Zed
 
 
 Extras
 ======
 * Potion Manager
+* HUD for Resolution 1920x1080 ( more will come soon )
 
 
 
