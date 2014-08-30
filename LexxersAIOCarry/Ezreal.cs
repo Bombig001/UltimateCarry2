@@ -64,6 +64,7 @@ namespace UltimateCarry
 			// var baseult = new BaseUlt();
 		
 			var potionManager = new PotionManager();
+			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()

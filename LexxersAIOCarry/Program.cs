@@ -7,7 +7,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 18;
+		public const int LocalVersion = 19;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;

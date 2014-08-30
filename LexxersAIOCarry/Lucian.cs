@@ -75,6 +75,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 
 			var potionManager = new PotionManager();
+			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()

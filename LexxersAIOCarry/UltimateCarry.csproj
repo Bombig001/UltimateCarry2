@@ -61,8 +61,8 @@
     <Compile Include="Ezreal.cs" />
     <Compile Include="Gnar.cs" />
     <Compile Include="HTMLColor.cs" />
-    <Compile Include="LeeSin.cs" />
     <Compile Include="Lucian.cs" />
+    <Compile Include="Overlay.cs" />
     <Compile Include="PotionManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -104,8 +104,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -126,10 +126,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Overlay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LayerDemo1.png" />
+    <None Include="Resources\Overlay2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
