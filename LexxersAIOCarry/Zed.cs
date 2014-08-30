@@ -2,7 +2,6 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -71,6 +70,9 @@ namespace UltimateCarry
 
 			Program.Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
 			Program.Menu.SubMenu("LastHit").AddItem(new MenuItem("useQ_LastHit", "Use Q").SetValue(true));
+			
+			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useE_Passive", "Auto E").SetValue(true));
 
 			Program.Menu.AddSubMenu(new Menu("ItemManager", "ItemManager"));
 
@@ -118,6 +120,9 @@ namespace UltimateCarry
 				CloneRCreated = false;
 				CloneRFound = false;
 			}
+
+			if(Program.Menu.Item("useE_Passive").GetValue<bool>())
+				CastE();
 
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -251,41 +256,37 @@ namespace UltimateCarry
 
 		private static void CastE()
 		{
-			if (!E.IsReady())
+			if(!E.IsReady())
 				return;
-			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo ||
-			    Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed ||
-				Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+			var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
+			if(target != null)
 			{
-				var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
-				if (target != null)
+				E.Cast();
+				return;
+			}
+			if(CloneW != null)
+				if(ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					E.Cast();
 					return;
 				}
-				if(CloneW != null)
-					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
-					{
-						E.Cast();
-						return;
-					}
 
-				if(CloneR != null )
-					if (ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
-					{
-						E.Cast();
-						return;
-					}
-			}
-			if (Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear) 
+			if(CloneR != null)
+				if(ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+				{
+					E.Cast();
+					return;
+				}
+
+			if(Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear)
 				return;
 			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.NotAlly);
 			foreach(var minion in allMinions)
 			{
-				if(minion != null)
-					if(minion.IsValidTarget(E.Range))
-						if((DamageLib.getDmg(minion, DamageLib.SpellType.E) > minion.Health) || (DamageLib.getDmg(minion, DamageLib.SpellType.E) + 100 < minion.Health))
-							E.Cast();
+				if (!minion.IsValidTarget(E.Range)) 
+					continue;
+				if((DamageLib.getDmg(minion, DamageLib.SpellType.E) > minion.Health) || (DamageLib.getDmg(minion, DamageLib.SpellType.E) + 100 < minion.Health))
+					E.Cast();
 			}
 		}
 
