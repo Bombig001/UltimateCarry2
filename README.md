@@ -13,6 +13,7 @@ Included Champions
 * Gnar
 * Lucian
 * Morgana
+* Teemo
 * Zed
 
 
