@@ -68,8 +68,6 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("hint2", "MIP = Orange"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("hint3", "LiP = Yellow"));
 		
-			var potionManager = new PotionManager();
-			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()

@@ -54,6 +54,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activator.cs" />
     <Compile Include="AutoUpdater.cs" />
     <Compile Include="BaseUlt.cs" />
     <Compile Include="Champion.cs" />

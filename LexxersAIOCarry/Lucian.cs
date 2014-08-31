@@ -62,10 +62,6 @@ namespace UltimateCarry
 			Program.Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
 			Program.Menu.SubMenu("LastHit").AddItem(new MenuItem("useQ_LastHit", "Use Q").SetValue(true));
 
-			//Program.Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
-
-			Program.Menu.AddSubMenu(new Menu("ItemManager", "ItemManager"));
-
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
@@ -73,8 +69,6 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 
-			var potionManager = new PotionManager();
-			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()

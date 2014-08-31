@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 22;
+		public const int LocalVersion = 23;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -28,6 +28,10 @@ namespace UltimateCarry
 
 			Menu.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
 			Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalker"));
+
+			var overlay = new Overlay();
+			var potionManager = new PotionManager();
+			var avtivator = new Activator();
 
 			string championName = ObjectManager.Player.ChampionName;
 			switch(championName)

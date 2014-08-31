@@ -48,16 +48,12 @@ namespace UltimateCarry
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useW_LaneClear", "Use W").SetValue(true));
 
-			Program.Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
-
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_W", "Draw W").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 
-			var potionManager = new PotionManager();
-			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()

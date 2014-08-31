@@ -51,8 +51,6 @@ namespace UltimateCarry
 
 			//Program.Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
 
-			Program.Menu.AddSubMenu(new Menu("ItemManager", "ItemManager"));
-
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
@@ -62,8 +60,6 @@ namespace UltimateCarry
 			// Currently Dissabled couse need Remake
 			// var baseult = new BaseUlt();
 		
-			var potionManager = new PotionManager();
-			var overlay = new Overlay();
 		}
 
 		private static void LoadSpells()
