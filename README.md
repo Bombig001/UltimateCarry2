@@ -20,6 +20,7 @@ Included Champions
 Extras
 ======
 * Potion Manager
+* SummonerSPell Support ( Smite, Ignite, Heal, Barrier, Exhoust )
 * HUD for Resolution 1920x1080 ( more will come soon )
 
 
