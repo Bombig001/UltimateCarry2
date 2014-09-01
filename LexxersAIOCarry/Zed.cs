@@ -238,24 +238,35 @@ namespace UltimateCarry
 			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
 				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
 					return;
-
-			var target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
-			if(IsTeleportToClone("W"))
-			{
-				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth && Program.Menu.Item("followW_TeamFight").GetValue<bool>())
-					if(CloneW.Position.Distance(target.Position) < ObjectManager.Player.Position.Distance(target.Position))
-						W.Cast();
-			}
-			if( Delay >= Environment.TickCount - DelayTick)
+			if(Delay >= Environment.TickCount - DelayTick)
 				return;
 			DelayTick = Environment.TickCount;
-			if(target == null)
-				return;
-			if((W.IsReady() && Q.IsReady() && target.IsValidTarget(Q.Range + W.Range) && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)))
-			   || (W.IsReady() && E.IsReady() && target.IsValidTarget(W.Range + E.Range) && IsEnoughEnergy(GetCost(SpellSlot.W) + GetCost(SpellSlot.E)))
-			   || (W.IsReady() && target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(target)) && Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo))
+			var target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
+			if (IsTeleportToClone("W"))
 			{
-				W.Cast(target.Position, Packets());
+				if (ObjectManager.Player.Health*100/ObjectManager.Player.MaxHealth > target.Health*100/target.MaxHealth &&
+				    (Program.Menu.Item("followW_TeamFight").GetValue<bool>() &&
+				     Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo) ||
+				    (Program.Menu.Item("followW_Harass").GetValue<bool>() &&
+				     Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed))
+					if (CloneW.Position.Distance(target.Position) < ObjectManager.Player.Position.Distance(target.Position))
+						W.Cast();
+			}
+			else
+			{
+				if (target == null)
+					return;
+				if ((W.IsReady() && Q.IsReady() && target.IsValidTarget(Q.Range + W.Range) &&
+				     IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)))
+				    ||
+				    (W.IsReady() && E.IsReady() && target.IsValidTarget(W.Range + E.Range) &&
+				     IsEnoughEnergy(GetCost(SpellSlot.W) + GetCost(SpellSlot.E)))
+				    ||
+				    (W.IsReady() && target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(target)) &&
+				     Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo))
+				{
+					W.Cast(target.Position, Packets());
+				}
 			}
 		}
 
