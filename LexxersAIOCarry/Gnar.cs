@@ -8,7 +8,7 @@ using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
-	class Gnar : Champion
+ class Gnar : Champion
 	{
 		public static Spell QMini;
 		public static Spell QMega;
@@ -32,9 +32,8 @@ namespace UltimateCarry
 			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
-
-			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Drawing.OnDraw += Drawing_OnDraw;
 			Chat.Print(Name + " Plugin Loaded!");
 		}
 
@@ -43,8 +42,8 @@ namespace UltimateCarry
 			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
 			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
 
-			Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
-			Program.Menu.Item("Farm").DisplayName = "Harass";
+			//Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
+			//Program.Menu.Item("Farm").DisplayName = "Harass";
 
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
@@ -69,37 +68,31 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_W", "Draw W").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
-
+	
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
-			QMini = new Spell(SpellSlot.Q, 1100);
+			QMini = new Spell(SpellSlot.Q, 1100f);
 			QMini.SetSkillshot(0.066f, 60f, 1400f, true, SkillshotType.SkillshotLine);
-
-			QMega = new Spell(SpellSlot.Q, 1100);
-			QMega.SetSkillshot(0.60f, 90f, 2100, true, SkillshotType.SkillshotLine);
-			
-			WMega = new Spell(SpellSlot.W,525);
-			WMega.SetSkillshot(0.25f,80f,1200,false,SkillshotType.SkillshotLine);
-
-			EMini = new Spell(SpellSlot.E,475);
-			EMini.SetSkillshot(0.695f, 150f, float.MaxValue, false, SkillshotType.SkillshotCircle );
-
-			EMega = new Spell(SpellSlot.E, 475);
-			EMega.SetSkillshot(0.695f, 350f, float.MaxValue, false, SkillshotType.SkillshotCircle);
-
-			RMega = new Spell(SpellSlot.R, 1);
+			QMega = new Spell(SpellSlot.Q, 1100f);
+			QMega.SetSkillshot(0.60f, 90f, 2100f, true, SkillshotType.SkillshotLine);
+			WMega = new Spell(SpellSlot.W,525f);
+			WMega.SetSkillshot(0.25f,80f,1200f,false,SkillshotType.SkillshotLine);
+			EMini = new Spell(SpellSlot.E,475f);
+			EMini.SetSkillshot(0.695f, 150f, 2000f, false, SkillshotType.SkillshotCircle);
+			EMega = new Spell(SpellSlot.E, 475f);
+			EMega.SetSkillshot(0.695f, 350f, 2000f, false, SkillshotType.SkillshotCircle);
+			RMega = new Spell(SpellSlot.R, 1f);
 			RMega.SetSkillshot(0.066f, 400f, 1400f, false, SkillshotType.SkillshotCircle);
-
 			W = WMega;
 			R = RMega;
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			CheckState();
-			switch (GnarState)
+			switch(GnarState)
 			{
 				case 1:
 					Q = QMini;

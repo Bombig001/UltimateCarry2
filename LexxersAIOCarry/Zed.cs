@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -178,6 +179,14 @@ namespace UltimateCarry
 		{
 			if (!Q.IsReady())
 				return;
+
+			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
+					return;
+
+			if (W.IsReady() && CloneW == null)
+				return;
+
 			var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
 			if (target != null)
 				if (target.IsValidTarget(Q.Range) && Q.GetPrediction(target).Hitchance >= HitChance.High)
@@ -224,36 +233,44 @@ namespace UltimateCarry
 
 		private static void CastWEnemy()
 		{
-			var follow = (Program.Menu.Item("followW_Harass").GetValue<bool>() &&
-						   Orbwalking.OrbwalkingMode.Mixed == Program.Orbwalker.ActiveMode) || (Program.Menu.Item("followW_TeamFight").GetValue<bool>() &&
-																								Orbwalking.OrbwalkingMode.Combo == Program.Orbwalker.ActiveMode);
+			
+
+			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
+					return;
 
 			var target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
-	
-			if((IsTeleportToClone("W") || Delay >= Environment.TickCount - DelayTick))
+			if(IsTeleportToClone("W"))
+			{
+				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth && Program.Menu.Item("followW_TeamFight").GetValue<bool>())
+					if(CloneW.Position.Distance(target.Position) < ObjectManager.Player.Position.Distance(target.Position))
+						W.Cast();
+			}
+			if( Delay >= Environment.TickCount - DelayTick)
 				return;
 			DelayTick = Environment.TickCount;
 			if(target == null)
 				return;
 			if((W.IsReady() && Q.IsReady() && target.IsValidTarget(Q.Range + W.Range) && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)))
 			   || (W.IsReady() && E.IsReady() && target.IsValidTarget(W.Range + E.Range) && IsEnoughEnergy(GetCost(SpellSlot.W) + GetCost(SpellSlot.E)))
-			   || (W.IsReady() && target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(target))))
+			   || (W.IsReady() && target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(target)) && Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo))
 			{
 				W.Cast(target.Position, Packets());
-				if (follow)W.Cast();
-			}
-			if(IsTeleportToClone("W") && follow)
-			{
-				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth || ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth > 5)
-					if(CloneW.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
-						W.Cast();
 			}
 		}
+
+		
+
 
 		private static void CastE()
 		{
 			if(!E.IsReady())
 				return;
+
+			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+				if (R.IsReady() && CloneR == null   && Q.IsReady() && E.IsReady()  && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
+					return;
+
 			var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
 			if(target != null)
 			{
@@ -290,24 +307,25 @@ namespace UltimateCarry
 		{
 			if(!R.IsReady())
 				return;
+
 			var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
 			if (!IsTeleportToClone("R"))
 			{
 
-				var dmg = DamageLib.getDmg(target, DamageLib.SpellType.Q);
-				dmg += DamageLib.getDmg(target, DamageLib.SpellType.E);
-				dmg += DamageLib.getDmg(target, DamageLib.SpellType.R);
-				dmg += DamageLib.getDmg(target, DamageLib.SpellType.AD)*2;
+				//var dmg = DamageLib.getDmg(target, DamageLib.SpellType.Q);
+				//dmg += DamageLib.getDmg(target, DamageLib.SpellType.E);
+				//dmg += DamageLib.getDmg(target, DamageLib.SpellType.R);
+				//dmg += DamageLib.getDmg(target, DamageLib.SpellType.AD)*2;
 
-				if (dmg >= target.Health)
-				{
+				//if (dmg >= target.Health)
+				//{
 					R.Cast(target);
 					SearchForClone("R");
-				}
+				//}
 			}
 			else
 				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth)
-					if(CloneR.Position.Distance(target.Position) > ObjectManager.Player.Position.Distance(target.Position))
+					if(CloneR.Position.Distance(target.Position) < ObjectManager.Player.Position.Distance(target.Position))
 						R.Cast();
 		}
 
@@ -333,7 +351,13 @@ namespace UltimateCarry
 
 		private static float GetCost(SpellSlot spell)
 		{
-			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost;
+			if(SpellSlot.Q == spell)
+				return 50 + (5 * Q.Level);
+			if(SpellSlot.W == spell)
+				return 15 + (5 * W.Level);
+			if(SpellSlot.E == spell)
+				return 50;
+			return 0;
 		}
 
 		private static void SearchForClone(string p)

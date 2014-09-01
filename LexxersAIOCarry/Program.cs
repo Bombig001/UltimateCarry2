@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 23;
+		public const int LocalVersion = 24;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -20,20 +20,21 @@ namespace UltimateCarry
 		private static void Game_OnGameLoad(EventArgs args)
 		{
 			AutoUpdater.InitializeUpdater();
+
 			Menu = new Menu("UltimateCarry", "UltimateCarry", true);
 
 			var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
 			SimpleTs.AddToMenu(targetSelectorMenu);
 			Menu.AddSubMenu(targetSelectorMenu);
 
-			Menu.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
-			Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalker"));
+			var orbwalking = Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+			Orbwalker = new Orbwalking.Orbwalker(orbwalking);
 
 			var overlay = new Overlay();
 			var potionManager = new PotionManager();
-			var avtivator = new Activator();
+			var activator = new Activator();
 
-			string championName = ObjectManager.Player.ChampionName;
+			var championName = ObjectManager.Player.ChampionName;
 			switch(championName)
 			{
 				case "Ezreal":
@@ -58,8 +59,7 @@ namespace UltimateCarry
 					Champion = new Champion();
 					break;
 			}
-
-			Menu.AddToMainMenu(); 
+			Menu.AddToMainMenu();
 		}
 	}
 }
