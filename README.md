@@ -11,6 +11,7 @@ Included Champions
 
 * Ezreal
 * Gnar
+* Khazix
 * Lucian
 * Morgana
 * Teemo
@@ -21,6 +22,7 @@ Extras
 ======
 * Potion Manager
 * SummonerSpell Support ( Smite, Ignite, Heal, Barrier, Exhoust )
+* ItemSupport for alot items ( not all yet )
 * HUD for Resolution 1920x1080 ( more will come soon )
 
 
