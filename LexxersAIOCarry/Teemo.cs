@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LexxersAIOCarry.Annotations;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -30,12 +25,12 @@ namespace UltimateCarry
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Chat.Print(Name + " Plugin Loaded!");
+			Orbwalking.AfterAttack += Orbwalking_AfterAttack;
 			ShroomPositions = new ShroomTables();
 		}
 
 		private static void LoadMenu()
 		{
-
 			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
 			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
 
@@ -90,17 +85,26 @@ namespace UltimateCarry
 			{
 					
 					case Orbwalking.OrbwalkingMode.Combo:
-						if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>())
-							CastQEnemy();
 						if(Program.Menu.Item("useW_TeamFight").GetValue<bool>())
 							CastW();
 						if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
 							CastR();
 						break;
-					case Orbwalking.OrbwalkingMode.Mixed:
-						if(Program.Menu.Item("useQ_Harass").GetValue<bool>())
-							CastQEnemy();
-						break;
+			}
+		}
+
+		private static void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
+		{
+			switch(Program.Orbwalker.ActiveMode)
+			{
+				case Orbwalking.OrbwalkingMode.Combo:
+					if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>())
+						CastQEnemy();
+					break;
+				case Orbwalking.OrbwalkingMode.Mixed:
+					if(Program.Menu.Item("useQ_Harass").GetValue<bool>())
+						CastQEnemy();
+					break;
 			}
 		}
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -8,7 +7,7 @@ using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
-	class Zed :Champion 
+	class Zed : Champion 
 	{
 		public static Spell Q;
 		public static Spell W;
@@ -73,7 +72,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("LastHit").AddItem(new MenuItem("useQ_LastHit", "Use Q").SetValue(true));
 			
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useE_Passive", "Auto E").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useE_Passive", "Auto E").SetValue((new KeyBind("H".ToCharArray()[0], KeyBindType.Toggle, true))));
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -96,7 +95,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R, 600);
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 
 			if(CloneWCreated && !CloneWFound)
@@ -118,7 +117,7 @@ namespace UltimateCarry
 				CloneRFound = false;
 			}
 
-			if(Program.Menu.Item("useE_Passive").GetValue<bool>())
+			if(Program.Menu.Item("useE_Passive").GetValue<KeyBind>().Active )
 				CastE();
 
 			switch(Program.Orbwalker.ActiveMode)
@@ -173,6 +172,10 @@ namespace UltimateCarry
 			if(Program.Menu.Item("Draw_E").GetValue<bool>())
 				if(E.Level > 0)
 					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
+
+			if(Program.Menu.Item("Draw_R").GetValue<bool>())
+				if(R.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
 		private static void CastQEnemy()
@@ -183,7 +186,7 @@ namespace UltimateCarry
 			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
 				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
 					return;
-
+			
 			if (W.IsReady() && CloneW == null)
 				return;
 

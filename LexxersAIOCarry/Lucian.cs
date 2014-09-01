@@ -225,7 +225,7 @@ namespace UltimateCarry
 			else if(W.GetPrediction(target).Hitchance == HitChance.Collision)
 			{
 				var wCollision = W.GetPrediction(target).CollisionObjects;
-				foreach(var wCollisionChar in wCollision.Where(wCollisionChar => wCollisionChar.Distance(target) <= 200))
+				foreach(var wCollisionChar in wCollision.Where(wCollisionChar => wCollisionChar.Distance(target) <= 100))
 				{
 					W.Cast(wCollisionChar.Position, Packets());
 					UsedSkill();
@@ -237,7 +237,7 @@ namespace UltimateCarry
 		{
 			if (!W.IsReady() || !CanUseSpells)
 				return;
-			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range + 200, MinionTypes.All,
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range + 100, MinionTypes.All,
 				MinionTeam.NotAlly);
 			var minion = allMinions.First(minionn => minionn.IsValidTarget(W.Range));
 			if (minion != null)
