@@ -53,17 +53,28 @@ namespace UltimateCarry
 				Check_DFG();
 				Check_BILGEWATER();
 				Check_BOTRK();
-				//Check_YOMO();
+				Check_YOMO();
 			}
 		}
 
-		//private static void Check_YOMO()
-		//{
-		//	var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
-		//	var targ = ObjectManager.Get<Obj_AI_Hero>().First(hero => hero.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)));
-		//		if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
-		//			Items.UseItem(item.Id);
-		//}
+		private static void Check_YOMO()
+		{
+			try
+			{
+				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
+				Obj_AI_Hero nearenemy = null;
+				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()).Where(enemy => nearenemy == null || nearenemy.Distance(ObjectManager.Player) < enemy.Distance(ObjectManager.Player)))
+					nearenemy = enemy;
+
+				if(nearenemy == null)
+					return;
+				if(Orbwalking.GetRealAutoAttackRange(nearenemy) <= nearenemy.Distance(ObjectManager.Player))
+					Items.UseItem(item.Id);
+			}
+			catch
+			{
+			}
+		}
 
 		private static void Check_TIAMANT()
 		{
