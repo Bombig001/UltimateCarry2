@@ -16,6 +16,7 @@ Included Champions
 * Morgana
 * Teemo
 * Zed
+* Zyra
 
 
 Extras

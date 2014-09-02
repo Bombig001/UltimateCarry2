@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 26;
+		public const int LocalVersion = 27;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -30,10 +30,10 @@ namespace UltimateCarry
 			var orbwalking = Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
 			Orbwalker = new Orbwalking.Orbwalker(orbwalking);
 
-			var overlay = new Overlay();
+			//var overlay = new Overlay();
 			var potionManager = new PotionManager();
 			var activator = new Activator();
-
+		
 			var championName = ObjectManager.Player.ChampionName;
 			switch(championName)
 			{
@@ -57,6 +57,9 @@ namespace UltimateCarry
 					break;
 				case "Zed":
 					Champion = new Zed();
+					break;
+				case "Zyra":
+					Champion = new Zyra();
 					break;
 				default:
 					Champion = new Champion();

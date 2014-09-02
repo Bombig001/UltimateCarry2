@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="Teemo.cs" />
     <Compile Include="Zed.cs" />
+    <Compile Include="Zyra.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">

@@ -18,7 +18,6 @@ namespace UltimateCarry
 
 			Hud = new Render.Sprite(Properties.Resources.Overlay2, new Vector2(1, 1));
 			Hud.Add();
-
 			Drawing.OnDraw += Drawing_OnDraw;
 		}
 
