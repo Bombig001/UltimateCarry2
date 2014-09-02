@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
-	class Khazix : Champion 
+	class Khazix : Champion
 	{
 
 		public static Spell Q;
@@ -64,13 +67,13 @@ namespace UltimateCarry
 		private static void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 325f);
-			
+
 			W = new Spell(SpellSlot.W, 1000f);
-			W.SetSkillshot(0.225f,100f,828.5f,true,SkillshotType.SkillshotLine);
-			
+			W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
+
 			E = new Spell(SpellSlot.E, 600f);
-			E.SetSkillshot(0.250f,100f,1000f,false,SkillshotType.SkillshotCircle);
-			
+			E.SetSkillshot(0.250f, 150f, 1000f, false, SkillshotType.SkillshotCircle);
+
 			R = new Spell(SpellSlot.R);
 		}
 
@@ -122,10 +125,10 @@ namespace UltimateCarry
 			switch(Program.Orbwalker.ActiveMode)
 			{
 				case Orbwalking.OrbwalkingMode.Combo:
+					if(Program.Menu.Item("useE_TeamFight").GetValue<bool>())
+						CastEEnemy();
 					if(Program.Menu.Item("useW_TeamFight").GetValue<bool>())
 						CastWEnemy();
-						if(Program.Menu.Item("useE_TeamFight").GetValue<bool>())
-							CastEEnemy();
 					break;
 				case Orbwalking.OrbwalkingMode.Mixed:
 					if(Program.Menu.Item("useW_Harass").GetValue<bool>())
@@ -144,22 +147,54 @@ namespace UltimateCarry
 		{
 			if(!E.IsReady())
 				return;
-			var target = SimpleTs.GetTarget(E.Range + ( E.Width / 2), SimpleTs.DamageType.Physical);
-			if(target == null)
-				return;
-			if(target.IsValidTarget(E.Range + ( E.Width / 2)) && E.GetPrediction(target).Hitchance >= HitChance.High)
-				E.Cast(E.GetPrediction(target).CastPosition , Packets());
+			var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
+			if(target.IsValidTarget(E.Range))
+				E.Cast(E.GetPrediction(target).CastPosition, Packets());
+		}
+
+		private static void CastWEnemy()
+		{
+			try
+			{
+				if(!W.IsReady())
+					return;
+				var target = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Physical);
+				if(target == null)
+					return;
+				if(target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
+					W.Cast(W.GetPrediction(target).CastPosition, Packets());
+				else if(W.GetPrediction(target).Hitchance == HitChance.Collision)
+				{
+					var wCollision = W.GetPrediction(target).CollisionObjects;
+					foreach(var wCollisionChar in wCollision.Where(wCollisionChar => wCollisionChar.Distance(target) <= 50))
+					{
+						W.Cast(wCollisionChar.Position, Packets());
+						return;
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				Chat.Print(ex.Message);
+			}
 		}
 
 		private static void CastEMinion()
 		{
-			if(!E.IsReady())
-				return;
-			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, E.Range + (E.Width / 2), MinionTypes.All, MinionTeam.NotAlly);
-			if(minions.Count == 0)
-				return;
-			var castPostion = MinionManager.GetBestCircularFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), E.Width, E.Range);
-			E.Cast(castPostion.Position, Packets());
+			try
+			{
+				if(!E.IsReady())
+					return;
+				var minions = MinionManager.GetMinions(ObjectManager.Player.Position, E.Range + (E.Width / 2), MinionTypes.All, MinionTeam.NotAlly);
+				if(minions.Count == 0)
+					return;
+				var castPostion = MinionManager.GetBestCircularFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), E.Width, E.Range);
+				E.Cast(castPostion.Position, Packets());
+			}
+			catch(Exception ex)
+			{
+				Chat.Print(ex.Message );
+			}
 		}
 
 		private static void CastQEnemy()
@@ -167,7 +202,7 @@ namespace UltimateCarry
 			if(!Q.IsReady())
 				return;
 			var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-			if (target.IsValidTarget(Q.Range))
+			if(target.IsValidTarget(Q.Range))
 			{
 				Q.CastOnUnit(target, Packets());
 				Orbwalking.ResetAutoAttackTimer();
@@ -178,7 +213,7 @@ namespace UltimateCarry
 		{
 			if(!Q.IsReady())
 				return;
-			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly,MinionOrderTypes.MaxHealth);
 			foreach(var minion in allMinions)
 			{
 				if(!minion.IsValidTarget())
@@ -200,23 +235,6 @@ namespace UltimateCarry
 					Q.CastOnUnit(minion, Packets());
 					Orbwalking.ResetAutoAttackTimer();
 				}
-			}
-		}
-
-		private static void CastWEnemy()
-		{
-			if(!W.IsReady())
-				return;
-			var target = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Physical);
-			if(target == null)
-				return;
-			if (target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
-				W.Cast(W.GetPrediction(target).CastPosition, Packets());
-			else if(W.GetPrediction(target).Hitchance == HitChance.Collision)
-			{
-				var wCollision = W.GetPrediction(target).CollisionObjects;
-				foreach(var wCollisionChar in wCollision.Where(wCollisionChar => wCollisionChar.Distance(target) <= 50))
-					W.Cast(wCollisionChar.Position, Packets());
 			}
 		}
 
