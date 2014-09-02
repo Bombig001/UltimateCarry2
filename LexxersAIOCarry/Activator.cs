@@ -53,7 +53,17 @@ namespace UltimateCarry
 				Check_DFG();
 				Check_BILGEWATER();
 				Check_BOTRK();
+				Check_YOMO();
 			}
+		}
+
+		private static void Check_YOMO()
+		{
+			var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active",
+				(int) Orbwalking.GetRealAutoAttackRange(ObjectManager.Player));
+				var targ = ObjectManager.Get<Obj_AI_Hero>().First(hero => hero.IsValidTarget(item.Range));
+				if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
+					Items.UseItem(item.Id);
 		}
 
 		private static void Check_TIAMANT()
@@ -365,9 +375,7 @@ namespace UltimateCarry
 				new Item(3144, "Bilgewater Cutlass", "1,2,3,4", "Active", 450),
 				new Item(3128, "Deathfire Grasp", "1,4", "Active", 750),
 				new Item(3153, "Blade of the Ruined King", "1,2,3,4", "Active", 450),
-				new Item(2041, "Crystalline Flask", "1,2,3", "Neutral"),
-				new Item(2004, "Health Potion", "1,2,3,4", "Neutral"),
-				new Item(2010, "Biscuit", "1,2,3,4", "Neutral")
+				new Item(3142, "Youmuu's Ghostblade","1,2,3,4", "Active", (int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player))
 			};
 
 			return list;
