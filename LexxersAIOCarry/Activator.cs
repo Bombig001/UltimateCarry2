@@ -63,12 +63,12 @@ namespace UltimateCarry
 			{
 				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
 				Obj_AI_Hero[] nearenemy = {null};
-				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()).Where(enemy => nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < enemy.Distance(ObjectManager.Player)))
+				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()).Where(enemy => nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < enemy.Distance(ObjectManager.Player) && enemy.IsEnemy))
 					nearenemy[0] = enemy;
 
 				if(nearenemy[0] == null)
 					return;
-				if(Orbwalking.GetRealAutoAttackRange(nearenemy[0]) <= nearenemy[0].Distance(ObjectManager.Player))
+				if(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) >= nearenemy[0].Distance(ObjectManager.Player))
 					Items.UseItem(item.Id);
 			}
 			catch
@@ -368,7 +368,9 @@ namespace UltimateCarry
 			}
 			if(maxDpsHero == null)
 				return;
-			ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
+
+			if (ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(Friend => Friend.Health <= maxDps * 3))
+				ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
 		}
 
 		private static IEnumerable<Item> GetallItems()
