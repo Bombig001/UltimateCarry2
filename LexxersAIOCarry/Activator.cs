@@ -62,13 +62,13 @@ namespace UltimateCarry
 			try
 			{
 				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
-				Obj_AI_Hero nearenemy = null;
-				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()).Where(enemy => nearenemy == null || nearenemy.Distance(ObjectManager.Player) < enemy.Distance(ObjectManager.Player)))
-					nearenemy = enemy;
+				Obj_AI_Hero[] nearenemy = {null};
+				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()).Where(enemy => nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < enemy.Distance(ObjectManager.Player)))
+					nearenemy[0] = enemy;
 
-				if(nearenemy == null)
+				if(nearenemy[0] == null)
 					return;
-				if(Orbwalking.GetRealAutoAttackRange(nearenemy) <= nearenemy.Distance(ObjectManager.Player))
+				if(Orbwalking.GetRealAutoAttackRange(nearenemy[0]) <= nearenemy[0].Distance(ObjectManager.Player))
 					Items.UseItem(item.Id);
 			}
 			catch

@@ -65,6 +65,7 @@
     <Compile Include="HTMLColor.cs" />
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />
+    <Compile Include="MissFortune.cs" />
     <Compile Include="Morgana.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="PotionManager.cs" />
@@ -85,6 +86,9 @@
     <Compile Include="Zyra.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="clipper_library">
+      <HintPath>..\..\..\..\..\..\..\Desktop\LeagueSharp\lsharp\Assemblies\System\clipper_library.dll</HintPath>
+    </Reference>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Desktop\LeagueSharp\lsharp\Assemblies\System\LeagueSharp.dll</HintPath>
