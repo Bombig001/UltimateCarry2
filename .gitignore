@@ -6,6 +6,8 @@
 *.user
 *.sln.docstates
 
+UltimateCarry.sln
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
