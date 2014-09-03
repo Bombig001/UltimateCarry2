@@ -21,6 +21,7 @@ namespace UltimateCarry
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Chat.Print(Name + " Plugin Loaded!");
 		}
 
@@ -47,6 +48,9 @@ namespace UltimateCarry
 
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useW_LaneClear", "Use W").SetValue(true));
+
+			Program.Menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
+			Program.Menu.SubMenu("SupportMode").AddItem(new MenuItem("hitMinions", "Hit Minions").SetValue(false));
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -185,10 +189,16 @@ namespace UltimateCarry
 		{
 			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
-	
 
-	
-	
+		static void Game_OnGameSendPacket(GamePacketEventArgs args)
+		{
+			if(args.PacketData[0] != Packet.C2S.Move.Header)
+				return;
+			var decodedPacket = Packet.C2S.Move.Decoded(args.PacketData);
+			if(decodedPacket.MoveType == 3 &&
+				(Program.Orbwalker.GetTarget().IsMinion && !Program.Menu.Item("hitMinions").GetValue<bool>()))
+				args.Process = false;
+		}
 	}
 
 
