@@ -70,7 +70,7 @@ namespace UltimateCarry
 						System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak");
 				}
 				System.IO.File.Move(System.Reflection.Assembly.GetExecutingAssembly().Location,
-					System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak");
+					System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak.v" + (Program.LocalVersion -1));
 				_wc.DownloadFile(_updatelink,
 					System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location));
 				return true;
