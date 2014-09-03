@@ -2,8 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using Path = System.Collections.Generic.List<ClipperLib.IntPoint>;
-using Paths = System.Collections.Generic.List<System.Collections.Generic.List<ClipperLib.IntPoint>>;
+using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
@@ -57,7 +56,6 @@ namespace UltimateCarry
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
-			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_W", "Draw W").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 
@@ -79,7 +77,21 @@ namespace UltimateCarry
 
 		private static void Drawing_OnDraw(EventArgs args)
 		{
-			
+			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
+				return;
+
+			if(Program.Menu.Item("Draw_Q").GetValue<bool>())
+				if(Q.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, Q.Range, Q.IsReady() ? Color.Green : Color.Red);
+
+			if(Program.Menu.Item("Draw_E").GetValue<bool>())
+				if(E.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
+
+			if(Program.Menu.Item("Draw_R").GetValue<bool>())
+				if(R.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
+		
 		}
 
 		private void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
