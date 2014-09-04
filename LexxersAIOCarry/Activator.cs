@@ -23,7 +23,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Active", "ItemsActive"));
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Defensive", "ItemsDefensive"));
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Neutral", "ItemsNeutral"));
-			foreach(Item item in GetallItems().Where(item => item.IsMap()))
+			foreach(var item in GetallItems().Where(item => item.IsMap()))
 				Program.Menu.SubMenu("supportedextras").SubMenu("Items" + item.Modestring).AddItem(new MenuItem("Item" + item.Id + item.Modestring, item.Name).SetValue(true));
 
 			AddSummonerMenu();
@@ -369,7 +369,7 @@ namespace UltimateCarry
 			if(maxDpsHero == null)
 				return;
 
-			if (ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(Friend => Friend.Health <= maxDps * 3))
+			if (ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
 				ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
 		}
 

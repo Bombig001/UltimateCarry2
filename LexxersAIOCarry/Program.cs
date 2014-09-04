@@ -35,16 +35,43 @@ namespace UltimateCarry
 			var activator = new Activator();
 		
 			var championName = ObjectManager.Player.ChampionName;
-			try
-			{
-				var handle = System.Activator.CreateInstance("null", championName);
-				Champion = (Champion)handle.Unwrap();
-			}
-			catch(Exception e)
-			{
-				Champion = new Champion(); //Champ not supported
-			}
 			
+			switch(championName)
+			{
+				case "Ezreal":
+					Champion = new Ezreal();
+					break;
+				case "Gnar":
+					Champion = new Gnar();
+					break;
+				case "Khazix":
+					Champion = new Khazix();
+					break;
+				case "Lucian":
+					Champion = new Lucian();
+					break;
+				case "Lulu":
+					Champion = new Lulu();
+					break;
+				case "MissFortune":
+					Champion = new MissFortune() ;
+					break;
+				case "Morgana":
+					Champion = new Morgana();
+					break;
+				case "Teemo":
+					Champion = new Teemo();
+					break;
+				case "Zed":
+					Champion = new Zed();
+					break;
+				case "Zyra":
+					Champion = new Zyra();
+					break;
+				default:
+					Champion = new Champion();
+					break;
+			}
 			Menu.AddToMainMenu();
 		}
 	}
