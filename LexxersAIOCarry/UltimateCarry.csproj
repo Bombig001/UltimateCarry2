@@ -82,6 +82,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Swain.cs" />
     <Compile Include="Teemo.cs" />
     <Compile Include="Zed.cs" />
     <Compile Include="Zyra.cs" />

@@ -154,12 +154,12 @@ namespace UltimateCarry
 				return;
 			foreach(var friend in from friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= R.Range)
 								  let enemyCount = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 600)
-								  let enemyCount2 = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 200)
+								  let enemyCountnear = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 200)
 								  let frinedhealthprecent = friend.Health / friend.MaxHealth * 100
 								  where frinedhealthprecent <= 1 || 
 								  (frinedhealthprecent <= 10 && enemyCount >= 1) ||
 								  (frinedhealthprecent <= 15 && enemyCount >= 2) ||
-								  (frinedhealthprecent <= 25 && enemyCount2 >= 2)
+								  (frinedhealthprecent <= 25 && enemyCountnear >= 2)
 								  select friend)
 			{
 				R.CastOnUnit(friend, Packets());
@@ -191,7 +191,7 @@ namespace UltimateCarry
 
 			if(Program.Menu.Item("Draw_Q").GetValue<bool>())
 				if(Q.Level > 0)
-					Utility.DrawCircle(ObjectManager.Player.Position, QPix.Range, QPix.IsReady() ? Color.Green : Color.Red);
+					Utility.DrawCircle(ObjectManager.Player.Position, Q.Range, Q.IsReady() ? Color.Green : Color.Red);
 
 			if(Program.Menu.Item("Draw_W").GetValue<bool>())
 				if(W.Level > 0)

@@ -39,7 +39,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useR_TeamFight", "Use R on Me").SetValue(true));
 			
 			Program.Menu.AddSubMenu(new Menu("Harass", "Harass"));
-			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_Harass", "Use Q").SetValue(true));
+			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass", "Use Q").SetValue(true));
 
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
 			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("put_Shroom1", "place Shroom VIP").SetValue(true));

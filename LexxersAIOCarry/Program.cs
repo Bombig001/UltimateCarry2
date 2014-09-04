@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 39;
+		public const int LocalVersion = 40;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -37,50 +37,13 @@ namespace UltimateCarry
 			try
 			{
 				var handle = System.Activator.CreateInstance(null, "UltimateCarry." + championName);
-				Champion = (Champion)handle.Unwrap();
-
+				Champion = (Champion) handle.Unwrap();
 			}
-			catch(Exception e)
+			catch (Exception)
 			{
 				Champion = new Champion(); //Champ not supported
 			}
-
-			//switch(championName)
-			//{
-			//	case "Ezreal":
-			//		Champion = new Ezreal();
-			//		break;
-			//	case "Gnar":
-			//		Champion = new Gnar();
-			//		break;
-			//	case "Khazix":
-			//		Champion = new Khazix();
-			//		break;
-			//	case "Lucian":
-			//		Champion = new Lucian();
-			//		break;
-			//	case "Lulu":
-			//		Champion = new Lulu();
-			//		break;
-			//	case "MissFortune":
-			//		Champion = new MissFortune() ;
-			//		break;
-			//	case "Morgana":
-			//		Champion = new Morgana();
-			//		break;
-			//	case "Teemo":
-			//		Champion = new Teemo();
-			//		break;
-			//	case "Zed":
-			//		Champion = new Zed();
-			//		break;
-			//	case "Zyra":
-			//		Champion = new Zyra();
-			//		break;
-			//	default:
-			//		Champion = new Champion();
-			//		break;
-			//}
+					
 			Menu.AddToMainMenu();
 		}
 	}

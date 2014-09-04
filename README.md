@@ -16,6 +16,7 @@ Included Champions
 * Lulu
 * MissFortune
 * Morgana
+* Swain
 * Teemo
 * Zed
 * Zyra

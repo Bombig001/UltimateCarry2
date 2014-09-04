@@ -97,12 +97,12 @@ namespace UltimateCarry
 					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>())
 					{
 						Cast_BasicLineSkillshot_Enemy(Q);
-						Cast_BasicLineSkillshot_Farm(Q);
+						Cast_Basic_Farm(Q,true);
 					}
 					break;
 				case Orbwalking.OrbwalkingMode.LastHit:
 					if(Program.Menu.Item("useQ_LastHit").GetValue<bool>())
-						Cast_BasicLineSkillshot_Farm(Q);
+						Cast_Basic_Farm(Q,true);
 					break;
 			}
 		}

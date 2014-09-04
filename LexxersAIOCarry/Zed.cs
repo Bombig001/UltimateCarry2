@@ -27,8 +27,8 @@ namespace UltimateCarry
 		public static int RCastTick = 0;
 		public static Vector3 CloneRNearPosition;
 
-		public static int Delay = 300;
-		public static int DelayTick = 0;
+		public static int Delay2 = 300;
+		public static int DelayTick2 = 0;
 
 		public Zed()
 		{
@@ -238,9 +238,9 @@ namespace UltimateCarry
 			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
 				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
 					return;
-			if(Delay >= Environment.TickCount - DelayTick)
+			if(Delay2 >= Environment.TickCount - DelayTick2)
 				return;
-			DelayTick = Environment.TickCount;
+			DelayTick2 = Environment.TickCount;
 			var target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
 			if (IsTeleportToClone("W"))
 			{
