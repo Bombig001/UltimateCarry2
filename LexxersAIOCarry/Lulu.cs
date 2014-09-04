@@ -55,7 +55,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
 
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useE_Interupt", "E Interrupt").SetValue(false));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useW_Interupt", "W Interrupt").SetValue(false));
 
 			Program.Menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
 			Program.Menu.SubMenu("SupportMode").AddItem(new MenuItem("hitMinions", "Hit Minions").SetValue(false));
@@ -107,7 +107,7 @@ namespace UltimateCarry
 
 		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
 		{
-			if(!Program.Menu.Item("useE_Interupt").GetValue<bool>())
+			if(!Program.Menu.Item("useW_Interupt").GetValue<bool>())
 				return;
 			if(ObjectManager.Player.Distance(unit) < W.Range && W.IsReady() && unit.IsEnemy )
 				W.Cast(unit, Packets());
