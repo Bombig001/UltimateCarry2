@@ -26,11 +26,7 @@ namespace UltimateCarry
 
 		private static void LoadMenu()
 		{
-			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
-			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
-
-			Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
-			Program.Menu.Item("Farm").DisplayName = "Harass";
+			MenuBasics();
 
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
@@ -42,14 +38,15 @@ namespace UltimateCarry
 			Program.Menu.AddSubMenu(new Menu("Harass", "Harass"));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useW_Harass", "Use W").SetValue(true));
+			AddManaManager("Harass", 40);
 
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
+			AddManaManager("LaneClear", 0);
 
 			Program.Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
 			Program.Menu.SubMenu("LastHit").AddItem(new MenuItem("useQ_LastHit", "Use Q").SetValue(true));
-
-			//Program.Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
+			AddManaManager("LastHit", 60);
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -100,12 +97,12 @@ namespace UltimateCarry
 					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>())
 					{
 						Cast_BasicLineSkillshot_Enemy(Q);
-						CastQMinion();
+						Cast_BasicLineSkillshot_Farm(Q);
 					}
 					break;
 				case Orbwalking.OrbwalkingMode.LastHit:
 					if(Program.Menu.Item("useQ_LastHit").GetValue<bool>())
-						CastQMinion();
+						Cast_BasicLineSkillshot_Farm(Q);
 					break;
 			}
 		}
@@ -126,29 +123,6 @@ namespace UltimateCarry
 			if(Program.Menu.Item("Draw_E").GetValue<bool>())
 				if(E.Level > 0)
 					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
-		}
-
-		private static void CastQMinion()
-		{
-			if(!Q.IsReady())
-				return;
-			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
-			foreach(var minion in allMinions)
-			{
-				if(!minion.IsValidTarget())
-					continue;
-				var minionInRangeAa = Orbwalking.InAutoAttackRange(minion);
-				var minionInRangeSpell = minion.Distance(ObjectManager.Player) <= Q.Range;
-				var minionKillableAa = DamageLib.getDmg(minion, DamageLib.SpellType.AD) >= minion.Health;
-				var minionKillableSpell = DamageLib.getDmg(minion, DamageLib.SpellType.Q) >= minion.Health;
-				var lastHit = Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit;
-				var laneClear = Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear;
-
-				if((lastHit && minionInRangeSpell && minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
-					Q.Cast(minion.Position, Packets());
-				else if((laneClear && minionInRangeSpell && !minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
-					Q.Cast(minion.Position, Packets());
-			}
 		}
 
 		private static void CastREnemy()

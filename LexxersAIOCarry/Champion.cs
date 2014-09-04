@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data.Odbc;
 using System.Linq;
+using System.Runtime.InteropServices;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -9,10 +12,20 @@ namespace UltimateCarry
 	 class Champion
 	{
 		public string  Name = "";
-
+		public static List<string> ManaManagerList = new List<string>();
+ 
 		public static bool Packets()
 		{
 			return Program.Menu.Item("usePackets").GetValue<bool>();
+		}
+
+		public static void MenuBasics()
+		{
+			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
+			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
+
+			Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
+			Program.Menu.Item("Farm").DisplayName = "Harass";
 		}
 
 		public static void Game_OnGameSendPacket(GamePacketEventArgs args)
@@ -25,9 +38,50 @@ namespace UltimateCarry
 				args.Process = false;
 		}
 
+		public static void AddManaManager(string menuname, int basicmana)
+		{
+			Program.Menu.SubMenu(menuname).AddItem(new MenuItem("ManaManager_" + menuname, "Mana-Manager").SetValue(new Slider(basicmana, 100, 0)));
+			ManaManagerList.Add("ManaManager_" + menuname);
+		}
+
+		 public static bool ManaManagerAllowCast(Spell spell)
+		 {
+			 if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed &&
+			     ManaManagerList.Contains("ManaManager_Harass"))
+			 {
+				 if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
+					 return true;
+				 if (ObjectManager.Player.Mana/ObjectManager.Player.MaxMana*100 >=
+				     Program.Menu.Item("ManaManager_Harass").GetValue<Slider>().Value)
+					 return true;
+				 return false;
+			 }
+			 if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit  &&
+				 ManaManagerList.Contains("ManaManager_LastHit"))
+			 {
+				 if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
+					 return true;
+				 if(ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100 >=
+					 Program.Menu.Item("ManaManager_LastHit").GetValue<Slider>().Value)
+					 return true;
+				 return false;
+			 }
+			 if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear  &&
+				 ManaManagerList.Contains("ManaManager_LaneClear"))
+			 {
+				 if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
+					 return true;
+				 if(ObjectManager.Player.Mana  / ObjectManager.Player.MaxMana * 100 >=
+					 Program.Menu.Item("ManaManager_LaneClear").GetValue<Slider>().Value)
+					 return true;
+				 return false;
+			 }
+			 return true;
+		 }
+
 		public static void Cast_BasicLineSkillshot_Enemy(Spell spell,SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical )
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			var target = SimpleTs.GetTarget(spell.Range, damageType);
 			if(target == null)
@@ -38,7 +92,7 @@ namespace UltimateCarry
 
 		public static void Cast_BasicLineSkillshot_Enemy(Spell spell, Vector3 sourcePosition, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			spell.UpdateSourcePosition(sourcePosition, sourcePosition);
 			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>()
@@ -51,7 +105,7 @@ namespace UltimateCarry
 
 		public static void Cast_BasicLineSkillshot_AOE_Farm(Spell spell)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, spell.Range, MinionTypes.All, MinionTeam.NotAlly);
 			if(minions.Count == 0)
@@ -60,9 +114,31 @@ namespace UltimateCarry
 			spell.Cast(castPostion.Position, Packets());
 		}
 
+		 public static void Cast_BasicLineSkillshot_Farm(Spell spell)
+		 {
+			 if(!spell.IsReady() || !ManaManagerAllowCast(spell))
+				 return;
+			 var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range, MinionTypes.All, MinionTeam.NotAlly);
+			foreach(var minion in allMinions)
+			{
+				if(!minion.IsValidTarget())
+					continue;
+				var minionInRangeAa = Orbwalking.InAutoAttackRange(minion);
+				var minionInRangeSpell = minion.Distance(ObjectManager.Player) <= spell.Range;
+				var minionKillableAa = DamageLib.getDmg(minion, DamageLib.SpellType.AD) >= minion.Health;
+				var minionKillableSpell = DamageLib.getDmg(minion, DamageLib.SpellType.Q) >= minion.Health;
+				var lastHit = Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit;
+				var laneClear = Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear;
+
+				if((lastHit && minionInRangeSpell && minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
+					spell.Cast(minion.Position, Packets());
+				else if((laneClear && minionInRangeSpell && !minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
+					spell.Cast(minion.Position, Packets());
+			}
+		 }
 		public static void Cast_Speedboost_onFriend(Spell spell)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			var champions = ObjectManager.Get<Obj_AI_Hero>();
 			var objAiHeroes = champions as IList<Obj_AI_Hero> ?? champions.ToList();
@@ -79,7 +155,7 @@ namespace UltimateCarry
 
 		public static void Cast_Shield_onFriend(Spell spell, int percent)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			foreach (var friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health/friend.MaxHealth*100 <= percent && Utility.CountEnemysInRange( 1000) >=1 ))
 			{
@@ -90,7 +166,7 @@ namespace UltimateCarry
 
 		public static void Cast_onEnemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			var target = SimpleTs.GetTarget(spell.Range, damageType);
 			if(target.IsValidTarget(spell.Range))
@@ -99,7 +175,7 @@ namespace UltimateCarry
 
 		public static void Cast_onMinion_nearEnemy(Spell spell, float range, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical, MinionTypes minionTypes = MinionTypes.All, MinionTeam minionTeam = MinionTeam.All)
 		{
-			if(!spell.IsReady())
+			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			var target = SimpleTs.GetTarget(spell.Range + range, damageType);
 			Obj_AI_Base[] nearstMinion = {null};
@@ -111,30 +187,20 @@ namespace UltimateCarry
 				spell.CastOnUnit(nearstMinion[0],Packets());
 		}
 
-		public static bool EnoughManaFor(SpellSlot spell)
+		public static bool EnoughManaFor(SpellSlot spell, SpellSlot spell2 = SpellSlot.Unknown, SpellSlot spell3 = SpellSlot.Unknown, SpellSlot spell4 = SpellSlot.Unknown)
 		{
-			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost <= ObjectManager.Player.Mana;
-		}
+			var cost1 = ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost;
+			var cost2 = 0.0;
+			var cost3 = 0.0;
+			var cost4 = 0.0;
+			if(spell2 != SpellSlot.Unknown)
+				cost2 = ObjectManager.Player.Spellbook.GetSpell(spell2).ManaCost;
+			if(spell3 != SpellSlot.Unknown)
+				cost3 = ObjectManager.Player.Spellbook.GetSpell(spell3).ManaCost;
+			if(spell4 != SpellSlot.Unknown)
+				cost4 = ObjectManager.Player.Spellbook.GetSpell(spell4).ManaCost;
 
-		public static bool EnoughManaFor(SpellSlot spell, SpellSlot spell2)
-		{
-			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell2).ManaCost <= ObjectManager.Player.Mana;
-		}
-
-		public static bool EnoughManaFor(SpellSlot spell, SpellSlot spell2, SpellSlot spell3)
-		{
-			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell2).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell3).ManaCost <= ObjectManager.Player.Mana;
-		}
-
-		public static bool EnoughManaFor(SpellSlot spell, SpellSlot spell2, SpellSlot spell3, SpellSlot spell4)
-		{
-			return ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell2).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell3).ManaCost +
-					ObjectManager.Player.Spellbook.GetSpell(spell4).ManaCost <= ObjectManager.Player.Mana;
+			return cost1 + cost2 + cost3 + cost4 <= ObjectManager.Player.Mana;
 		}
 	}
  }

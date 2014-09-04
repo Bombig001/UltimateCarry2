@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 38;
+		public const int LocalVersion = 39;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -26,7 +26,6 @@ namespace UltimateCarry
 			var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
 			SimpleTs.AddToMenu(targetSelectorMenu);
 			Menu.AddSubMenu(targetSelectorMenu);
-
 			var orbwalking = Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
 			Orbwalker = new Orbwalking.Orbwalker(orbwalking);
 
@@ -35,43 +34,53 @@ namespace UltimateCarry
 			var activator = new Activator();
 		
 			var championName = ObjectManager.Player.ChampionName;
-			
-			switch(championName)
+			try
 			{
-				case "Ezreal":
-					Champion = new Ezreal();
-					break;
-				case "Gnar":
-					Champion = new Gnar();
-					break;
-				case "Khazix":
-					Champion = new Khazix();
-					break;
-				case "Lucian":
-					Champion = new Lucian();
-					break;
-				case "Lulu":
-					Champion = new Lulu();
-					break;
-				case "MissFortune":
-					Champion = new MissFortune() ;
-					break;
-				case "Morgana":
-					Champion = new Morgana();
-					break;
-				case "Teemo":
-					Champion = new Teemo();
-					break;
-				case "Zed":
-					Champion = new Zed();
-					break;
-				case "Zyra":
-					Champion = new Zyra();
-					break;
-				default:
-					Champion = new Champion();
-					break;
+				var handle = System.Activator.CreateInstance(null, "UltimateCarry." + championName);
+				Champion = (Champion)handle.Unwrap();
+
 			}
+			catch(Exception e)
+			{
+				Champion = new Champion(); //Champ not supported
+			}
+
+			//switch(championName)
+			//{
+			//	case "Ezreal":
+			//		Champion = new Ezreal();
+			//		break;
+			//	case "Gnar":
+			//		Champion = new Gnar();
+			//		break;
+			//	case "Khazix":
+			//		Champion = new Khazix();
+			//		break;
+			//	case "Lucian":
+			//		Champion = new Lucian();
+			//		break;
+			//	case "Lulu":
+			//		Champion = new Lulu();
+			//		break;
+			//	case "MissFortune":
+			//		Champion = new MissFortune() ;
+			//		break;
+			//	case "Morgana":
+			//		Champion = new Morgana();
+			//		break;
+			//	case "Teemo":
+			//		Champion = new Teemo();
+			//		break;
+			//	case "Zed":
+			//		Champion = new Zed();
+			//		break;
+			//	case "Zyra":
+			//		Champion = new Zyra();
+			//		break;
+			//	default:
+			//		Champion = new Champion();
+			//		break;
+			//}
 			Menu.AddToMainMenu();
 		}
 	}

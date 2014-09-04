@@ -28,11 +28,7 @@ namespace UltimateCarry
 
 		private static void LoadMenu()
 		{
-			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
-			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
-
-			Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
-			Program.Menu.Item("Farm").DisplayName = "Harass";
+			MenuBasics();
 
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));

@@ -45,16 +45,15 @@ namespace UltimateCarry
 
 		private static void Check_Active_Items()
 		{
-			if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-			{
-				Check_HEXGUN();
-				Check_HYDRA();
-				Check_TIAMANT();
-				Check_DFG();
-				Check_BILGEWATER();
-				Check_BOTRK();
-				Check_YOMO();
-			}
+			if (Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo) 
+				return;
+			Check_HEXGUN();
+			Check_HYDRA();
+			Check_TIAMANT();
+			Check_DFG();
+			Check_BILGEWATER();
+			Check_BOTRK();
+			Check_YOMO();
 		}
 
 		private static void Check_YOMO()

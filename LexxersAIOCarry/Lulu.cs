@@ -31,11 +31,7 @@ namespace UltimateCarry
 
 		private static void LoadMenu()
 		{
-			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
-			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
-
-			Program.Menu.Item("Orbwalk").DisplayName = "TeamFight";
-			Program.Menu.Item("Farm").DisplayName = "Harass";
+			MenuBasics();
 
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
@@ -50,9 +46,11 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useE_Harass", "Use E").SetValue(true));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useE_Harass_pix", "Use E on Minion for Q").SetValue(true));
-			
+			AddManaManager("Harass", 40);
+
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
+			AddManaManager("LaneClear", 0);
 
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
 			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useW_Interupt", "W Interrupt").SetValue(false));
