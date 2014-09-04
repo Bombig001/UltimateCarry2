@@ -182,18 +182,6 @@ namespace UltimateCarry
 					R.Cast(place, Packets());
 		}
 
-
-
-
-
-
-
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
-		}
-
 		internal class ShroomTables
 		{
 			public List<Vector3> HighPriority = new List<Vector3>();

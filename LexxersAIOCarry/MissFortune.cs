@@ -9,7 +9,6 @@ namespace UltimateCarry
 	internal class MissFortune : Champion
 	{
 		public static Spell Q;
-		public static Spell QPoly1;
 		public static Spell W;
 		public static Spell E;
 		public static Spell R;
@@ -250,10 +249,6 @@ namespace UltimateCarry
 				return;
 			var castPostion = MinionManager.GetBestCircularFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(),E.Width + 200,E.Range);
 			E.Cast(castPostion.Position, Packets());
-		}
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 
 	}

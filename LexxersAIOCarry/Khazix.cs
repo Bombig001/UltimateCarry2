@@ -171,10 +171,8 @@ namespace UltimateCarry
 				return;
 			var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
 			if(target.IsValidTarget(Q.Range))
-			{
 				Q.CastOnUnit(target, Packets());
-				Orbwalking.ResetAutoAttackTimer();
-			}
+
 		}
 
 		private static void CastQMinion()
@@ -194,15 +192,11 @@ namespace UltimateCarry
 				var laneClear = Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear;
 
 				if((lastHit && minionInRangeSpell && minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
-				{
 					Q.CastOnUnit(minion, Packets());
-					Orbwalking.ResetAutoAttackTimer();
-				}
+
 				else if((laneClear && minionInRangeSpell && !minionKillableSpell) && ((minionInRangeAa && !minionKillableAa) || !minionInRangeAa))
-				{
 					Q.CastOnUnit(minion, Packets());
-					Orbwalking.ResetAutoAttackTimer();
-				}
+
 			}
 		}
 
@@ -240,11 +234,6 @@ namespace UltimateCarry
 				Q.Range = 375f;
 			if(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).Name == "khazixelong" && E.Range < 899f)
 				E.Range = 900f;
-		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 	}
 }

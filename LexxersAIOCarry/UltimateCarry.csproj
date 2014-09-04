@@ -65,6 +65,7 @@
     <Compile Include="HTMLColor.cs" />
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />
+    <Compile Include="Lulu.cs" />
     <Compile Include="MissFortune.cs" />
     <Compile Include="Morgana.cs" />
     <Compile Include="Overlay.cs" />
@@ -141,7 +142,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "C:\LSharp\Assemblies"</PostBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "C:\LSharp\Assemblies"
+copy /y "$(TargetPath)" "C:\Users\Lexxer\Documents\GitHub\Leage-Sharp"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

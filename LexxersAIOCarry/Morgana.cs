@@ -184,21 +184,6 @@ namespace UltimateCarry
 			var castPostion = MinionManager.GetBestCircularFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), W.Width, W.Range);
 			W.Cast(castPostion.Position, Packets());
 		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
-		}
-
-		static void Game_OnGameSendPacket(GamePacketEventArgs args)
-		{
-			if(args.PacketData[0] != Packet.C2S.Move.Header)
-				return;
-			var decodedPacket = Packet.C2S.Move.Decoded(args.PacketData);
-			if(decodedPacket.MoveType == 3 &&
-				(Program.Orbwalker.GetTarget().IsMinion && !Program.Menu.Item("hitMinions").GetValue<bool>()))
-				args.Process = false;
-		}
 	}
 
 

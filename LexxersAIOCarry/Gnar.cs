@@ -310,11 +310,5 @@ namespace UltimateCarry
 			}
 			GnarState = tempState;
 		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
-		}
-
 	}
 }

@@ -13,6 +13,7 @@ Included Champions
 * Gnar
 * Khazix
 * Lucian
+* Lulu
 * MissFortune
 * Morgana
 * Teemo

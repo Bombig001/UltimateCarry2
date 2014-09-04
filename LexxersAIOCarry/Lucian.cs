@@ -282,16 +282,10 @@ namespace UltimateCarry
 			else if(laneClear)
 			{
 				var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, laneClearRange, MinionTypes.All, MinionTeam.NotAlly);
-				foreach(var minion in allMinions)
+				foreach (var minion in allMinions.Where(minion => minion != null).Where(minion => minion.IsValidTarget(laneClearRange) && E.IsReady()))
 				{
-					if(minion != null)
-					{
-						if(minion.IsValidTarget(laneClearRange) && E.IsReady())
-						{
-							E.Cast(Game.CursorPos, Packets());
-							UsedSkill();
-						}
-					}
+					E.Cast(Game.CursorPos, Packets());
+					UsedSkill();
 				}
 			}
 		}
@@ -351,9 +345,5 @@ namespace UltimateCarry
 			CanUseSpells = true;
 		}
 
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
-		}
 	}
 }

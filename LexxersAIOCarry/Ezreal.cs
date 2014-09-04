@@ -83,23 +83,23 @@ namespace UltimateCarry
 			switch(Program.Orbwalker.ActiveMode)
 			{
 				case Orbwalking.OrbwalkingMode.Combo:
-					if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>())
-						CastQEnemy();
+					if (Program.Menu.Item("useQ_TeamFight").GetValue<bool>())
+						Cast_BasicLineSkillshot_Enemy(Q);
 					if(Program.Menu.Item("useW_TeamFight").GetValue<bool>())
-						CastWEnemy();
+						Cast_BasicLineSkillshot_Enemy(W, SimpleTs.DamageType.Magical);
 					if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
 						CastREnemy();
 					break;
 				case Orbwalking.OrbwalkingMode.Mixed:
 					if(Program.Menu.Item("useQ_Harass").GetValue<bool>())
-						CastQEnemy();
+						Cast_BasicLineSkillshot_Enemy(Q);
 					if(Program.Menu.Item("useW_Harass").GetValue<bool>())
-						CastWEnemy();
+						Cast_BasicLineSkillshot_Enemy(W, SimpleTs.DamageType.Magical);
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
 					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>())
 					{
-						CastQEnemy();
+						Cast_BasicLineSkillshot_Enemy(Q);
 						CastQMinion();
 					}
 					break;
@@ -110,7 +110,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -126,17 +126,6 @@ namespace UltimateCarry
 			if(Program.Menu.Item("Draw_E").GetValue<bool>())
 				if(E.Level > 0)
 					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
-		}
-
-		private static void CastQEnemy()
-		{
-			if(!Q.IsReady())
-				return;
-			var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-			if(target == null)
-				return;
-			if(target.IsValidTarget(Q.Range) && Q.GetPrediction(target).Hitchance >= HitChance.High)
-				Q.Cast(target, Packets());
 		}
 
 		private static void CastQMinion()
@@ -162,17 +151,6 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWEnemy()
-		{
-			if(!W.IsReady())
-				return;
-			var target = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Magical);
-			if(target == null)
-				return;
-			if(target.IsValidTarget(W.Range) && W.GetPrediction(target).Hitchance >= HitChance.High)
-				W.Cast(target, Packets());
-		}
-
 		private static void CastREnemy()
 		{
 			if(!R.IsReady())
@@ -185,11 +163,6 @@ namespace UltimateCarry
 				return;
 			if(target.Distance(ObjectManager.Player) >= minRange)
 				R.CastIfWillHit(target, minHit - 1, Packets());
-		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 
 	}

@@ -182,10 +182,11 @@ namespace UltimateCarry
 		{
 			if (!Q.IsReady())
 				return;
-
-			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
-					return;
+			
+			if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
+				if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+					if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
+						return;
 			
 			if (W.IsReady() && CloneW == null)
 				return;
@@ -236,8 +237,8 @@ namespace UltimateCarry
 
 		private static void CastWEnemy()
 		{
-			
 
+			if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
 			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
 				if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
 					return;
@@ -281,9 +282,10 @@ namespace UltimateCarry
 			if(!E.IsReady())
 				return;
 
-			if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-				if (R.IsReady() && CloneR == null   && Q.IsReady() && E.IsReady()  && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
-					return;
+			if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
+				if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+					if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
+						return;
 
 			var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
 			if(target != null)
@@ -341,11 +343,6 @@ namespace UltimateCarry
 				if(ObjectManager.Player.Health * 100 / ObjectManager.Player.MaxHealth < target.Health * 100 / target.MaxHealth)
 					if(CloneR.Position.Distance(target.Position) < ObjectManager.Player.Position.Distance(target.Position))
 						R.Cast();
-		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 
 		private static bool IsTeleportToClone(string spell)

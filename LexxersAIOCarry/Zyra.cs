@@ -158,13 +158,12 @@ namespace UltimateCarry
 			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly);
 			if(minions.Count == 0)
 				return;
-			var castPostion = MinionManager.GetBestLineFarmLocation( minions.Select(minion => minion.ServerPosition.To2D()).ToList(), E.Width, E.Range);
+			var castPostion = MinionManager.GetBestLineFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), E.Width, E.Range);
 			E.Cast(castPostion.Position, Packets());
-			if(Program.Menu.Item("useW_Passive").GetValue<bool>())
-			{
-				var pos = castPostion.Position.To3D() ;
-				Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
-			}
+			if(!Program.Menu.Item("useW_Passive").GetValue<bool>())
+				return;
+			var pos = castPostion.Position.To3D();
+			Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
 		}
 
 		private static void CastQMinion()
@@ -234,21 +233,6 @@ namespace UltimateCarry
 			if(!target.IsValidTarget(E.Range))
 				return;
 			Passive.CastIfHitchanceEquals(target, HitChance.High, Packets());
-		}
-
-		private static bool Packets()
-		{
-			return Program.Menu.Item("usePackets").GetValue<bool>();
-		}
-
-		static void Game_OnGameSendPacket(GamePacketEventArgs args)
-		{
-			if(args.PacketData[0] != Packet.C2S.Move.Header)
-				return;
-			var decodedPacket = Packet.C2S.Move.Decoded(args.PacketData);
-			if(decodedPacket.MoveType == 3 &&
-				(Program.Orbwalker.GetTarget().IsMinion && !Program.Menu.Item("hitMinions").GetValue<bool>()))
-				args.Process = false;
 		}
 	}
 }
