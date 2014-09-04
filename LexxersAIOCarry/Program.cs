@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 40;
+		public const int LocalVersion = 41;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -21,7 +21,7 @@ namespace UltimateCarry
 		{
 			AutoUpdater.InitializeUpdater();
 
-			Menu = new Menu("UltimateCarry", "UltimateCarry", true);
+			Menu = new Menu("UltimateCarry", "UltimateCarry_" + ObjectManager.Player.ChampionName, true);
 
 			var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
 			SimpleTs.AddToMenu(targetSelectorMenu);
