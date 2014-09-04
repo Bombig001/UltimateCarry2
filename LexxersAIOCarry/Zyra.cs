@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace UltimateCarry
@@ -134,7 +135,7 @@ namespace UltimateCarry
 				case Orbwalking.OrbwalkingMode.Mixed:
 					if(Program.Menu.Item("useQ_Harass").GetValue<bool>())
 						CastQEnemy();
-					if(Program.Menu.Item("useE_TeamFight").GetValue<bool>())
+					if(Program.Menu.Item("useE_Harass").GetValue<bool>())
 						CastEEnemy();
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
@@ -159,7 +160,8 @@ namespace UltimateCarry
 			if(!Program.Menu.Item("useW_Passive").GetValue<bool>())
 				return;
 			var pos = castPostion.Position.To3D();
-			Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
+			Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
+			Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 		}
 
 		private static void CastQMinion()
@@ -174,7 +176,8 @@ namespace UltimateCarry
 			if(Program.Menu.Item("useW_Passive").GetValue<bool>())
 			{
 				var pos = castPostion.Position.To3D();
-				Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
+				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X -5,pos.Y -5 ,pos.Z), Packets()));
+				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 			}
 		}
 
@@ -202,7 +205,8 @@ namespace UltimateCarry
 			if(Program.Menu.Item("useW_Passive").GetValue<bool>())
 			{
 				var pos = Q.GetPrediction(target ).CastPosition;
-				Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
+				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
+				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 			}
 		}
 
@@ -217,7 +221,8 @@ namespace UltimateCarry
 			if(Program.Menu.Item("useW_Passive").GetValue<bool>())
 			{
 				var pos = E.GetPrediction(target).CastPosition;
-				Utility.DelayAction.Add(50, () => W.Cast(pos, Packets()));
+				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
+				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 			}
 		}
 
