@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -103,13 +102,13 @@ namespace UltimateCarry
 			if(!spell.IsReady())
 				return;
 			var target = SimpleTs.GetTarget(spell.Range + range, damageType);
-			Obj_AI_Base nearstMinion = null;
+			Obj_AI_Base[] nearstMinion = {null};
 			var allminions = MinionManager.GetMinions(target.Position, range, minionTypes, minionTeam);
-			foreach (var minion in allminions.Where(minion => minion.Distance(ObjectManager.Player) <= spell.Range && minion.Distance(target) <= range).Where(minion => nearstMinion == null || nearstMinion.Distance(target) >= minion.Distance(target)))
-				nearstMinion = minion;
+			foreach (var minion in allminions.Where(minion => minion.Distance(ObjectManager.Player) <= spell.Range && minion.Distance(target) <= range).Where(minion => nearstMinion[0] == null || nearstMinion[0].Distance(target) >= minion.Distance(target)))
+				nearstMinion[0] = minion;
 
-			if (nearstMinion != null)
-				spell.CastOnUnit(nearstMinion,Packets());
+			if (nearstMinion[0] != null)
+				spell.CastOnUnit(nearstMinion[0],Packets());
 		}
 
 		public static bool EnoughManaFor(SpellSlot spell)

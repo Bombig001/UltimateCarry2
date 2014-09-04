@@ -155,9 +155,13 @@ namespace UltimateCarry
 			if(!R.IsReady())
 				return;
 			foreach(var friend in from friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= R.Range)
-								  let enemyCount = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 250)
+								  let enemyCount = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 600)
+								  let enemyCount2 = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 200)
 								  let frinedhealthprecent = friend.Health / friend.MaxHealth * 100
-								  where frinedhealthprecent <= 20 || (frinedhealthprecent <= 30 && enemyCount >= 2)
+								  where frinedhealthprecent <= 1 || 
+								  (frinedhealthprecent <= 10 && enemyCount >= 1) ||
+								  (frinedhealthprecent <= 15 && enemyCount >= 2) ||
+								  (frinedhealthprecent <= 25 && enemyCount2 >= 2)
 								  select friend)
 			{
 				R.CastOnUnit(friend, Packets());
