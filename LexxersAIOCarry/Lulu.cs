@@ -157,9 +157,9 @@ namespace UltimateCarry
 								  let enemyCountnear = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 200)
 								  let frinedhealthprecent = friend.Health / friend.MaxHealth * 100
 								  where frinedhealthprecent <= 1 || 
-								  (frinedhealthprecent <= 10 && enemyCount >= 1) ||
-								  (frinedhealthprecent <= 15 && enemyCount >= 2) ||
-								  (frinedhealthprecent <= 25 && enemyCountnear >= 2)
+								  (frinedhealthprecent <= 20 && enemyCount >= 1) ||
+								  (frinedhealthprecent <= 25 && enemyCount >= 2) ||
+								  (frinedhealthprecent <= 30 && enemyCountnear >= 2)
 								  select friend)
 			{
 				R.CastOnUnit(friend, Packets());
