@@ -63,7 +63,7 @@
     <Compile Include="Chat.cs" />
     <Compile Include="Ezreal.cs" />
     <Compile Include="Gnar.cs" />
-    <Compile Include="HTMLColor.cs" />
+    <Compile Include="HtmlColor.cs" />
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="Lulu.cs" />
@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="Swain.cs" />
     <Compile Include="Teemo.cs" />
+    <Compile Include="Thresh.cs" />
     <Compile Include="Zed.cs" />
     <Compile Include="Zyra.cs" />
   </ItemGroup>

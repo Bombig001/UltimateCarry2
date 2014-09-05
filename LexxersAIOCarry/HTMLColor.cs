@@ -1,4 +1,4 @@
-﻿namespace LexxersAIOCarry
+﻿namespace UltimateCarry
 {
 	public static class HtmlColor
 	{

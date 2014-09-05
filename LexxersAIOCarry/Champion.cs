@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -77,15 +78,17 @@ namespace UltimateCarry
 			return true;
 		}
 
-		public static void Cast_BasicLineSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
+		public static Obj_AI_Hero Cast_BasicLineSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
-				return;
+				return null;
 			var target = SimpleTs.GetTarget(spell.Range, damageType);
 			if(target == null)
-				return;
-			if(target.IsValidTarget(spell.Range) && spell.GetPrediction(target).Hitchance >= HitChance.High)
-				spell.Cast(target, Packets());
+				return null;
+			if (!target.IsValidTarget(spell.Range) || spell.GetPrediction(target).Hitchance < HitChance.High)
+				return null;
+			spell.Cast(target, Packets());
+			return target;
 		}
 
 		public static void Cast_BasicLineSkillshot_Enemy(Spell spell, Vector3 sourcePosition, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
@@ -180,13 +183,16 @@ namespace UltimateCarry
 			spell.CastOnUnit(friend, Packets());
 		}
 
-		public static void Cast_Shield_onFriend(Spell spell, int percent)
+		public static void Cast_Shield_onFriend(Spell spell, int percent,bool skillshot = false)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			foreach(var friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && Utility.CountEnemysInRange(1000) >= 1))
 			{
-				spell.CastOnUnit(friend, Packets());
+				if (skillshot)
+					spell.Cast(friend.Position, Packets());
+				else
+					spell.CastOnUnit(friend, Packets());
 				return;
 			}
 		}
@@ -229,6 +235,14 @@ namespace UltimateCarry
 
 			return cost1 + cost2 + cost3 + cost4 <= ObjectManager.Player.Mana;
 		}
+
+		public static Vector3 GetReversePosition(Vector3 positionMe, Vector3 positionEnemy)
+		{
+			var x = positionMe.X - positionEnemy.X;
+			var y = positionMe.Y - positionEnemy.Y;
+			return new Vector3(positionMe.X + x, positionMe.Y + y, positionMe.Z);
+		}
+	
 	}
 }
 
