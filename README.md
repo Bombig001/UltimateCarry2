@@ -18,7 +18,6 @@ Included Champions
 * Morgana
 * Swain
 * Teemo
-* karatetiger
 * Zed
 * Zyra
 
@@ -32,7 +31,7 @@ Extras
 
 Last Update
 =========
-i fall in love with scarface!
+i dont know
 what happend now
 
 
