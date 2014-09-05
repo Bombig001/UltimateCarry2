@@ -29,6 +29,9 @@ Extras
 * ItemSupport for alot items ( not all yet )
 * Manamanager ( not all champs now )
 
+Last Update
+=========
+Added AutoBushReleaver, some Bugfixes.
 
 
 [![PayPayl donate button](http://img.shields.io/paypal/donate.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NDD6M83G586RW "You Like it ? buy me a beer :P")
