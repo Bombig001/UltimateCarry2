@@ -42,7 +42,7 @@ namespace UltimateCarry
             foreach (PlayerInfo playerInfo in _playerInfo.Where(x => x.Player.IsVisible))
                 playerInfo.LastSeen = time;
 
-			if(_menu.Item("AutoBushKey").GetValue<KeyBind>().Active)
+            if (_menu.Item("AutoBushEnabled").GetValue<bool>() && _menu.Item("AutoBushKey").GetValue<KeyBind>().Active)
 			{
 				foreach(Obj_AI_Hero enemy in _playerInfo.Where(x =>
 					x.Player.IsValid &&
