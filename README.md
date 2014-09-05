@@ -18,6 +18,7 @@ Included Champions
 * Morgana
 * Swain
 * Teemo
+* JOker
 * Zed
 * Zyra
 
