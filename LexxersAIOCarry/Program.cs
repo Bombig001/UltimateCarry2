@@ -32,6 +32,7 @@ namespace UltimateCarry
 			//var overlay = new Overlay();
 			var potionManager = new PotionManager();
 			var activator = new Activator();
+            var bushRevealer = new AutoBushRevealer();
 		
 			var championName = ObjectManager.Player.ChampionName;
 			try
