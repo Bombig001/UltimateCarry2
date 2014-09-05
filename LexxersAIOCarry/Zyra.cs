@@ -161,7 +161,7 @@ namespace UltimateCarry
 				return;
 			var pos = castPostion.Position.To3D();
 			Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
-			Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
+			Utility.DelayAction.Add(150, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 		}
 
 		private static void CastQMinion()
@@ -177,7 +177,7 @@ namespace UltimateCarry
 			{
 				var pos = castPostion.Position.To3D();
 				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X -5,pos.Y -5 ,pos.Z), Packets()));
-				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
+				Utility.DelayAction.Add(150, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 			}
 		}
 
@@ -205,8 +205,8 @@ namespace UltimateCarry
 			if(Program.Menu.Item("useW_Passive").GetValue<bool>())
 			{
 				var pos = Q.GetPrediction(target ).CastPosition;
-				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
-				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
+				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 2, pos.Y - 2, pos.Z), Packets()));
+				Utility.DelayAction.Add(150, () => W.Cast(new Vector3(pos.X + 2, pos.Y + 2, pos.Z), Packets()));
 			}
 		}
 
@@ -222,7 +222,7 @@ namespace UltimateCarry
 			{
 				var pos = E.GetPrediction(target).CastPosition;
 				Utility.DelayAction.Add(50, () => W.Cast(new Vector3(pos.X - 5, pos.Y - 5, pos.Z), Packets()));
-				Utility.DelayAction.Add(100, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
+				Utility.DelayAction.Add(150, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 			}
 		}
 

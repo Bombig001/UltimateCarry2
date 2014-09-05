@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -24,14 +20,14 @@ namespace UltimateCarry
 
     class AutoBushRevealer
     {
-        static int lastTimeWarded;
+        static int _lastTimeWarded;
         private static List<PlayerInfo> _playerInfo = new List<PlayerInfo>();
         static Menu _menu;
 
         public AutoBushRevealer()
         {
             _menu = Program.Menu.AddSubMenu(new Menu("Auto Bush Revealer", "AutoBushRevealer"));
-            _menu.AddItem(new MenuItem("AutoBushEnabled", "Enabled").SetValue<bool>(true));
+            _menu.AddItem(new MenuItem("AutoBushEnabled", "Enabled").SetValue(true));
             _menu.AddItem(new MenuItem("AutoBushKey", "Key").SetValue(new KeyBind(Program.Menu.Item("Orbwalk").GetValue<KeyBind>().Key, KeyBindType.Press))); //32 == space
 
             _playerInfo = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy).Select(x => new PlayerInfo(x)).ToList();
@@ -57,16 +53,16 @@ namespace UltimateCarry
                 {
                     Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
 
-                    if (bestWardPos != null && bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) <= 600)
+                    if (bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) <= 600)
                     {
-                        if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
+                        if (_lastTimeWarded == 0 || Environment.TickCount - _lastTimeWarded > 500)
                         {
-                            InventorySlot wardSlot = LeagueSharp.Common.Items.GetWardSlot();
+                            InventorySlot wardSlot = Items.GetWardSlot();
 
                             if (wardSlot != null && wardSlot.Id != ItemId.Unknown)
                             {
                                 wardSlot.UseItem(bestWardPos);
-                                lastTimeWarded = Environment.TickCount;
+                                _lastTimeWarded = Environment.TickCount;
                             }
                         }
                     }
@@ -82,7 +78,7 @@ namespace UltimateCarry
             {
                 int vertices = radius;
 
-                WardLocation[] wardLocations = new WardLocation[vertices];
+                var wardLocations = new WardLocation[vertices];
                 double angle = 2 * Math.PI / vertices;
 
                 for (int i = 0; i < vertices; i++)
@@ -92,7 +88,7 @@ namespace UltimateCarry
                     wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos));
                 }
 
-                List<GrassLocation> grassLocations = new List<GrassLocation>();
+                var grassLocations = new List<GrassLocation>();
 
                 for (int i = 0; i < wardLocations.Length; i++)
                 {
@@ -105,13 +101,13 @@ namespace UltimateCarry
                     }
                 }
 
-                GrassLocation grassLocation = grassLocations.OrderByDescending(x => x.Count).FirstOrDefault();
+                var grassLocation = grassLocations.OrderByDescending(x => x.Count).FirstOrDefault();
 
                 if (grassLocation != null) //else: no pos found. increase/decrease radius?
                 {
-                    int midelement = (int)Math.Ceiling((float)grassLocation.Count / 2f);
+                    var midelement = (int)Math.Ceiling(grassLocation.Count / 2f);
                     lastPos = wardLocations[grassLocation.Index + midelement - 1].Pos;
-                    radius = (int)Math.Floor((float)radius / 2f);
+                    radius = (int)Math.Floor(radius / 2f);
                 }
 
                 count--;
@@ -122,8 +118,8 @@ namespace UltimateCarry
 
         class WardLocation
         {
-            public Vector3 Pos;
-            public bool Grass;
+            public readonly Vector3 Pos;
+            public readonly bool Grass;
 
             public WardLocation(Vector3 pos, bool grass)
             {
@@ -134,7 +130,7 @@ namespace UltimateCarry
 
         class GrassLocation
         {
-            public int Index;
+            public readonly int Index;
             public int Count;
 
             public GrassLocation(int index, int count)
