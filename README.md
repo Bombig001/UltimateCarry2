@@ -17,7 +17,9 @@ Included Champions
 * MissFortune
 * Morgana
 * Swain
+* Tim
 * Teemo
+* Strupi
 * Zed
 * Zyra
 
