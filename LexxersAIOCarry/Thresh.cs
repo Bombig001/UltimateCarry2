@@ -53,6 +53,9 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useE_LaneClear", "Use E").SetValue(true));
 			AddManaManager("Harass", 20);
 
+			Program.Menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
+			Program.Menu.SubMenu("SupportMode").AddItem(new MenuItem("hitMinions", "Hit Minions").SetValue(false));
+
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
 			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useQ_Interupt", "Q Interrupt").SetValue(false));
 			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useW_Interupt", "W Interrupt").SetValue(false));
