@@ -18,7 +18,7 @@ Included Champions
 * Morgana
 * Swain
 * Teemo
-* JOker
+* MostOPChampEver
 * Zed
 * Zyra
 
