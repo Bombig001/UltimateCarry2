@@ -32,42 +32,42 @@ namespace UltimateCarry
 
             _playerInfo = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy).Select(x => new PlayerInfo(x)).ToList();
 
-            Game.OnGameUpdate += Game_OnGameUpdate;
+			Game.OnGameUpdate += Game_OnGameUpdate;
         }
 
         static void Game_OnGameUpdate(EventArgs args)
         {
-            int time = Environment.TickCount;
+            var time = Environment.TickCount;
 
             foreach (PlayerInfo playerInfo in _playerInfo.Where(x => x.Player.IsVisible))
                 playerInfo.LastSeen = time;
 
-            if (_menu.Item("comboKey").GetValue<KeyBind>().Active)
-            {
-                foreach (Obj_AI_Hero enemy in _playerInfo.Where(x =>
-                    x.Player.IsValid &&
-                    !x.Player.IsVisible &&
-                    !x.Player.IsDead &&
-                    x.Player.Distance(ObjectManager.Player.ServerPosition) < 1000 &&
-                    time - x.LastSeen < 2500).Select(x => x.Player))
-                {
-                    Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
+			if(_menu.Item("AutoBushKey").GetValue<KeyBind>().Active)
+			{
+				foreach(Obj_AI_Hero enemy in _playerInfo.Where(x =>
+					x.Player.IsValid &&
+					!x.Player.IsVisible &&
+					!x.Player.IsDead &&
+					x.Player.Distance(ObjectManager.Player.ServerPosition) < 1000 &&
+					time - x.LastSeen < 2500).Select(x => x.Player))
+				{
+					Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
 
-                    if (bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) <= 600)
-                    {
-                        if (_lastTimeWarded == 0 || Environment.TickCount - _lastTimeWarded > 500)
-                        {
-                            InventorySlot wardSlot = Items.GetWardSlot();
+					if(bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) <= 600)
+					{
+						if(_lastTimeWarded == 0 || Environment.TickCount - _lastTimeWarded > 500)
+						{
+							var wardSlot = Items.GetWardSlot();
 
-                            if (wardSlot != null && wardSlot.Id != ItemId.Unknown)
-                            {
-                                wardSlot.UseItem(bestWardPos);
-                                _lastTimeWarded = Environment.TickCount;
-                            }
-                        }
-                    }
-                }
-            }
+							if(wardSlot != null && wardSlot.Id != ItemId.Unknown)
+							{
+								wardSlot.UseItem(bestWardPos);
+								_lastTimeWarded = Environment.TickCount;
+							}
+						}
+					}
+				}
+			}
         }
 
         static Vector3 GetWardPos(Vector3 lastPos, int radius = 165, int precision = 3)
