@@ -204,35 +204,37 @@ namespace UltimateCarry
 
 		private static void SafeFriendLatern()
 		{
-			if (!W.IsReady())
+			if(!W.IsReady())
 				return;
 			var bestcastposition = new Vector3(0f, 0f, 0f);
-			foreach (
+			foreach(
 				var friend in
 					ObjectManager.Get<Obj_AI_Hero>()
 						.Where(
 							hero =>
-								hero.IsAlly && !hero.IsMe  && hero.Distance(ObjectManager.Player) <= W.Range + 300 &&
-								hero.Distance(ObjectManager.Player) <= W.Range - 200 && hero.Health/hero.MaxHealth*100 >= 20 ))
+								hero.IsAlly && !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 &&
+								hero.Distance(ObjectManager.Player) <= W.Range - 200 && hero.Health / hero.MaxHealth * 100 >= 20))
 			{
-				foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy && hero.Distance(friend) <= 300))
+				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>())
 				{
+					if(friend == null || (!enemy.IsEnemy || !(friend.Distance(enemy) <= 300)))
+						continue;
 					var center = ObjectManager.Player.Position;
 					const int points = 36;
 					var radius = W.Range;
 
-					const double slice = 2*Math.PI/points;
-					for (var i = 0; i < points; i++)
+					const double slice = 2 * Math.PI / points;
+					for(var i = 0; i < points; i++)
 					{
-						var angle = slice*i;
-						var newX = (int) (center.X + radius*Math.Cos(angle));
-						var newY = (int) (center.Y + radius*Math.Sin(angle));
+						var angle = slice * i;
+						var newX = (int)(center.X + radius * Math.Cos(angle));
+						var newY = (int)(center.Y + radius * Math.Sin(angle));
 						var p = new Vector3(newX, newY, 0);
-						if (p.Distance(friend.Position) <= bestcastposition.Distance(friend.Position))
+						if(p.Distance(friend.Position) <= bestcastposition.Distance(friend.Position))
 							bestcastposition = p;
 					}
 				}
-				if (bestcastposition.Distance(new Vector3(0f, 0f, 0f)) >= 100)
+				if(bestcastposition.Distance(new Vector3(0f, 0f, 0f)) >= 100)
 					W.Cast(bestcastposition, Packets());
 			}
 		}

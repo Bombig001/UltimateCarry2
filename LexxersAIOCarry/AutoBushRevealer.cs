@@ -51,7 +51,7 @@ namespace UltimateCarry
 					x.Player.Distance(ObjectManager.Player.ServerPosition) < 1000 &&
 					time - x.LastSeen < 2500).Select(x => x.Player))
 				{
-					Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
+					var bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
 
 					if(bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) <= 600)
 					{

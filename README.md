@@ -32,9 +32,6 @@ Extras
 
 Last Update
 =========
-Fix (Thresh lasthit also if lasthit disabled )
-Fix (Thresh use E in laneclear also if it is disabled )
-Fix (Thresh Manamanager for Laneclear)
-Fix (Thresh some little smal fixes )
+some little bugfixes in thresh lanternlogic
 
 [![PayPayl donate button](http://img.shields.io/paypal/donate.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NDD6M83G586RW "You Like it ? buy me a beer :P")
