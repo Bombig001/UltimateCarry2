@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -17,8 +14,8 @@ namespace UltimateCarry
 		public static Spell E;
 		public static Spell R;
 
-		public static int Q_Follow_Tick = 0;
-		public const int Q_Follow_Time = 3000;
+		public static int QFollowTick = 0;
+		public const int QFollowTime = 3000;
 		public Thresh()
 		{
 			Name = "Thresh";
@@ -27,6 +24,7 @@ namespace UltimateCarry
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
+			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
 			Chat.Print(Name + " Plugin Loaded!");
 		}
@@ -51,7 +49,7 @@ namespace UltimateCarry
 
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useE_LaneClear", "Use E").SetValue(true));
-			AddManaManager("Harass", 20);
+			AddManaManager("LaneClear", 20);
 
 			Program.Menu.AddSubMenu(new Menu("SupportMode", "SupportMode"));
 			Program.Menu.SubMenu("SupportMode").AddItem(new MenuItem("hitMinions", "Hit Minions").SetValue(false));
@@ -105,39 +103,41 @@ namespace UltimateCarry
 
 		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
 		{
+			if (unit.IsAlly)
+				return;
 			if(Program.Menu.Item("useE_Interupt").GetValue<bool>())
 				if(E.IsReady())
 					if(unit.IsValidTarget(W.Range))
 					{
-						W.Cast(unit, Packets());
+						E.Cast(unit, Packets());
 						return;
 					}
-			if(!Program.Menu.Item("useQ_Interupt").GetValue<bool>() || !unit.IsValidTarget(Q.Range) || Q.GetPrediction(unit).Hitchance < HitChance.Low || Environment.TickCount - Q_Follow_Tick < Q_Follow_Time || !Q.IsReady())
+			if(!Program.Menu.Item("useQ_Interupt").GetValue<bool>() || !unit.IsValidTarget(Q.Range) || Q.GetPrediction(unit).Hitchance < HitChance.Low || Environment.TickCount - QFollowTick < QFollowTime || !Q.IsReady())
 				return;
 			Q.Cast(unit, Packets());
-			Q_Follow_Tick = Environment.TickCount;
+			QFollowTick = Environment.TickCount;
 			LastQTarget = (Obj_AI_Hero)unit;
 		}
 
 		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			if (LastQTarget != null)
-				if (Environment.TickCount - Q_Follow_Tick >= Q_Follow_Time)
+				if (Environment.TickCount - QFollowTick >= QFollowTime)
 					LastQTarget = null;
 
 			switch(Program.Orbwalker.ActiveMode)
 			{
 				case Orbwalking.OrbwalkingMode.Combo:
-					if (Program.Menu.Item("useQ_TeamFight").GetValue<bool>() && Environment.TickCount - Q_Follow_Tick >= Q_Follow_Time)
+					if (Program.Menu.Item("useQ_TeamFight").GetValue<bool>() && Environment.TickCount - QFollowTick >= QFollowTime)
 					{
 						var target = Cast_BasicLineSkillshot_Enemy(Q, SimpleTs.DamageType.Magical);
 						if (target != null)
 						{
-							Q_Follow_Tick = Environment.TickCount;
+							QFollowTick = Environment.TickCount;
 							LastQTarget = target;
 						}
 					}
-					if(Program.Menu.Item("useQ_TeamFight_follow").GetValue<bool>() && Environment.TickCount <= Q_Follow_Tick + Q_Follow_Time && LastQTarget != null)
+					if(Program.Menu.Item("useQ_TeamFight_follow").GetValue<bool>() && Environment.TickCount <= QFollowTick + QFollowTime && LastQTarget != null)
 						Q.Cast();
 					if(Program.Menu.Item("useW_TeamFight_shield").GetValue<bool>())
 						Cast_Shield_onFriend(W,50,true);
@@ -150,12 +150,12 @@ namespace UltimateCarry
 							R.Cast();
 					break;
 				case Orbwalking.OrbwalkingMode.Mixed:
-					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() && Environment.TickCount - Q_Follow_Tick >= Q_Follow_Time)
+					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() && Environment.TickCount - QFollowTick >= QFollowTime)
 					{
 						var target = Cast_BasicLineSkillshot_Enemy(Q, SimpleTs.DamageType.Magical);
 						if(target != null)
 						{
-							Q_Follow_Tick = Environment.TickCount;
+							QFollowTick = Environment.TickCount;
 							LastQTarget = target;
 						}
 					}
