@@ -51,7 +51,8 @@ namespace UltimateCarry
 
             Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
             Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Animation").SetValue(true));
-			
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "ROFL Combo").SetValue(true));
+
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
@@ -206,6 +207,8 @@ namespace UltimateCarry
             if (args.Animation == "Spell1a")
             {
                 QStage = 1;
+				if(Program.Menu.Item("QLaugh").GetValue<bool>())
+					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
                     Game.Say("/l");
             }
@@ -213,6 +216,8 @@ namespace UltimateCarry
             if (args.Animation == "Spell1b")
             {
                 QStage = 2;
+				if(Program.Menu.Item("QLaugh").GetValue<bool>())
+					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
                     Game.Say("/l");
             }
@@ -220,6 +225,8 @@ namespace UltimateCarry
             if (args.Animation == "Spell1c")
             {
                 QStage = 0;
+				if(Program.Menu.Item("QLaugh").GetValue<bool>())
+					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
                     Game.Say("/l");
             }
