@@ -45,7 +45,7 @@ namespace UltimateCarry
 
 		private static void Check_Active_Items()
 		{
-			if (Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo) 
+			if(Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
 				return;
 			Check_HEXGUN();
 			Check_HYDRA();
@@ -60,14 +60,10 @@ namespace UltimateCarry
 		{
 			try
 			{
+				Chat.Print("Check Yomo");
 				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
-				Obj_AI_Hero[] nearenemy = {null};
-                foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget() && nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < hero.Distance(ObjectManager.Player)))
-					nearenemy[0] = enemy;
 
-				if(nearenemy[0] == null)
-					return;
-				if(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) >= nearenemy[0].Distance(ObjectManager.Player))
+				if(Utility.CountEnemysInRange((int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1 && item.IsEnabled() && item.IsMap()) 
 					Items.UseItem(item.Id);
 			}
 			catch
@@ -80,7 +76,7 @@ namespace UltimateCarry
 			try
 			{
 				var item = new Item(3077, "Tiamat", "1,2,3,4", "Active", 400);
-                var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
+				var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
 				if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
 					Items.UseItem(item.Id);
 			}
@@ -94,7 +90,7 @@ namespace UltimateCarry
 			try
 			{
 				var item = new Item(3074, "Ravenous Hydra", "1,2,3,4", "Active", 400);
-                var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
+				var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
 				if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
 					Items.UseItem(item.Id);
 			}
@@ -199,7 +195,7 @@ namespace UltimateCarry
 			{
 				// todo remove deathmark from zed 
 				var item = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
-                var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= item.Range && Items.CanUseItem(item.Id) && item.IsMap() && item.IsEnabled());
+				var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= item.Range && Items.CanUseItem(item.Id) && item.IsMap() && item.IsEnabled());
 				if(friend == null)
 					return;
 				Items.UseItem(item.Id, friend);
@@ -263,115 +259,145 @@ namespace UltimateCarry
 
 		private static void Check_Smite()
 		{
-			if(Smite == SpellSlot.Unknown ||
-				(!Program.Menu.Item("useSmite").GetValue<bool>() ||
-				 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Smite) !=
-				 SpellState.Ready))
-				return;
-			var minion = SmiteTarget.GetNearest(ObjectManager.Player.Position);
-			if(minion != null && minion.Health <= SmiteTarget.Damage())
-				ObjectManager.Player.SummonerSpellbook.CastSpell(Smite, minion);
+			try
+			{
+				if(Smite == SpellSlot.Unknown ||
+					(!Program.Menu.Item("useSmite").GetValue<bool>() ||
+					 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Smite) !=
+					 SpellState.Ready))
+					return;
+				var minion = SmiteTarget.GetNearest(ObjectManager.Player.Position);
+				if(minion != null && minion.Health <= SmiteTarget.Damage())
+					ObjectManager.Player.SummonerSpellbook.CastSpell(Smite, minion);
+			}
+			catch
+			{
+			}
 		}
 
 		private static void Check_Barrier()
 		{
-			if(Barrier == SpellSlot.Unknown ||
-				(!Program.Menu.Item("useBarrier").GetValue<bool>() ||
-				 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Barrier) !=
-				 SpellState.Ready))
-				return;
-			if(Program.Menu.Item("useBarrierifEnemy").GetValue<bool>())
+			try
 			{
-				var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
-				if(target == null)
+				if(Barrier == SpellSlot.Unknown ||
+				   (!Program.Menu.Item("useBarrier").GetValue<bool>() ||
+					ObjectManager.Player.SummonerSpellbook.CanUseSpell(Barrier) !=
+					SpellState.Ready))
 					return;
+				if(Program.Menu.Item("useBarrierifEnemy").GetValue<bool>())
+				{
+					var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+					if(target == null)
+						return;
+				}
+				if(!(ObjectManager.Player.Health / ObjectManager.Player.MaxHealth * 100 <=
+					  Program.Menu.Item("useBarrierPercent").GetValue<Slider>().Value))
+					return;
+				ObjectManager.Player.SummonerSpellbook.CastSpell(Barrier);
 			}
-			if(!(ObjectManager.Player.Health / ObjectManager.Player.MaxHealth * 100 <=
-				  Program.Menu.Item("useBarrierPercent").GetValue<Slider>().Value))
-				return;
-			ObjectManager.Player.SummonerSpellbook.CastSpell(Barrier);
+			catch
+			{
+			}
 		}
 
 		private static void Check_Heal()
 		{
-			if(Heal == SpellSlot.Unknown ||
-				(!Program.Menu.Item("useHeal").GetValue<bool>() ||
-				 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Heal) !=
-				 SpellState.Ready))
-				return;
-			if(Program.Menu.Item("useHealifEnemy").GetValue<bool>())
+			try
 			{
-				var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
-				if(target == null)
+				if(Heal == SpellSlot.Unknown ||
+				   (!Program.Menu.Item("useHeal").GetValue<bool>() ||
+					ObjectManager.Player.SummonerSpellbook.CanUseSpell(Heal) !=
+					SpellState.Ready))
 					return;
+				if(Program.Menu.Item("useHealifEnemy").GetValue<bool>())
+				{
+					var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+					if(target == null)
+						return;
+				}
+				if(ObjectManager.Player.Health / ObjectManager.Player.MaxHealth * 100 <=
+					Program.Menu.Item("useHealPercent").GetValue<Slider>().Value)
+				{
+					ObjectManager.Player.SummonerSpellbook.CastSpell(Heal);
+					return;
+				}
+				const int range = 700;
+				if(Program.Menu.Item("useHealFriend").GetValue<bool>() && Program.Helper.OwnTeam.Any(hero => hero.Health / hero.MaxHealth * 100 <= Program.Menu.Item("useHealPercent").GetValue<Slider>().Value && hero.Distance(ObjectManager.Player.Position) <= range))
+					ObjectManager.Player.SummonerSpellbook.CastSpell(Heal);
 			}
-			if(ObjectManager.Player.Health / ObjectManager.Player.MaxHealth * 100 <=
-				Program.Menu.Item("useHealPercent").GetValue<Slider>().Value)
+			catch
 			{
-				ObjectManager.Player.SummonerSpellbook.CastSpell(Heal);
-				return;
 			}
-			const int range = 700;
-            if (Program.Menu.Item("useHealFriend").GetValue<bool>() && Program.Helper.OwnTeam.Any(hero => hero.Health / hero.MaxHealth * 100 <= Program.Menu.Item("useHealPercent").GetValue<Slider>().Value && hero.Distance(ObjectManager.Player.Position) <= range))
-				ObjectManager.Player.SummonerSpellbook.CastSpell(Heal);
 		}
 
 		private static void Check_Dot()
 		{
-			if(Dot == SpellSlot.Unknown ||
-				 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Dot) !=
-				 SpellState.Ready)
-				return;
-			if(!(Program.Menu.Item("useDot1").GetValue<bool>() || Program.Menu.Item("useDot2").GetValue<bool>()))
-				return;
-			const int range = 600;
-			if(Program.Menu.Item("useDot1").GetValue<bool>())
-                foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range) && DamageLib.getDmg(hero, DamageLib.SpellType.IGNITE) >= hero.Health))
-				{
-					ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, enemy);
-					return;
-				}
-			if(!Program.Menu.Item("useDot2").GetValue<bool>())
-				return;
-			Obj_AI_Hero lowhealthEnemy = null;
-            foreach (var enemy in Program.Helper.EnemyTeam.Where(enemy => enemy.IsValidTarget(range) && (enemy.Health / enemy.MaxHealth * 100 <= 60)))
+			try
 			{
-				if(lowhealthEnemy != null)
+				if(Dot == SpellSlot.Unknown ||
+					ObjectManager.Player.SummonerSpellbook.CanUseSpell(Dot) !=
+					SpellState.Ready)
+					return;
+				if(!(Program.Menu.Item("useDot1").GetValue<bool>() || Program.Menu.Item("useDot2").GetValue<bool>()))
+					return;
+				const int range = 600;
+				if(Program.Menu.Item("useDot1").GetValue<bool>())
+					foreach(var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range) && DamageLib.getDmg(hero, DamageLib.SpellType.IGNITE) >= hero.Health))
+					{
+						ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, enemy);
+						return;
+					}
+				if(!Program.Menu.Item("useDot2").GetValue<bool>())
+					return;
+				Obj_AI_Hero lowhealthEnemy = null;
+				foreach(var enemy in Program.Helper.EnemyTeam.Where(enemy => enemy.IsValidTarget(range) && (enemy.Health / enemy.MaxHealth * 100 <= 60)))
 				{
-					if(lowhealthEnemy.Health > enemy.Health)
+					if(lowhealthEnemy != null)
+					{
+						if(lowhealthEnemy.Health > enemy.Health)
+							lowhealthEnemy = enemy;
+					}
+					else
 						lowhealthEnemy = enemy;
 				}
-				else
-					lowhealthEnemy = enemy;
+				if(lowhealthEnemy == null)
+					return;
+				ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, lowhealthEnemy);
 			}
-			if(lowhealthEnemy == null)
-				return;
-			ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, lowhealthEnemy);
+			catch
+			{
+			}
 		}
 
 		private static void Check_Exhaust()
 		{
-			if(Exhoust == SpellSlot.Unknown ||
-				(!Program.Menu.Item("useExhaust").GetValue<bool>() ||
-				 ObjectManager.Player.SummonerSpellbook.CanUseSpell(Exhoust) !=
-				 SpellState.Ready) || Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
-				return;
-			Obj_AI_Hero maxDpsHero = null;
-			float maxDps = 0;
-			const int range = 550;
-            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range + 200)))
+			try
 			{
-				var dps = enemy.BaseAttackDamage * enemy.AttackSpeedMod;
-				if(maxDpsHero != null && !(maxDps < dps))
-					continue;
-				maxDps = dps;
-				maxDpsHero = enemy;
-			}
-			if(maxDpsHero == null)
-				return;
+				if(Exhoust == SpellSlot.Unknown ||
+				   (!Program.Menu.Item("useExhaust").GetValue<bool>() ||
+					ObjectManager.Player.SummonerSpellbook.CanUseSpell(Exhoust) !=
+					SpellState.Ready) || Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+					return;
+				Obj_AI_Hero maxDpsHero = null;
+				float maxDps = 0;
+				const int range = 550;
+				foreach(var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range + 200)))
+				{
+					var dps = enemy.BaseAttackDamage * enemy.AttackSpeedMod;
+					if(maxDpsHero != null && !(maxDps < dps))
+						continue;
+					maxDps = dps;
+					maxDpsHero = enemy;
+				}
+				if(maxDpsHero == null)
+					return;
 
-            if (Program.Helper.OwnTeam.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
-				ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
+				if(Program.Helper.OwnTeam.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
+					ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
+			}
+			catch
+			{
+			}
 		}
 
 		private static IEnumerable<Item> GetallItems()
@@ -396,6 +422,7 @@ namespace UltimateCarry
 
 		internal class SmiteTarget
 		{
+
 			private static readonly string[] MinionNames = { "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith" };
 
 			public static Obj_AI_Minion GetNearest(Vector3 pos)
@@ -415,6 +442,7 @@ namespace UltimateCarry
 					sMinion = minion;
 				}
 				return sMinion;
+
 			}
 
 			public static double Damage()
@@ -425,45 +453,47 @@ namespace UltimateCarry
 			}
 		}
 
-		internal class Item
+	}
+
+	internal class Item
+	{
+		public int Id;
+		public string Name;
+		public string Mapstring;
+		public string Modestring;
+		public int Range;
+
+		public Item(int id, string name, string mapstring, string modestring, int range = 0)
 		{
-			public int Id;
-			public string Name;
-			public string Mapstring;
-			public string Modestring;
-			public int Range;
+			Id = id;
+			Name = name;
+			Modestring = modestring;
+			Range = range;
 
-			public Item(int id, string name, string mapstring, string modestring, int range = 0)
+			mapstring = mapstring.Replace("1", Utility.Map.MapType.SummonersRift.ToString());
+			mapstring = mapstring.Replace("2", Utility.Map.MapType.TwistedTreeline.ToString());
+			mapstring = mapstring.Replace("3", Utility.Map.MapType.CrystalScar.ToString());
+			mapstring = mapstring.Replace("4", Utility.Map.MapType.HowlingAbyss.ToString());
+			Mapstring = mapstring;
+		}
+
+		internal bool IsEnabled()
+		{
+			try
 			{
-				Id = id;
-				Name = name;
-				Modestring = modestring;
-				Range = range;
-
-				mapstring = mapstring.Replace("1", Utility.Map.MapType.SummonersRift.ToString());
-				mapstring = mapstring.Replace("2", Utility.Map.MapType.TwistedTreeline.ToString());
-				mapstring = mapstring.Replace("3", Utility.Map.MapType.CrystalScar.ToString());
-				mapstring = mapstring.Replace("4", Utility.Map.MapType.HowlingAbyss.ToString());
-				Mapstring = mapstring;
+				var ret = Program.Menu.Item("Item" + Id + Modestring).GetValue<bool>();
+				return ret;
 			}
-
-			internal bool IsEnabled()
+			catch(Exception)
 			{
-				try
-				{
-					var ret = Program.Menu.Item("Item" + Id + Modestring).GetValue<bool>();
-					return ret;
-				}
-				catch(Exception)
-				{
-					return false;
-				}
+				return false;
 			}
+		}
 
-			internal bool IsMap()
-			{
-				return Mapstring.Contains(Utility.Map.GetMap().ToString());
-			}
+		internal bool IsMap()
+		{
+			return Mapstring.Contains(Utility.Map.GetMap().ToString());
 		}
 	}
 }
+

@@ -37,8 +37,9 @@ namespace UltimateCarry
 			AddManaManager("Harass", 40);
 
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
-			AddManaManager("LaneClear", 0);
+			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear_minion", "Use Q Minion").SetValue(true));
+			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear_enemy", "Use Q Enemy").SetValue(true));
+			AddManaManager("LaneClear", 20);
 
 			Program.Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
 			Program.Menu.SubMenu("LastHit").AddItem(new MenuItem("useQ_LastHit", "Use Q").SetValue(true));
@@ -87,11 +88,10 @@ namespace UltimateCarry
 						Cast_BasicLineSkillshot_Enemy(W, SimpleTs.DamageType.Magical);
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
-					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>())
-					{
+					if(Program.Menu.Item("useQ_LaneClear_enemy").GetValue<bool>())
 						Cast_BasicLineSkillshot_Enemy(Q);
+					if(Program.Menu.Item("useQ_LaneClear_minion").GetValue<bool>())
 						Cast_Basic_Farm(Q,true);
-					}
 					break;
 				case Orbwalking.OrbwalkingMode.LastHit:
 					if(Program.Menu.Item("useQ_LastHit").GetValue<bool>())

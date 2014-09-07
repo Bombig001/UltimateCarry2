@@ -245,7 +245,7 @@ namespace UltimateCarry
                     return;
                 if (!target.IsValidTarget(R.Range) || R.GetPrediction(target).Hitchance < HitChance.High)
                     return;
-                if (DamageLib.getDmg(target, DamageLib.SpellType.R) >= target.Health || Environment.TickCount - RTick >= 6000 || !target.IsValidTarget(R.Range - 400))
+                if (DamageLib.getDmg(target, DamageLib.SpellType.R) >= target.Health || Environment.TickCount - RTick >= 13000 || !target.IsValidTarget(R.Range - 400))
                     R.Cast(target, Packets());
             }
         }
