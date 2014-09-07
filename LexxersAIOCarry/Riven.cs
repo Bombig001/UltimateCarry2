@@ -69,7 +69,7 @@ namespace UltimateCarry
 
             W = new Spell(SpellSlot.W, 260);
 
-            E = new Spell(SpellSlot.E, 400);
+            E = new Spell(SpellSlot.E, 350);
             E.SetSkillshot(0.1f, Orbwalking.GetRealAutoAttackRange(Player), float.MaxValue, false, SkillshotType.SkillshotCircle);
 
             Rstart = new Spell(SpellSlot.R, 900);
@@ -126,17 +126,17 @@ namespace UltimateCarry
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() )
                         CastR();
-                    if (Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive != 3)
+					if(Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive == 0)
                         Cast_IfEnemys_inRange(W);
-                    if (Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive != 3)
+					if(Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive == 0)
 						CastE();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    if (Program.Menu.Item("useW_Harass").GetValue<bool>() && StackPassive != 3)
+					if(Program.Menu.Item("useW_Harass").GetValue<bool>() && StackPassive == 0)
                         Cast_IfEnemys_inRange(W);
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    if (Program.Menu.Item("useW_LaneClear").GetValue<bool>() && StackPassive != 3)
+                    if (Program.Menu.Item("useW_LaneClear").GetValue<bool>() && StackPassive == 0)
                         Cast_W_Farm();
                     break;
             }
@@ -162,18 +162,18 @@ namespace UltimateCarry
 	        {
 		        case Orbwalking.OrbwalkingMode.Combo:
 			        if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
-			           StackPassive != 3)
+					   StackPassive == 0)
 				        Cast_BasicCircleSkillshot_Enemy(Q);
 
 			        break;
 		        case Orbwalking.OrbwalkingMode.Mixed:
 			        if(Program.Menu.Item("useQ_Harass").GetValue<bool>()  &&
-			           StackPassive != 3)
+					   StackPassive == 0)
 				        Cast_BasicCircleSkillshot_Enemy(Q);
 			        break;
 		        case Orbwalking.OrbwalkingMode.LaneClear:
 			        if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>()  &&
-			           StackPassive != 3)
+					  StackPassive == 0)
 				        Cast_BasicCircleSkillshot_AOE_Farm(Q);
 			        break;
 	        }

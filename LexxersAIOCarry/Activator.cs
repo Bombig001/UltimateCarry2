@@ -60,9 +60,7 @@ namespace UltimateCarry
 		{
 			try
 			{
-				Chat.Print("Check Yomo");
 				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
-
 				if(Utility.CountEnemysInRange((int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1 && item.IsEnabled() && item.IsMap()) 
 					Items.UseItem(item.Id);
 			}
