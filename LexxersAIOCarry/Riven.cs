@@ -65,12 +65,12 @@ namespace UltimateCarry
         {
 
             Q = new Spell(SpellSlot.Q, 275);
-            Q.SetSkillshot(0.1f, 112.5f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(0, 112.5f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
             W = new Spell(SpellSlot.W, 260);
 
             E = new Spell(SpellSlot.E, 350);
-            E.SetSkillshot(0.1f, Orbwalking.GetRealAutoAttackRange(Player), float.MaxValue, false, SkillshotType.SkillshotCircle);
+            E.SetSkillshot(0, Orbwalking.GetRealAutoAttackRange(Player), float.MaxValue, false, SkillshotType.SkillshotCircle);
 
             Rstart = new Spell(SpellSlot.R, 900);
 
@@ -124,7 +124,10 @@ namespace UltimateCarry
             {
 
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() )
+					if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
+						StackPassive == 0)
+						Cast_BasicCircleSkillshot_Enemy(Q);
+					if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() )
                         CastR();
 					if(Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive == 0)
                         Cast_IfEnemys_inRange(W);
@@ -132,14 +135,39 @@ namespace UltimateCarry
 						CastE();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
+					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() &&
+					   StackPassive == 0)
+						Cast_BasicCircleSkillshot_Enemy(Q);
 					if(Program.Menu.Item("useW_Harass").GetValue<bool>() && StackPassive == 0)
                         Cast_IfEnemys_inRange(W);
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
+					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>() &&
+					  StackPassive == 0)
+						Cast_BasicCircleSkillshot_AOE_Farm(Q);
                     if (Program.Menu.Item("useW_LaneClear").GetValue<bool>() && StackPassive == 0)
                         Cast_W_Farm();
                     break;
             }
+			//switch(Program.Orbwalker.ActiveMode)
+			//{
+			//	case Orbwalking.OrbwalkingMode.Combo:
+			//		if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
+			//		   StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_Enemy(Q);
+
+			//		break;
+			//	case Orbwalking.OrbwalkingMode.Mixed:
+			//		if(Program.Menu.Item("useQ_Harass").GetValue<bool>() &&
+			//		   StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_Enemy(Q);
+			//		break;
+			//	case Orbwalking.OrbwalkingMode.LaneClear:
+			//		if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>() &&
+			//		  StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_AOE_Farm(Q);
+			//		break;
+			//}
         }
 
         private void Cast_W_Farm()
@@ -158,25 +186,25 @@ namespace UltimateCarry
 	        //if (Environment.TickCount - QTick >= QDelay)
 	        //{
 	        //	QTick = Environment.TickCount;
-	        switch (Program.Orbwalker.ActiveMode)
-	        {
-		        case Orbwalking.OrbwalkingMode.Combo:
-			        if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
-					   StackPassive == 0)
-				        Cast_BasicCircleSkillshot_Enemy(Q);
+			//switch (Program.Orbwalker.ActiveMode)
+			//{
+			//	case Orbwalking.OrbwalkingMode.Combo:
+			//		if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
+			//		   StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_Enemy(Q);
 
-			        break;
-		        case Orbwalking.OrbwalkingMode.Mixed:
-			        if(Program.Menu.Item("useQ_Harass").GetValue<bool>()  &&
-					   StackPassive == 0)
-				        Cast_BasicCircleSkillshot_Enemy(Q);
-			        break;
-		        case Orbwalking.OrbwalkingMode.LaneClear:
-			        if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>()  &&
-					  StackPassive == 0)
-				        Cast_BasicCircleSkillshot_AOE_Farm(Q);
-			        break;
-	        }
+			//		break;
+			//	case Orbwalking.OrbwalkingMode.Mixed:
+			//		if(Program.Menu.Item("useQ_Harass").GetValue<bool>()  &&
+			//		   StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_Enemy(Q);
+			//		break;
+			//	case Orbwalking.OrbwalkingMode.LaneClear:
+			//		if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>()  &&
+			//		  StackPassive == 0)
+			//			Cast_BasicCircleSkillshot_AOE_Farm(Q);
+			//		break;
+			//}
 	        //}
         }
 
