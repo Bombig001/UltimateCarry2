@@ -51,7 +51,7 @@ namespace UltimateCarry
 
             Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
             Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Move").SetValue(true));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "Cancle Q Laugh").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "Cancle Q Laugh").SetValue(false));
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -124,24 +124,18 @@ namespace UltimateCarry
             {
 
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() && StackPassive != 3)
+                    if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() )
                         CastR();
-                    if (Program.Menu.Item("useQ_TeamFight").GetValue<bool>() && (QStage == 2 || QStage == 0) && StackPassive != 3)
-                        Cast_BasicCircleSkillshot_Enemy(Q);
                     if (Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive != 3)
                         Cast_IfEnemys_inRange(W);
                     if (Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive != 3)
 						CastE();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    if (Program.Menu.Item("useQ_Harass").GetValue<bool>() && QStage == 2 && StackPassive != 3)
-                        Cast_BasicCircleSkillshot_Enemy(Q);
                     if (Program.Menu.Item("useW_Harass").GetValue<bool>() && StackPassive != 3)
                         Cast_IfEnemys_inRange(W);
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    if (Program.Menu.Item("useQ_LaneClear").GetValue<bool>() && QStage == 2 && StackPassive != 3)
-                        Cast_BasicCircleSkillshot_AOE_Farm(Q);
                     if (Program.Menu.Item("useW_LaneClear").GetValue<bool>() && StackPassive != 3)
                         Cast_W_Farm();
                     break;
@@ -159,49 +153,35 @@ namespace UltimateCarry
 
         private void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
         {
-            if (unit.IsMe)
-            {
-                if (StackPassive == 2 || (QStage < 2 && Q.IsReady()))
-                {
-                    switch (Program.Orbwalker.ActiveMode)
-                    {
+	        if (!unit.IsMe) 
+				return;
+	        //if (Environment.TickCount - QTick >= QDelay)
+	        //{
+	        //	QTick = Environment.TickCount;
+	        switch (Program.Orbwalker.ActiveMode)
+	        {
+		        case Orbwalking.OrbwalkingMode.Combo:
+			        if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>() &&
+			           StackPassive != 3)
+				        Cast_BasicCircleSkillshot_Enemy(Q);
 
-                        case Orbwalking.OrbwalkingMode.Combo:
-                            if (Program.Menu.Item("useR_TeamFight").GetValue<bool>() && StackPassive != 3)
-                                CastR();
-                            if (Program.Menu.Item("useQ_TeamFight").GetValue<bool>() && Environment.TickCount - QTick >= QDelay &&
-                                StackPassive != 3)
-                            {
-                                QTick = Environment.TickCount;
-                                Cast_BasicCircleSkillshot_Enemy(Q);
-                            }
-                            if (Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive != 3)
-                                Cast_IfEnemys_inRange(W);
-                            if (Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive != 3)
-                               CastE();
-                            break;
-                        case Orbwalking.OrbwalkingMode.Mixed:
-                            if (Program.Menu.Item("useQ_Harass").GetValue<bool>() && Environment.TickCount - QTick >= QDelay &&
-                                StackPassive != 3)
-                                Cast_BasicCircleSkillshot_Enemy(Q);
-                            if (Program.Menu.Item("useW_Harass").GetValue<bool>() && StackPassive != 3)
-                                Cast_IfEnemys_inRange(W);
-                            break;
-                        case Orbwalking.OrbwalkingMode.LaneClear:
-                            if (Program.Menu.Item("useQ_LaneClear").GetValue<bool>() && Environment.TickCount - QTick >= QDelay &&
-                                StackPassive != 3)
-                                Cast_BasicCircleSkillshot_AOE_Farm(Q);
-                            if (Program.Menu.Item("useW_LaneClear").GetValue<bool>() && StackPassive != 3)
-                                Cast_W_Farm();
-                            break;
-                    }
-
-                }
-            }
+			        break;
+		        case Orbwalking.OrbwalkingMode.Mixed:
+			        if(Program.Menu.Item("useQ_Harass").GetValue<bool>()  &&
+			           StackPassive != 3)
+				        Cast_BasicCircleSkillshot_Enemy(Q);
+			        break;
+		        case Orbwalking.OrbwalkingMode.LaneClear:
+			        if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>()  &&
+			           StackPassive != 3)
+				        Cast_BasicCircleSkillshot_AOE_Farm(Q);
+			        break;
+	        }
+	        //}
         }
 
-        private  void OnAnimation(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs args)
-        {
+	    private  void OnAnimation(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs args)
+		{
             if (!sender.IsMe)
                 return;
             if (args.Animation == "Spell1a")
@@ -209,8 +189,8 @@ namespace UltimateCarry
                 QStage = 1;
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
-                if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-                    Program.Orbwalker.SetOrbwalkingPoint( Game.CursorPos );
+                else if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
+					Game.Say("/l");
             }
 
             if (args.Animation == "Spell1b")
@@ -218,8 +198,8 @@ namespace UltimateCarry
                 QStage = 2;
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
-                if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-					Program.Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
+                else if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
+					Game.Say("/l");
             }
 
             if (args.Animation == "Spell1c")
@@ -227,8 +207,8 @@ namespace UltimateCarry
                 QStage = 0;
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
-                if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-					Program.Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
+				else if(Program.Menu.Item("CancleQAnimation").GetValue<bool>())
+					Game.Say("/l");
             }
         }
 
