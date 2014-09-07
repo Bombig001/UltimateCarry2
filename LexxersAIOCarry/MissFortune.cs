@@ -38,11 +38,13 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useW_Harass", "Use W").SetValue(true));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useE_Harass_bind", "Use E if stunned").SetValue(true));
 			Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useE_Harass_willhit", "Use E if hit").SetValue(new Slider(2, 5, 0)));
-			
+			AddManaManager("Harass", 40);
+
 			Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useW_LaneClear", "Use W").SetValue(true));
 			Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useE_LaneClear", "Use E").SetValue(true));
+			AddManaManager("LaneClear", 20);
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -104,7 +106,7 @@ namespace UltimateCarry
 			Program.Orbwalker.SetAttacks(true);
 			Program.Orbwalker.SetMovement(true);
 
-			switch (Program.Orbwalker.ActiveMode)
+			switch(Program.Orbwalker.ActiveMode)
 			{
 				case Orbwalking.OrbwalkingMode.Combo:
 					if(Program.Menu.Item("useQ_TeamFight").GetValue<bool>())
@@ -119,22 +121,22 @@ namespace UltimateCarry
 						CastREnemyAmount();
 					break;
 				case Orbwalking.OrbwalkingMode.Mixed:
-					if(Program.Menu.Item("useQ_Harass").GetValue<bool>())
+					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() && ManaManagerAllowCast(Q))
 						CastQEnemy();
-					if(Program.Menu.Item("useW_Harass").GetValue<bool>())
+					if(Program.Menu.Item("useW_Harass").GetValue<bool>() && ManaManagerAllowCast(W))
 						CastW();
-					if(Program.Menu.Item("useE_Harass_bind").GetValue<bool>())
+					if(Program.Menu.Item("useE_Harass_bind").GetValue<bool>() && ManaManagerAllowCast(E))
 						CastEEnemyBind();
-					if(Program.Menu.Item("useE_Harass_willhit").GetValue<Slider>().Value >= 1)
+					if(Program.Menu.Item("useE_Harass_willhit").GetValue<Slider>().Value >= 1 && ManaManagerAllowCast(E))
 						CastEEnemyAmount();
 					break;
-				case Orbwalking.OrbwalkingMode.LaneClear :
-					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>())
-						CastQMinion() ;
-					if(Program.Menu.Item("useW_LaneClear").GetValue<bool>())
+				case Orbwalking.OrbwalkingMode.LaneClear:
+					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>() && ManaManagerAllowCast(Q))
+						CastQMinion();
+					if(Program.Menu.Item("useW_LaneClear").GetValue<bool>() && ManaManagerAllowCast(W))
 						CastW();
-					if(Program.Menu.Item("useE_LaneClear").GetValue<bool>())
-						CastEMinion() ;
+					if(Program.Menu.Item("useE_LaneClear").GetValue<bool>() && ManaManagerAllowCast(E))
+						CastEMinion();
 					break;
 			}
 		}

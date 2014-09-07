@@ -62,6 +62,7 @@
     <Compile Include="Champion.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Ezreal.cs" />
+    <Compile Include="Gangplank.cs" />
     <Compile Include="Gnar.cs" />
     <Compile Include="HtmlColor.cs" />
     <Compile Include="Karthus.cs" />

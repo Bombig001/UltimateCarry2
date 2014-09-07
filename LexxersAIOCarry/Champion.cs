@@ -8,7 +8,7 @@ namespace UltimateCarry
 {
 	class Champion
 	{
-		public List<string> ManaManagerList = new List<string>();
+		public static List<string> ManaManagerList = new List<string>();
 
         public Champion()
         {
@@ -16,7 +16,7 @@ namespace UltimateCarry
             MenuBasics();
         }
 
-		public bool Packets()
+		public static bool Packets()
 		{
 			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}

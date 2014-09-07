@@ -28,7 +28,7 @@ namespace UltimateCarry
 					"https://github.com/LXMedia1/Leage-Sharp/raw/master/UltimateCarry.exe", Localversion);
 			if (myUpdater.NeedUpdate)
 			{
-				Chat.Print("UltimateCarry is Updateing ...");
+				Chat.Print("UltimateCarry is Updating ...");
 				Chat.Print("-- Using trellis Updater --");
 				if (myUpdater.Update())
 				{
