@@ -50,7 +50,7 @@ namespace UltimateCarry
 			comboMenu.AddItem(new MenuItem("comboEPercent", "Use E until Mana %").SetValue(new Slider(15)));
 
 			var harassMenu = _menu.AddSubMenu(new Menu("Harass", "Harass"));
-		harassMenu.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
+		    harassMenu.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
 			harassMenu.AddItem(new MenuItem("harassQPercent", "Use Q until Mana %").SetValue(new Slider(15)));
 
 			var farmMenu = _menu.AddSubMenu(new Menu("Farming", "Farming"));
@@ -87,7 +87,6 @@ namespace UltimateCarry
 
 		void Game_OnGameUpdate(EventArgs args)
 		{
-			UpdateLastSeen();
 			if(_menu.Item("ultKS").GetValue<bool>())
 				UltKs();
 			switch(Program.Orbwalker.ActiveMode)
@@ -101,7 +100,7 @@ namespace UltimateCarry
 					Harass();
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
-					Program.Orbwalker.SetAttacks(ObjectManager.Player.Mana < 100);
+					Program.Orbwalker.SetAttacks(_menu.Item("farmAA").GetValue<bool>() || ObjectManager.Player.Mana < 100);
 					LaneClear();
 					break;
 				case Orbwalking.OrbwalkingMode.LastHit:
@@ -109,28 +108,11 @@ namespace UltimateCarry
 					LastHit();
 					break;
 				default:
+                    Program.Orbwalker.SetAttacks(true);
 					RegulateEState();
 					break;
 			}
 
-		}
-
-		void UpdateLastSeen()
-		{
-			var time = Environment.TickCount;
-
-			foreach(EnemyInfo playerInfo in Program.Helper.EnemyInfo.Where(x => x.Player.IsVisible))
-				playerInfo.LastSeen = time;
-		}
-
-		void CastW(Obj_AI_Base target, int minManaPercent = 0)
-		{
-			if(!_spellW.IsReady() || !(GetManaPercent() >= minManaPercent))
-				return;
-			if(target == null)
-				return;
-			_spellW.Width = GetDynamicWWidth(target);
-			_spellW.Cast(target, Packets());
 		}
 
 		void Combo()
@@ -165,6 +147,87 @@ namespace UltimateCarry
 				CastQ(SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical));
 		}
 
+        void Harass()
+        {
+            if (_menu.Item("harassQ").GetValue<bool>())
+                CastQ(SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical), _menu.Item("harassQPercent").GetValue<Slider>().Value);
+        }
+
+        void LaneClear()
+        {
+            var farmQ = _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 1 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
+            var farmE = _menu.Item("farmE").GetValue<bool>();
+
+            List<Obj_AI_Base> minions;
+
+            bool jungleMobs;
+            if (farmQ && _spellQ.IsReady())
+            {
+                minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellQ.Range, MinionTypes.All, MinionTeam.NotAlly);
+                jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
+
+                _spellQ.Width = SpellQWidth;
+                var farmInfo = _spellQ.GetCircularFarmLocation(minions, _spellQ.Width);
+
+                if (farmInfo.MinionsHit >= 1)
+                    CastQ(farmInfo.Position, jungleMobs ? 0 : _menu.Item("farmQPercent").GetValue<Slider>().Value);
+            }
+
+            if (!farmE || !_spellE.IsReady() || IsInPassiveForm())
+                return;
+            _comboE = false;
+
+            minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellE.Range, MinionTypes.All, MinionTeam.NotAlly);
+
+            jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
+
+            var enoughMana = GetManaPercent() > _menu.Item("farmEPercent").GetValue<Slider>().Value;
+
+            if (enoughMana && ((minions.Count >= 3 || jungleMobs) && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState == 1))
+                _spellE.Cast(ObjectManager.Player.Position, Packets());
+            else if (!enoughMana || ((minions.Count <= 2 && !jungleMobs) && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState == 2))
+                RegulateEState(!enoughMana);
+        }
+
+        void LastHit()
+        {
+            var farmQ = _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 0 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
+
+            if (!farmQ || !_spellQ.IsReady())
+                return;
+            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellQ.Range, MinionTypes.All, MinionTeam.NotAlly);
+
+            foreach (var minion in minions.Where(x => DamageLib.getDmg(x, DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage) >= //FirstDamage = multitarget hit, differentiate! (check radius around mob predicted pos)
+                                                      HealthPrediction.GetHealthPrediction(x, (int)(_spellQ.Delay * 1000))))
+            {
+                CastQ(minion, _menu.Item("farmQPercent").GetValue<Slider>().Value);
+            }
+        }
+
+        void UltKs()
+        {
+            if (!_spellR.IsReady())
+                return;
+            var time = Environment.TickCount;
+
+            foreach (var target in Program.Helper.EnemyInfo.Where(x =>
+                x.Player.IsValid &&
+                !x.Player.IsDead &&
+                x.Player.IsEnemy &&
+                ((!x.Player.IsVisible && time - x.LastSeen < 10000) || (x.Player.IsVisible && x.Player.IsValidTarget())) &&
+                DamageLib.getDmg(x.Player, DamageLib.SpellType.R) >= Program.Helper.GetTargetHealth(x, (int)(_spellR.Delay * 1000f))))
+            {
+                var cast = true;
+
+                if (target.Player.IsVisible || (!target.Player.IsVisible && time - target.LastSeen < 2750)) //allies still attacking target? prevent overkill
+                    if (Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1800))
+                        cast = false;
+
+                if (cast && !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800)) //any other enemies around? dont ult
+                    _spellR.Cast(ObjectManager.Player.Position, Packets());
+            }
+        }
+
 		void CastQ(Obj_AI_Base target, int minManaPercent = 0)
 		{
 			if(!_spellQ.IsReady() || !(GetManaPercent() >= minManaPercent))
@@ -175,6 +238,20 @@ namespace UltimateCarry
 			_spellQ.CastIfHitchanceEquals(target, HitChance.High, Packets());
 		}
 
+        void RegulateEState(bool ignoreTargetChecks = false)
+        {
+            if (!_spellE.IsReady() || IsInPassiveForm() ||
+                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState != 2)
+                return;
+            var target = SimpleTs.GetTarget(_spellE.Range, SimpleTs.DamageType.Magical);
+            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellE.Range, MinionTypes.All, MinionTeam.NotAlly);
+
+            if (!ignoreTargetChecks && (target != null || (!_comboE && minions.Count != 0)))
+                return;
+            _spellE.Cast(ObjectManager.Player.Position, Packets());
+            _comboE = false;
+        }
+
 		void CastQ(Vector2 pos, int minManaPercent = 0)
 		{
 			if(!_spellQ.IsReady())
@@ -182,6 +259,16 @@ namespace UltimateCarry
 			if(GetManaPercent() >= minManaPercent)
 				_spellQ.Cast(pos, Packets());
 		}
+
+        void CastW(Obj_AI_Base target, int minManaPercent = 0)
+        {
+            if (!_spellW.IsReady() || !(GetManaPercent() >= minManaPercent))
+                return;
+            if (target == null)
+                return;
+            _spellW.Width = GetDynamicWWidth(target);
+            _spellW.Cast(target, Packets());
+        }
 
 		float GetDynamicWWidth(Obj_AI_Base target)
 		{
@@ -191,101 +278,6 @@ namespace UltimateCarry
 		float GetDynamicQWidth(Obj_AI_Base target)
 		{
 			return Math.Max(25, (1f - (ObjectManager.Player.Distance(target) / _spellQ.Range)) * SpellQWidth);
-		}
-
-		void Harass()
-		{
-			if(_menu.Item("harassQ").GetValue<bool>())
-				CastQ(SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical), _menu.Item("harassQPercent").GetValue<Slider>().Value);
-		}
-
-		void LaneClear()
-		{
-			var farmQ = _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 1 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
-			var farmE = _menu.Item("farmE").GetValue<bool>();
-
-			List<Obj_AI_Base> minions;
-
-			bool jungleMobs;
-			if(farmQ && _spellQ.IsReady())
-			{
-				minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellQ.Range, MinionTypes.All, MinionTeam.NotAlly);
-				jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
-
-				_spellQ.Width = SpellQWidth;
-				var farmInfo = _spellQ.GetCircularFarmLocation(minions, _spellQ.Width);
-
-				if(farmInfo.MinionsHit >= 1)
-					CastQ(farmInfo.Position, jungleMobs ? 0 : _menu.Item("farmQPercent").GetValue<Slider>().Value);
-			}
-
-			if(!farmE || !_spellE.IsReady() || IsInPassiveForm())
-				return;
-			_comboE = false;
-
-			minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellE.Range, MinionTypes.All, MinionTeam.NotAlly);
-
-			jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
-
-			var enoughMana = GetManaPercent() > _menu.Item("farmEPercent").GetValue<Slider>().Value;
-
-			if(enoughMana && ((minions.Count >= 3 || jungleMobs) && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState == 1))
-				_spellE.Cast(ObjectManager.Player.Position, Packets());
-			else if(!enoughMana || ((minions.Count <= 2 && !jungleMobs) && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState == 2))
-				RegulateEState(!enoughMana);
-		}
-
-		void LastHit()
-		{
-			var farmQ = _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 0 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
-
-			if(!farmQ || !_spellQ.IsReady())
-				return;
-			var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellQ.Range, MinionTypes.All, MinionTeam.NotAlly);
-
-			foreach(var minion in minions.Where(x => DamageLib.getDmg(x, DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage) >= //FirstDamage = multitarget hit, differentiate! (check radius around mob predicted pos)
-													  HealthPrediction.GetHealthPrediction(x, (int)(_spellQ.Delay * 1000))))
-			{
-				CastQ(minion, _menu.Item("farmQPercent").GetValue<Slider>().Value);
-			}
-		}
-
-		void RegulateEState(bool ignoreTargetChecks = false)
-		{
-			if(!_spellE.IsReady() || IsInPassiveForm() ||
-				ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState != 2)
-				return;
-			var target = SimpleTs.GetTarget(_spellE.Range, SimpleTs.DamageType.Magical);
-			var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellE.Range, MinionTypes.All, MinionTeam.NotAlly);
-
-			if(!ignoreTargetChecks && (target != null || (!_comboE && minions.Count != 0)))
-				return;
-			_spellE.Cast(ObjectManager.Player.Position, Packets());
-			_comboE = false;
-		}
-
-		void UltKs()
-		{
-			if(!_spellR.IsReady())
-				return;
-			var time = Environment.TickCount;
-
-			foreach(var target in Program.Helper.EnemyInfo.Where(x =>
-				x.Player.IsValid &&
-				!x.Player.IsDead &&
-				x.Player.IsEnemy &&
-				((!x.Player.IsVisible && time - x.LastSeen < 10000) || (x.Player.IsVisible && x.Player.IsValidTarget())) &&
-				DamageLib.getDmg(x.Player, DamageLib.SpellType.R) >= Program.Helper.GetTargetHealth(x, (int)(_spellR.Delay * 1000f))))
-			{
-				var cast = true;
-
-				if(target.Player.IsVisible || (!target.Player.IsVisible && time - target.LastSeen < 2750)) //allies still attacking target? prevent overkill
-					if(Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1800))
-						cast = false;
-
-				if(cast && !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800)) //any other enemies around? dont ult
-					_spellR.Cast(ObjectManager.Player.Position, Packets());
-			}
 		}
 
 		static bool IsInPassiveForm()
