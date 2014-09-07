@@ -9,25 +9,29 @@ namespace UltimateCarry
 {
 	class Zyra : Champion
 	{
-		public Spell Q;
-		public Spell W;
-		public Spell E;
-		public Spell R;
-		public Spell Passive;
+		public static Spell Q;
+		public static Spell W;
+		public static Spell E;
+		public static Spell R;
+		public static Spell Passive;
 
-        public Zyra()
-            : base()
+		public Zyra()
 		{
+			Name = "Zyra";
+			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
+			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
+			MenuBasics();
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useE_TeamFight", "Use E").SetValue(true));
@@ -55,7 +59,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
 		
 			Q = new Spell(SpellSlot.Q, 800);
@@ -73,7 +77,7 @@ namespace UltimateCarry
 			Passive.SetSkillshot(0.5f, 70f, 1400f, false, SkillshotType.SkillshotLine);
 		}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -101,7 +105,7 @@ namespace UltimateCarry
 		
 		}
 
-		private bool ZyraisZombie()
+		private static bool ZyraisZombie()
 		{
 			return ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Name ==
 			       ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).Name ||
@@ -109,7 +113,7 @@ namespace UltimateCarry
 			       ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Name;
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 
 			if (ZyraisZombie())
@@ -144,7 +148,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void CastEMinion()
+		private static void CastEMinion()
 		{
 			if(!E.IsReady())
 				return;
@@ -160,7 +164,7 @@ namespace UltimateCarry
 			Utility.DelayAction.Add(150, () => W.Cast(new Vector3(pos.X + 5, pos.Y + 5, pos.Z), Packets()));
 		}
 
-		private void CastQMinion()
+		private static void CastQMinion()
 		{
 			if(!Q.IsReady())
 				return;
@@ -177,7 +181,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void CastREnemy()
+		private static void CastREnemy()
 		{
 			if(!R.IsReady())
 				return;
@@ -190,7 +194,7 @@ namespace UltimateCarry
 			R.CastIfWillHit(target, minHit - 1, Packets());
 		}
 
-		private void CastQEnemy()
+		private static void CastQEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -206,7 +210,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void CastEEnemy()
+		private static void CastEEnemy()
 		{
 			if(!E.IsReady())
 				return;
@@ -222,7 +226,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void CastPassive()
+		private static void CastPassive()
 		{
 			if(!Passive.IsReady())
 				return;

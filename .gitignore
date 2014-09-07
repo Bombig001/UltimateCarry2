@@ -11,18 +11,12 @@ UltimateCarry.sln
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-#[Rr]elease/
+[Rr]elease/
 x64/
 build/
 bld/
-#[Bb]in/
+[Bb]in/
 [Oo]bj/
-
-*.vshost.exe*
-*.exe.config
-SharpDX.*
-LeagueSharp.*
-clipper_library.dll
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

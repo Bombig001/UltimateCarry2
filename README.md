@@ -11,13 +11,11 @@ Included Champions
 
 * Ezreal
 * Gnar
-* Karthus
 * Khazix
 * Lucian
 * Lulu
 * MissFortune
 * Morgana
-* Riven
 * Swain
 * Teemo
 * Thresh
@@ -28,14 +26,12 @@ Included Champions
 Extras
 ======
 * Potion Manager
-* SummonerSpell Support ( Smite, Ignite, Heal, Barrier, Exhaust )
+* SummonerSpell Support ( Smite, Ignite, Heal, Barrier, Exhoust )
 * ItemSupport for alot items ( not all yet )
 * Manamanager ( not all champs now )
-* Auto Bush Revealer
 
 Last Update
 =========
-Released Riven: need ideas for Engage couse engage sucks -.-
-Released Karthus
+some little bugfixes in thresh lanternlogic
 
 [![PayPayl donate button](http://img.shields.io/paypal/donate.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NDD6M83G586RW "You Like it ? buy me a beer :P")

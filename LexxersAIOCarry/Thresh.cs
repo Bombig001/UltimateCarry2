@@ -9,26 +9,30 @@ namespace UltimateCarry
 {
 	class Thresh : Champion
 	{
-		public Spell Q;
-		public Spell W;
-		public Spell E;
-		public Spell R;
+		public static Spell Q;
+		public static Spell W;
+		public static Spell E;
+		public static Spell R;
 
-		public int QFollowTick = 0;
+		public static int QFollowTick = 0;
 		public const int QFollowTime = 3000;
-        public Thresh()
-            : base()
+		public Thresh()
 		{
+			Name = "Thresh";
+			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
+			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
+			MenuBasics();
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight_follow", "Follow Q").SetValue(true));
@@ -62,7 +66,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
 
 			Q = new Spell(SpellSlot.Q, 1025);
@@ -75,7 +79,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R, 400);
 	}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -97,7 +101,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
+		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
 		{
 			if (unit.IsAlly)
 				return;
@@ -115,7 +119,7 @@ namespace UltimateCarry
 			LastQTarget = (Obj_AI_Hero)unit;
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			if (LastQTarget != null)
 				if (Environment.TickCount - QFollowTick >= QFollowTime)
@@ -161,18 +165,18 @@ namespace UltimateCarry
 						SafeFriendLatern();
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
-                    if (Program.Menu.Item("useE_LaneClear").GetValue<bool>())
+					if (Program.Menu.Item("useE_Harass").GetValue<bool>())
 						Cast_BasicLineSkillshot_AOE_Farm(E);
 					break;
 			}
 		}
 
-		private void EngageFriendLatern()
+		private static void EngageFriendLatern()
 		{
 			if (!W.IsReady())
 				return;
 			var bestcastposition = new Vector3(0f, 0f, 0f);
-            foreach (var friend in Program.Helper._ownTeam.Where(hero => !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 && hero.Distance(ObjectManager.Player) <= W.Range - 300 && hero.Health / hero.MaxHealth * 100 >= 20 && Utility.CountEnemysInRange(150) >= 1))
+			foreach(var friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 && hero.Distance(ObjectManager.Player) <= W.Range - 300 && hero.Health / hero.MaxHealth * 100 >= 20 && Utility.CountEnemysInRange(150) >= 1))
 			{
 				var center = ObjectManager.Player.Position;
 				const int points = 36;
@@ -198,22 +202,22 @@ namespace UltimateCarry
 				W.Cast(bestcastposition, Packets());
 		}
 
-		private void SafeFriendLatern()
+		private static void SafeFriendLatern()
 		{
 			if(!W.IsReady())
 				return;
 			var bestcastposition = new Vector3(0f, 0f, 0f);
 			foreach(
 				var friend in
-                    Program.Helper._ownTeam
+					ObjectManager.Get<Obj_AI_Hero>()
 						.Where(
 							hero =>
-								!hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 &&
+								hero.IsAlly && !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 &&
 								hero.Distance(ObjectManager.Player) <= W.Range - 200 && hero.Health / hero.MaxHealth * 100 >= 20))
 			{
-                foreach (var enemy in Program.Helper._enemyTeam)
+				foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>())
 				{
-					if(friend == null || !(friend.Distance(enemy) <= 300))
+					if(friend == null || (!enemy.IsEnemy || !(friend.Distance(enemy) <= 300)))
 						continue;
 					var center = ObjectManager.Player.Position;
 					const int points = 36;
@@ -235,7 +239,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Cast_E(string mode = "")
+		private static void Cast_E(string mode = "")
 		{
 			if (!E.IsReady() || !ManaManagerAllowCast(E))
 				return;
@@ -247,7 +251,7 @@ namespace UltimateCarry
 		}
 
 
-		public Obj_AI_Hero LastQTarget
+		public static Obj_AI_Hero LastQTarget
 		{
 			get;
 			set;

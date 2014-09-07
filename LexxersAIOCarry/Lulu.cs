@@ -9,15 +9,16 @@ namespace UltimateCarry
 {
 	class Lulu : Champion
 	{
-		public Spell Q;
-		public Spell QPix;
-		public Spell W;
-		public Spell E;
-		public Spell R;
+		public static Spell Q;
+		public static Spell QPix;
+		public static Spell W;
+		public static Spell E;
+		public static Spell R;
 
-        public Lulu()
-            : base()
+		public Lulu()
 		{
+			Name = "Lulu";
+			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
@@ -25,10 +26,13 @@ namespace UltimateCarry
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
+			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
+			MenuBasics();
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight_assist", "Use W Assist").SetValue(true));
@@ -64,19 +68,19 @@ namespace UltimateCarry
 			
 		}
 
-		private void SwitchAggro(object sender, OnValueChangeEventArgs e)
+		private static void SwitchAggro(object sender, OnValueChangeEventArgs e)
 		{
 			if (e.GetNewValue<bool>())
 				Program.Menu.Item("useE_TeamFight_Passiv").SetValue(false);
 		}
 
-		private void SwitchPassiv(object sender, OnValueChangeEventArgs e)
+		private static void SwitchPassiv(object sender, OnValueChangeEventArgs e)
 		{
 			if(e.GetNewValue<bool>())
 				Program.Menu.Item("useE_TeamFight_Aggro").SetValue(false);
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 945);
 			Q.SetSkillshot(0.25f,50,1400,false,SkillshotType.SkillshotLine);
@@ -92,14 +96,14 @@ namespace UltimateCarry
 		
 		}
 
-		private Vector3 PixPosition()
+		private static Vector3 PixPosition()
 		{
 			foreach (var pix in ObjectManager.Get<Obj_AI_Minion>().Where(pix => pix.Name == "RobotBuddy" && pix.IsAlly))
 				return pix.Position;
 			return ObjectManager.Player.Position;
 		}
 
-		private void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
+		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
 		{
 			if(!Program.Menu.Item("useW_Interupt").GetValue<bool>())
 				return;
@@ -107,7 +111,7 @@ namespace UltimateCarry
 				W.Cast(unit, Packets());
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -144,13 +148,13 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Cast_R()
+		private static void Cast_R()
 		{
 			if(!R.IsReady())
 				return;
-            foreach (var friend in from friend in Program.Helper._ownTeam.Where(hero => hero.Distance(ObjectManager.Player) <= R.Range)
-                                   let enemyCount = Program.Helper._enemyTeam.Count(hero => hero.Distance(friend) <= 600)
-                                   let enemyCountnear = Program.Helper._enemyTeam.Count(hero => hero.Distance(friend) <= 200)
+			foreach(var friend in from friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= R.Range)
+								  let enemyCount = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 600)
+								  let enemyCountnear = ObjectManager.Get<Obj_AI_Hero>().Count(hero => hero.IsEnemy && hero.Distance(friend) <= 200)
 								  let frinedhealthprecent = friend.Health / friend.MaxHealth * 100
 								  where frinedhealthprecent <= 1 || 
 								  (frinedhealthprecent <= 20 && enemyCount >= 1) ||
@@ -163,7 +167,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Cast_E()
+		private static void Cast_E()
 		{
 			var healatpercent = Program.Menu.Item("useE_TeamFight_Passiv").GetValue<bool>() ? 70 : 35;
 			var attack = Program.Menu.Item("useE_TeamFight_Aggro").GetValue<bool>();
@@ -172,7 +176,7 @@ namespace UltimateCarry
 				Cast_onEnemy(E,SimpleTs.DamageType.Magical);
 		}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())

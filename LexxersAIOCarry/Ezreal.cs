@@ -7,22 +7,27 @@ namespace UltimateCarry
 {
 	class Ezreal : Champion
 	{
-		public Spell Q;
-		public Spell W;
-		public Spell E;
-		public Spell R;
+		public static Spell Q;
+		public static Spell W;
+		public static Spell E;
+		public static Spell R;
 
-		public Ezreal() : base()
+		public Ezreal()
 		{
+			Name = "Ezreal";
+			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
+			MenuBasics();
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -54,7 +59,7 @@ namespace UltimateCarry
 		
 		}
 
-		private void LoadSpells()
+		private static void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 1200);
 			Q.SetSkillshot(0.25f, 60f, 2000f, true, SkillshotType.SkillshotLine);
@@ -70,7 +75,7 @@ namespace UltimateCarry
 
 		}
 
-		private void Game_OnGameUpdate(EventArgs args)
+		private static void Game_OnGameUpdate(EventArgs args)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -102,7 +107,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private void Drawing_OnDraw(EventArgs args)
+		private static void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -120,7 +125,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private void CastREnemy()
+		private static void CastREnemy()
 		{
 			if(!R.IsReady())
 				return;

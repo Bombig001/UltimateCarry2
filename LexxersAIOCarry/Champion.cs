@@ -8,20 +8,15 @@ namespace UltimateCarry
 {
 	class Champion
 	{
-		public List<string> ManaManagerList = new List<string>();
+		public string Name = "";
+		public static List<string> ManaManagerList = new List<string>();
 
-        public Champion()
-        {
-            Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loading ...");
-            MenuBasics();
-        }
-
-		public bool Packets()
+		public static bool Packets()
 		{
 			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}
 
-		public void MenuBasics()
+		public static void MenuBasics()
 		{
 			Program.Menu.AddSubMenu(new Menu("Packet Setting", "Packets"));
 			Program.Menu.SubMenu("Packets").AddItem(new MenuItem("usePackets", "Enable Packets").SetValue(true));
@@ -30,7 +25,7 @@ namespace UltimateCarry
 			Program.Menu.Item("Farm").DisplayName = "Harass";
 		}
 
-		public void Game_OnGameSendPacket(GamePacketEventArgs args)
+		public static void Game_OnGameSendPacket(GamePacketEventArgs args)
 		{
 			if(args.PacketData[0] != Packet.C2S.Move.Header)
 				return;
@@ -40,20 +35,21 @@ namespace UltimateCarry
 				args.Process = false;
 		}
 
-		public void AddManaManager(string menuname, int basicmana)
+		public static void AddManaManager(string menuname, int basicmana)
 		{
-			Program.Menu.SubMenu(menuname).AddItem(new MenuItem("ManaManager_" + menuname, "Mana-Manager").SetValue(new Slider(basicmana, 0, 100)));
+			Program.Menu.SubMenu(menuname).AddItem(new MenuItem("ManaManager_" + menuname, "Mana-Manager").SetValue(new Slider(basicmana, 100, 0)));
 			ManaManagerList.Add("ManaManager_" + menuname);
 		}
 
-		public bool ManaManagerAllowCast(Spell spell)
+		public static bool ManaManagerAllowCast(Spell spell)
 		{
 			if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed &&
 				ManaManagerList.Contains("ManaManager_Harass"))
 			{
 				if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
 					return true;
-				if(GetManaPercent() >= Program.Menu.Item("ManaManager_Harass").GetValue<Slider>().Value)
+				if(ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100 >=
+					Program.Menu.Item("ManaManager_Harass").GetValue<Slider>().Value)
 					return true;
 				return false;
 			}
@@ -62,7 +58,8 @@ namespace UltimateCarry
 			{
 				if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
 					return true;
-                if (GetManaPercent() >=	Program.Menu.Item("ManaManager_LastHit").GetValue<Slider>().Value)
+				if(ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100 >=
+					Program.Menu.Item("ManaManager_LastHit").GetValue<Slider>().Value)
 					return true;
 				return false;
 			}
@@ -71,14 +68,15 @@ namespace UltimateCarry
 			{
 				if((int)ObjectManager.Player.Spellbook.GetSpell(spell.Slot).ManaCost <= 1)
 					return true;
-                if (GetManaPercent() >=	Program.Menu.Item("ManaManager_LaneClear").GetValue<Slider>().Value)
+				if(ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100 >=
+					Program.Menu.Item("ManaManager_LaneClear").GetValue<Slider>().Value)
 					return true;
 				return false;
 			}
 			return true;
 		}
 
-		public Obj_AI_Hero Cast_BasicLineSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
+		public static Obj_AI_Hero Cast_BasicLineSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return null;
@@ -91,12 +89,12 @@ namespace UltimateCarry
 			return target;
 		}
 
-		public void Cast_BasicLineSkillshot_Enemy(Spell spell, Vector3 sourcePosition, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
+		public static void Cast_BasicLineSkillshot_Enemy(Spell spell, Vector3 sourcePosition, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			spell.UpdateSourcePosition(sourcePosition, sourcePosition);
-            foreach (var hero in Program.Helper._enemyTeam
+			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>()
 				.Where(hero => (hero.Distance(sourcePosition) < spell.Range) && hero.IsValidTarget()).Where(hero => spell.GetPrediction(hero).Hitchance >= HitChance.High))
 			{
 				spell.Cast(hero, Packets());
@@ -104,18 +102,18 @@ namespace UltimateCarry
 			}
 		}
 
-        public void Cast_BasicCircleSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical, float extrarange = 0)
+		public static void Cast_BasicCircleSkillshot_Enemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
-            var target = SimpleTs.GetTarget(spell.Range + extrarange, damageType);
+			var target = SimpleTs.GetTarget(spell.Range, damageType);
 			if(target == null)
 				return;
-            if (target.IsValidTarget(spell.Range + extrarange) && spell.GetPrediction(target).Hitchance >= HitChance.High)
+			if(target.IsValidTarget(spell.Range) && spell.GetPrediction(target).Hitchance >= HitChance.High)
 				spell.Cast(target, Packets());
 		}
 
-		public void Cast_BasicLineSkillshot_AOE_Farm(Spell spell)
+		public static void Cast_BasicLineSkillshot_AOE_Farm(Spell spell)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
@@ -126,7 +124,7 @@ namespace UltimateCarry
 			spell.Cast(castPostion.Position, Packets());
 		}
 
-		public void Cast_BasicCircleSkillshot_AOE_Farm(Spell spell, int extrawidth = 0)
+		public static void Cast_BasicCircleSkillshot_AOE_Farm(Spell spell, int extrawidth)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
@@ -137,7 +135,7 @@ namespace UltimateCarry
 			spell.Cast(castPostion.Position, Packets());
 		}
 
-		public void Cast_Basic_Farm(Spell spell , bool skillshot = false)
+		public static void Cast_Basic_Farm(Spell spell , bool skillshot = false)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
@@ -166,24 +164,28 @@ namespace UltimateCarry
 			}
 		}
 
-		public void Cast_Speedboost_onFriend(Spell spell)
+		public static void Cast_Speedboost_onFriend(Spell spell)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
+			var champions = ObjectManager.Get<Obj_AI_Hero>();
+			var objAiHeroes = champions as IList<Obj_AI_Hero> ?? champions.ToList();
+			var friends = objAiHeroes.Where(x => x.IsAlly);
+			var enemies = objAiHeroes.Where(x => x.IsEnemy);
 
-			var friend = Program.Helper._ownTeam.FirstOrDefault(x => x.Distance(ObjectManager.Player) <= spell.Range &&
-                Program.Helper._enemyTeam.Any(enemy => x.Distance(enemy) <= Orbwalking.GetRealAutoAttackRange(x) + 200 && x.BaseAttackDamage * x.AttackSpeedMod * 3 >= enemy.Health));
+			var friend = friends.FirstOrDefault(x => x.Distance(ObjectManager.Player) <= spell.Range &&
+				enemies.Any(enemy => x.Distance(enemy) <= Orbwalking.GetRealAutoAttackRange(x) + 200 && x.BaseAttackDamage * x.AttackSpeedMod * 3 >= enemy.Health));
 
 			if(friend == null)
 				return;
 			spell.CastOnUnit(friend, Packets());
 		}
 
-		public void Cast_Shield_onFriend(Spell spell, int percent,bool skillshot = false)
+		public static void Cast_Shield_onFriend(Spell spell, int percent,bool skillshot = false)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
-			foreach(var friend in Program.Helper._ownTeam.Where(hero => hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && Utility.CountEnemysInRange(1000) >= 1))
+			foreach(var friend in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && Utility.CountEnemysInRange(1000) >= 1))
 			{
 				if (skillshot)
 					spell.Cast(friend.Position, Packets());
@@ -193,17 +195,7 @@ namespace UltimateCarry
 			}
 		}
 
-        public bool Cast_IfEnemys_inRange(Spell spell,int count = 1,float extrarange = 0)
-        {
-            if(!spell.IsReady() || !ManaManagerAllowCast(spell))
-                return false;
-            if(Utility.CountEnemysInRange((int)spell.Range + (int)extrarange) < count)
-                return false;
-            spell.Cast();
-            return true;
-        }
-
-		public void Cast_onEnemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
+		public static void Cast_onEnemy(Spell spell, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
@@ -212,7 +204,7 @@ namespace UltimateCarry
 				spell.CastOnUnit(target, Packets());
 		}
 
-		public void Cast_onMinion_nearEnemy(Spell spell, float range, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical, MinionTypes minionTypes = MinionTypes.All, MinionTeam minionTeam = MinionTeam.All)
+		public static void Cast_onMinion_nearEnemy(Spell spell, float range, SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical, MinionTypes minionTypes = MinionTypes.All, MinionTeam minionTeam = MinionTeam.All)
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
@@ -226,7 +218,7 @@ namespace UltimateCarry
 				spell.CastOnUnit(nearstMinion[0], Packets());
 		}
 
-		public bool EnoughManaFor(SpellSlot spell, SpellSlot spell2 = SpellSlot.Unknown, SpellSlot spell3 = SpellSlot.Unknown, SpellSlot spell4 = SpellSlot.Unknown)
+		public static bool EnoughManaFor(SpellSlot spell, SpellSlot spell2 = SpellSlot.Unknown, SpellSlot spell3 = SpellSlot.Unknown, SpellSlot spell4 = SpellSlot.Unknown)
 		{
 			var cost1 = ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost;
 			var cost2 = 0.0;
@@ -242,17 +234,13 @@ namespace UltimateCarry
 			return cost1 + cost2 + cost3 + cost4 <= ObjectManager.Player.Mana;
 		}
 
-		public Vector3 GetReversePosition(Vector3 positionMe, Vector3 positionEnemy)
+		public static Vector3 GetReversePosition(Vector3 positionMe, Vector3 positionEnemy)
 		{
 			var x = positionMe.X - positionEnemy.X;
 			var y = positionMe.Y - positionEnemy.Y;
 			return new Vector3(positionMe.X + x, positionMe.Y + y, positionMe.Z);
 		}
-
-        public float GetManaPercent()
-        {
-            return (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana) * 100f;
-        }
+	
 	}
 }
 
