@@ -26,15 +26,16 @@ namespace UltimateCarry
 		public string Transformed = "gnartransform";
 		public int GnarState = 1;
 
-        public Gnar() : base()
-		{
+        public Gnar()
+        {
 			LoadMenu();
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
-		private void LoadMenu()
+		private static void LoadMenu()
 		{
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
@@ -136,7 +137,7 @@ namespace UltimateCarry
 		{
 			if (!R.IsReady())
 				return;
-            foreach (var target in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(R.Width)))
+            foreach (var target in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(R.Width)))
 				CastRToCollision(GetCollision(target));
 		}
 
@@ -212,13 +213,11 @@ namespace UltimateCarry
 				return;
 			if(target.IsValidTarget(Q.Range) && Q.GetPrediction(target).Hitchance >= HitChance.High)
 				Q.Cast(target, Packets());
-			if (Q.GetPrediction(target).Hitchance == HitChance.Collision)
-			{
-				var qCollision = Q.GetPrediction(target).CollisionObjects;
-				if ((!qCollision.Exists(coll => coll.Distance(target) > 180 && GnarState == 1)) || (!qCollision.Exists(coll => coll.Distance(target) > 40 )))
-					Q.Cast(target.Position , Packets());
-			}
-				
+			if (Q.GetPrediction(target).Hitchance != HitChance.Collision) 
+				return;
+			var qCollision = Q.GetPrediction(target).CollisionObjects;
+			if ((!qCollision.Exists(coll => coll.Distance(target) > 180 && GnarState == 1)) || (!qCollision.Exists(coll => coll.Distance(target) > 40 )))
+				Q.Cast(target.Position , Packets());
 		}
 
 		private void CastQMinion()

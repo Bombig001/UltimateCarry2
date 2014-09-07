@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
@@ -25,15 +22,15 @@ namespace UltimateCarry
         public int RDelay = 16000;
         public int RTick = 0;
         public Riven()
-            : base()
         {
             LoadMenu();
             LoadSpells();
 
-            //Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnPlayAnimation += OnAnimation;
             Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
         }
 
         private void LoadMenu()
@@ -54,7 +51,13 @@ namespace UltimateCarry
 
             Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
             Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Animation").SetValue(true));
-
+			
+			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
+			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
+			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
+			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_W", "Draw W").SetValue(true));
+			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
+			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
         }
 
         private void LoadSpells()
@@ -73,6 +76,28 @@ namespace UltimateCarry
             R = new Spell(SpellSlot.R, 900);
             R.SetSkillshot(0.25f, 300f, 1200, false, SkillshotType.SkillshotCone);
         }
+
+		private void Drawing_OnDraw(EventArgs args)
+		{
+			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
+				return;
+
+			if(Program.Menu.Item("Draw_Q").GetValue<bool>())
+				if(Q.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, Q.Range, Q.IsReady() ? Color.Green : Color.Red);
+
+			if(Program.Menu.Item("Draw_W").GetValue<bool>())
+				if(W.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, W.Range, W.IsReady() ? Color.Green : Color.Red);
+			
+			if(Program.Menu.Item("Draw_E").GetValue<bool>())
+				if(E.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
+
+			if(Program.Menu.Item("Draw_R").GetValue<bool>())
+				if(R.Level > 0)
+					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
+		}
 
         private void Game_OnGameUpdate(EventArgs args)
         {
@@ -105,7 +130,7 @@ namespace UltimateCarry
                     if (Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive != 3)
                         Cast_IfEnemys_inRange(W);
                     if (Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive != 3)
-                        Cast_BasicCircleSkillshot_Enemy(E);
+						CastE();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     if (Program.Menu.Item("useQ_Harass").GetValue<bool>() && QStage == 2 && StackPassive != 3)
@@ -152,7 +177,7 @@ namespace UltimateCarry
                             if (Program.Menu.Item("useW_TeamFight").GetValue<bool>() && StackPassive != 3)
                                 Cast_IfEnemys_inRange(W);
                             if (Program.Menu.Item("useE_TeamFight").GetValue<bool>() && StackPassive != 3)
-                                Cast_BasicCircleSkillshot_Enemy(E);
+                               CastE();
                             break;
                         case Orbwalking.OrbwalkingMode.Mixed:
                             if (Program.Menu.Item("useQ_Harass").GetValue<bool>() && Environment.TickCount - QTick >= QDelay &&

@@ -31,14 +31,14 @@ namespace UltimateCarry
 		public int DelayTick2 = 0;
 
         public Zed()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			GameObject.OnCreate += OnSpellCast;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -192,7 +192,7 @@ namespace UltimateCarry
 				}
 
 			if(CloneW != null)
-                foreach (var hero in Program.Helper._enemyTeam.Where(hero => (hero.Distance(CloneW.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+                foreach (var hero in Program.Helper.EnemyTeam.Where(hero => (hero.Distance(CloneW.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					Q.Cast(hero.Position, Packets());
 					return;
@@ -200,7 +200,7 @@ namespace UltimateCarry
 
 			if(CloneR == null )
 				return;
-            foreach (var hero in Program.Helper._enemyTeam.Where(hero => (hero.Distance(CloneR.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+            foreach (var hero in Program.Helper.EnemyTeam.Where(hero => (hero.Distance(CloneR.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				Q.Cast(hero.Position, Packets());
 		}
 
@@ -286,14 +286,14 @@ namespace UltimateCarry
 				return;
 			}
 			if(CloneW != null)
-                if (Program.Helper._enemyTeam.Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+                if (Program.Helper.EnemyTeam.Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					E.Cast();
 					return;
 				}
 
 			if(CloneR != null)
-                if (Program.Helper._enemyTeam.Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+                if (Program.Helper.EnemyTeam.Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					E.Cast();
 					return;

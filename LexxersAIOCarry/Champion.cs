@@ -42,7 +42,7 @@ namespace UltimateCarry
 
 		public void AddManaManager(string menuname, int basicmana)
 		{
-			Program.Menu.SubMenu(menuname).AddItem(new MenuItem("ManaManager_" + menuname, "Mana-Manager").SetValue(new Slider(basicmana, 0, 100)));
+			Program.Menu.SubMenu(menuname).AddItem(new MenuItem("ManaManager_" + menuname, "Mana-Manager").SetValue(new Slider(basicmana)));
 			ManaManagerList.Add("ManaManager_" + menuname);
 		}
 
@@ -96,7 +96,7 @@ namespace UltimateCarry
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 			spell.UpdateSourcePosition(sourcePosition, sourcePosition);
-            foreach (var hero in Program.Helper._enemyTeam
+            foreach (var hero in Program.Helper.EnemyTeam
 				.Where(hero => (hero.Distance(sourcePosition) < spell.Range) && hero.IsValidTarget()).Where(hero => spell.GetPrediction(hero).Hitchance >= HitChance.High))
 			{
 				spell.Cast(hero, Packets());
@@ -171,8 +171,8 @@ namespace UltimateCarry
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
 
-			var friend = Program.Helper._ownTeam.FirstOrDefault(x => x.Distance(ObjectManager.Player) <= spell.Range &&
-                Program.Helper._enemyTeam.Any(enemy => x.Distance(enemy) <= Orbwalking.GetRealAutoAttackRange(x) + 200 && x.BaseAttackDamage * x.AttackSpeedMod * 3 >= enemy.Health));
+			var friend = Program.Helper.OwnTeam.FirstOrDefault(x => x.Distance(ObjectManager.Player) <= spell.Range &&
+                Program.Helper.EnemyTeam.Any(enemy => x.Distance(enemy) <= Orbwalking.GetRealAutoAttackRange(x) + 200 && x.BaseAttackDamage * x.AttackSpeedMod * 3 >= enemy.Health));
 
 			if(friend == null)
 				return;
@@ -183,7 +183,7 @@ namespace UltimateCarry
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
-			foreach(var friend in Program.Helper._ownTeam.Where(hero => hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && Utility.CountEnemysInRange(1000) >= 1))
+			foreach(var friend in Program.Helper.OwnTeam.Where(hero => hero.Distance(ObjectManager.Player) <= spell.Range).Where(friend => friend.Health / friend.MaxHealth * 100 <= percent && Utility.CountEnemysInRange(1000) >= 1))
 			{
 				if (skillshot)
 					spell.Cast(friend.Position, Packets());

@@ -9,7 +9,7 @@ namespace UltimateCarry
 {
     class AutoBushRevealer
     {
-        List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>>() //insertion order
+	    readonly List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>> //insertion order
         {
             new KeyValuePair<int, String>(3340, "Warding Totem Trinket"),
             new KeyValuePair<int, String>(3361, "Greater Stealth Totem Trinket"),
@@ -24,7 +24,7 @@ namespace UltimateCarry
         };
         
         int _lastTimeWarded;
-        Menu _menu;
+	    readonly Menu _menu;
 
         public AutoBushRevealer()
         {
@@ -42,13 +42,10 @@ namespace UltimateCarry
 
         InventorySlot GetWardSlot()
         {
-            foreach (var wardId in _wards.Select(x => x.Key).Where(id => _menu.Item("AutoBush" + id).GetValue<bool>() && Items.CanUseItem(id)))
-                return ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)wardId);
-
-            return null;
+	        return _wards.Select(x => x.Key).Where(id => _menu.Item("AutoBush" + id).GetValue<bool>() && Items.CanUseItem(id)).Select(wardId => ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId) wardId)).FirstOrDefault();
         }
 
-        Obj_AI_Base GetNearObject(String name, Vector3 pos, int maxDistance)
+	    Obj_AI_Base GetNearObject(String name, Vector3 pos, int maxDistance)
         {
             return ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.Name == name && x.Distance(pos) <= maxDistance);
         }
@@ -59,7 +56,7 @@ namespace UltimateCarry
 
             if (_menu.Item("AutoBushEnabled").GetValue<bool>() && _menu.Item("AutoBushKey").GetValue<KeyBind>().Active)
 			{
-                foreach (Obj_AI_Hero enemy in Program.Helper._enemyInfo.Where(x =>
+                foreach (Obj_AI_Hero enemy in Program.Helper.EnemyInfo.Where(x =>
 					x.Player.IsValid &&
 					!x.Player.IsVisible &&
 					!x.Player.IsDead &&
@@ -89,36 +86,34 @@ namespace UltimateCarry
 
         Vector3 GetWardPos(Vector3 lastPos, int radius = 165, int precision = 3)
         {
-            int count = precision;
+            var count = precision;
 
             while (count > 0)
             {
-                int vertices = radius;
+                var vertices = radius;
 
                 var wardLocations = new WardLocation[vertices];
-                double angle = 2 * Math.PI / vertices;
+                var angle = 2 * Math.PI / vertices;
 
-                for (int i = 0; i < vertices; i++)
+                for (var i = 0; i < vertices; i++)
                 {
-                    double th = angle * i;
-                    Vector3 pos = new Vector3((float)(lastPos.X + radius * Math.Cos(th)), (float)(lastPos.Y + radius * Math.Sin(th)), 0);
+                    var th = angle * i;
+                    var pos = new Vector3((float)(lastPos.X + radius * Math.Cos(th)), (float)(lastPos.Y + radius * Math.Sin(th)), 0);
                     wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos));
                 }
 
                 var grassLocations = new List<GrassLocation>();
 
-                for (int i = 0; i < wardLocations.Length; i++)
+                for (var i = 0; i < wardLocations.Length; i++)
                 {
-                    if (wardLocations[i].Grass)
-                    {
-                        if (i != 0 && wardLocations[i - 1].Grass)
-                            grassLocations.Last().Count++;
-                        else
-                            grassLocations.Add(new GrassLocation(i, 1));
-                    }
+	                if (!wardLocations[i].Grass) continue;
+	                if (i != 0 && wardLocations[i - 1].Grass)
+		                grassLocations.Last().Count++;
+	                else
+		                grassLocations.Add(new GrassLocation(i, 1));
                 }
 
-                var grassLocation = grassLocations.OrderByDescending(x => x.Count).FirstOrDefault();
+	            var grassLocation = grassLocations.OrderByDescending(x => x.Count).FirstOrDefault();
 
                 if (grassLocation != null) //else: no pos found. increase/decrease radius?
                 {

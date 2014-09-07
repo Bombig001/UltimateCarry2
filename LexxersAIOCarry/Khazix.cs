@@ -14,14 +14,15 @@ namespace UltimateCarry
 		public Spell E;
 		public Spell R;
 
-        public Khazix() : base()
-		{
+        public Khazix()
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()

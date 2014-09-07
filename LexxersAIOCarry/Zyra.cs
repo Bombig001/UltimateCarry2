@@ -16,14 +16,14 @@ namespace UltimateCarry
 		public Spell Passive;
 
         public Zyra()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()

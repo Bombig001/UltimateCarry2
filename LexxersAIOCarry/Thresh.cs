@@ -17,14 +17,14 @@ namespace UltimateCarry
 		public int QFollowTick = 0;
 		public const int QFollowTime = 3000;
         public Thresh()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -172,7 +172,7 @@ namespace UltimateCarry
 			if (!W.IsReady())
 				return;
 			var bestcastposition = new Vector3(0f, 0f, 0f);
-            foreach (var friend in Program.Helper._ownTeam.Where(hero => !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 && hero.Distance(ObjectManager.Player) <= W.Range - 300 && hero.Health / hero.MaxHealth * 100 >= 20 && Utility.CountEnemysInRange(150) >= 1))
+            foreach (var friend in Program.Helper.OwnTeam.Where(hero => !hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 && hero.Distance(ObjectManager.Player) <= W.Range - 300 && hero.Health / hero.MaxHealth * 100 >= 20 && Utility.CountEnemysInRange(150) >= 1))
 			{
 				var center = ObjectManager.Player.Position;
 				const int points = 36;
@@ -205,13 +205,13 @@ namespace UltimateCarry
 			var bestcastposition = new Vector3(0f, 0f, 0f);
 			foreach(
 				var friend in
-                    Program.Helper._ownTeam
+                    Program.Helper.OwnTeam
 						.Where(
 							hero =>
 								!hero.IsMe && hero.Distance(ObjectManager.Player) <= W.Range + 300 &&
 								hero.Distance(ObjectManager.Player) <= W.Range - 200 && hero.Health / hero.MaxHealth * 100 >= 20))
 			{
-                foreach (var enemy in Program.Helper._enemyTeam)
+                foreach (var enemy in Program.Helper.EnemyTeam)
 				{
 					if(friend == null || !(friend.Distance(enemy) <= 300))
 						continue;

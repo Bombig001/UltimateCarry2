@@ -16,8 +16,7 @@ namespace UltimateCarry
 		public Spell R;
 
         public Lulu()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
@@ -25,6 +24,7 @@ namespace UltimateCarry
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -148,9 +148,9 @@ namespace UltimateCarry
 		{
 			if(!R.IsReady())
 				return;
-            foreach (var friend in from friend in Program.Helper._ownTeam.Where(hero => hero.Distance(ObjectManager.Player) <= R.Range)
-                                   let enemyCount = Program.Helper._enemyTeam.Count(hero => hero.Distance(friend) <= 600)
-                                   let enemyCountnear = Program.Helper._enemyTeam.Count(hero => hero.Distance(friend) <= 200)
+            foreach (var friend in from friend in Program.Helper.OwnTeam.Where(hero => hero.Distance(ObjectManager.Player) <= R.Range)
+                                   let enemyCount = Program.Helper.EnemyTeam.Count(hero => hero.Distance(friend) <= 600)
+                                   let enemyCountnear = Program.Helper.EnemyTeam.Count(hero => hero.Distance(friend) <= 200)
 								  let frinedhealthprecent = friend.Health / friend.MaxHealth * 100
 								  where frinedhealthprecent <= 1 || 
 								  (frinedhealthprecent <= 20 && enemyCount >= 1) ||

@@ -14,14 +14,14 @@ namespace UltimateCarry
 		public Spell R;
 		public int UltTick;
         public MissFortune()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -148,7 +148,7 @@ namespace UltimateCarry
 		{
 			if(!R.IsReady())
 				return;
-			foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(R.Range)))
+			foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(R.Range)))
 			{
 				if (R.CastIfWillHit(enemy, Program.Menu.Item("useR_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets()))
 				{
@@ -165,7 +165,7 @@ namespace UltimateCarry
 		{
 			if(!E.IsReady())
 				return;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) && hero.IsValidTarget(E.Range + (E.Width / 2)))))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) && hero.IsValidTarget(E.Range + (E.Width / 2)))))
 			{
 				E.Cast(enemy.Position, Packets());
 				return;
@@ -176,7 +176,7 @@ namespace UltimateCarry
 		{
 			if(!E.IsReady())
 				return;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(E.Range + (E.Width / 2))))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(E.Range + (E.Width / 2))))
 			{
 				E.CastIfWillHit(enemy, Program.Menu.Item("useE_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets());
 				return;

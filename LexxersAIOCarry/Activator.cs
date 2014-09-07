@@ -62,7 +62,7 @@ namespace UltimateCarry
 			{
 				var item = new Item(3142, "Youmuu's Ghostblade", "1,2,3,4", "Active");
 				Obj_AI_Hero[] nearenemy = {null};
-                foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget() && nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < hero.Distance(ObjectManager.Player)))
+                foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget() && nearenemy[0] == null || nearenemy[0].Distance(ObjectManager.Player) < hero.Distance(ObjectManager.Player)))
 					nearenemy[0] = enemy;
 
 				if(nearenemy[0] == null)
@@ -80,7 +80,7 @@ namespace UltimateCarry
 			try
 			{
 				var item = new Item(3077, "Tiamat", "1,2,3,4", "Active", 400);
-                var targ = Program.Helper._enemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
+                var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
 				if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
 					Items.UseItem(item.Id);
 			}
@@ -94,7 +94,7 @@ namespace UltimateCarry
 			try
 			{
 				var item = new Item(3074, "Ravenous Hydra", "1,2,3,4", "Active", 400);
-                var targ = Program.Helper._enemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
+                var targ = Program.Helper.EnemyTeam.FirstOrDefault(hero => hero.IsValidTarget(item.Range));
 				if(Items.CanUseItem(item.Id) && item.IsEnabled() && item.IsMap() && targ != null)
 					Items.UseItem(item.Id);
 			}
@@ -170,10 +170,12 @@ namespace UltimateCarry
 			try
 			{
 				// remove deathmark from zed 
-				var itemList = new List<Item>();
-				itemList.Add(new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"));
-				itemList.Add(new Item(3137, "Dervish Blade", "2,3", "Defensive"));
-				itemList.Add(new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive"));
+				var itemList = new List<Item>
+				{
+					new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
+					new Item(3137, "Dervish Blade", "2,3", "Defensive"),
+					new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive")
+				};
 
 				foreach(Item item in from item in itemList
 									 where item.IsMap()
@@ -197,7 +199,7 @@ namespace UltimateCarry
 			{
 				// todo remove deathmark from zed 
 				var item = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
-                var friend = Program.Helper._ownTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= item.Range && Items.CanUseItem(item.Id) && item.IsMap() && item.IsEnabled());
+                var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= item.Range && Items.CanUseItem(item.Id) && item.IsMap() && item.IsEnabled());
 				if(friend == null)
 					return;
 				Items.UseItem(item.Id, friend);
@@ -310,7 +312,7 @@ namespace UltimateCarry
 				return;
 			}
 			const int range = 700;
-            if (Program.Menu.Item("useHealFriend").GetValue<bool>() && Program.Helper._ownTeam.Any(hero => hero.Health / hero.MaxHealth * 100 <= Program.Menu.Item("useHealPercent").GetValue<Slider>().Value && hero.Distance(ObjectManager.Player.Position) <= range))
+            if (Program.Menu.Item("useHealFriend").GetValue<bool>() && Program.Helper.OwnTeam.Any(hero => hero.Health / hero.MaxHealth * 100 <= Program.Menu.Item("useHealPercent").GetValue<Slider>().Value && hero.Distance(ObjectManager.Player.Position) <= range))
 				ObjectManager.Player.SummonerSpellbook.CastSpell(Heal);
 		}
 
@@ -324,7 +326,7 @@ namespace UltimateCarry
 				return;
 			const int range = 600;
 			if(Program.Menu.Item("useDot1").GetValue<bool>())
-                foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(range) && DamageLib.getDmg(hero, DamageLib.SpellType.IGNITE) >= hero.Health))
+                foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range) && DamageLib.getDmg(hero, DamageLib.SpellType.IGNITE) >= hero.Health))
 				{
 					ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, enemy);
 					return;
@@ -332,7 +334,7 @@ namespace UltimateCarry
 			if(!Program.Menu.Item("useDot2").GetValue<bool>())
 				return;
 			Obj_AI_Hero lowhealthEnemy = null;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(enemy => enemy.IsValidTarget(range) && (enemy.Health / enemy.MaxHealth * 100 <= 60)))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(enemy => enemy.IsValidTarget(range) && (enemy.Health / enemy.MaxHealth * 100 <= 60)))
 			{
 				if(lowhealthEnemy != null)
 				{
@@ -357,7 +359,7 @@ namespace UltimateCarry
 			Obj_AI_Hero maxDpsHero = null;
 			float maxDps = 0;
 			const int range = 550;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(range + 200)))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range + 200)))
 			{
 				var dps = enemy.BaseAttackDamage * enemy.AttackSpeedMod;
 				if(maxDpsHero != null && !(maxDps < dps))
@@ -368,7 +370,7 @@ namespace UltimateCarry
 			if(maxDpsHero == null)
 				return;
 
-            if (Program.Helper._ownTeam.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
+            if (Program.Helper.OwnTeam.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
 				ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
 		}
 

@@ -21,13 +21,13 @@ namespace UltimateCarry
 		public bool GainBuff = false;
 
         public Lucian()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()

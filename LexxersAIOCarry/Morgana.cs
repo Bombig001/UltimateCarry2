@@ -13,14 +13,14 @@ namespace UltimateCarry
 		public static Spell R;
 
         public Morgana()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -127,7 +127,7 @@ namespace UltimateCarry
 		{
 			if(!Q.IsReady())
 				return;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(400)).Where(enemy => enemy.IsValidTarget(Q.Range) && Q.GetPrediction(enemy).Hitchance >= HitChance.High))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(400)).Where(enemy => enemy.IsValidTarget(Q.Range) && Q.GetPrediction(enemy).Hitchance >= HitChance.High))
 			{
 				Q.Cast(enemy, Packets());
 				return;
@@ -138,7 +138,7 @@ namespace UltimateCarry
 		{
 			if(!W.IsReady())
 				return;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) || hero.HasBuffOfType(BuffType.Taunt) && hero.IsValidTarget(W.Range + (W.Width / 2)))))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) || hero.HasBuffOfType(BuffType.Taunt) && hero.IsValidTarget(W.Range + (W.Width / 2)))))
 			{
 				W.Cast(enemy.Position, Packets());
 				return;
@@ -149,7 +149,7 @@ namespace UltimateCarry
 		{
 			if(!W.IsReady())
 				return;
-            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(W.Range + (W.Width / 2))))
+            foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(W.Range + (W.Width / 2))))
 			{
 				W.CastIfWillHit(enemy,Program.Menu.Item("useW_TeamFight_willhit").GetValue<Slider>().Value -1, Packets());
 				return;

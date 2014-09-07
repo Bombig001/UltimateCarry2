@@ -17,13 +17,13 @@ namespace UltimateCarry
 		public int DelayTick_Ron = 0;
 		public int DelayTick_Roff = 0;
         public Swain()
-            : base()
-		{
+        {
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()

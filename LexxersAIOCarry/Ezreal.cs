@@ -12,13 +12,14 @@ namespace UltimateCarry
 		public Spell E;
 		public Spell R;
 
-		public Ezreal() : base()
+		public Ezreal()
 		{
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
+			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
 		private void LoadMenu()
@@ -48,10 +49,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_W", "Draw W").SetValue(true));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_E", "Draw E").SetValue(true));
-
-			// Currently Dissabled couse need Remake
-			// var baseult = new BaseUlt();
-		
+	
 		}
 
 		private void LoadSpells()
