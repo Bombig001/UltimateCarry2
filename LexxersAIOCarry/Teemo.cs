@@ -10,29 +10,25 @@ namespace UltimateCarry
 {
 	class Teemo : Champion 
 	{
-		public static ShroomTables ShroomPositions;
-		public static Spell Q;
-		public static Spell W;
-		public static Spell R;
+		public ShroomTables ShroomPositions;
+		public Spell Q;
+		public Spell W;
+		public Spell R;
 
-		public Teemo()
+        public Teemo()
+            : base()
 		{
-			Name = "Morgana";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(Name + " Plugin Loaded!");
 			Orbwalking.AfterAttack += Orbwalking_AfterAttack;
 			ShroomPositions = new ShroomTables();
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W if enemy flee").SetValue(true));
@@ -61,19 +57,19 @@ namespace UltimateCarry
 		
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 580);		
 			W = new Spell(SpellSlot.W);		
 			R = new Spell(SpellSlot.R, 230);
 		}
 
-		private static bool IsShroomed(Vector3 position)
+		private bool IsShroomed(Vector3 position)
 		{
 			return ObjectManager.Get<Obj_AI_Base>().Where(obj => obj.Name == "Noxious Trap").Any(obj => position.Distance(obj.Position) <= 250);
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			PutShromsAuto();
 
@@ -89,7 +85,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
+		private void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -104,7 +100,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -136,7 +132,7 @@ namespace UltimateCarry
 		
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if (!Q.IsReady())
 				return;
@@ -145,7 +141,7 @@ namespace UltimateCarry
 				Q.CastOnUnit(target,Packets());
 		}
 
-		private static void CastW()
+		private void CastW()
 		{
 			if(!W.IsReady() || Q.IsReady())
 				return;
@@ -154,7 +150,7 @@ namespace UltimateCarry
 				W.Cast();
 		}
 
-		private static void CastR()
+		private void CastR()
 		{
 			if(!R.IsReady())
 				return;
@@ -163,7 +159,7 @@ namespace UltimateCarry
 				R.Cast(ObjectManager.Player.Position, Packets());
 		}
 
-		private static void PutShromsAuto()
+		private void PutShromsAuto()
 		{
 			if (!R.IsReady())
 				return;

@@ -8,30 +8,26 @@ namespace UltimateCarry
 {
 	class Swain : Champion 
 	{
-		public static Spell Q;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
+		public Spell Q;
+		public Spell W;
+		public Spell E;
+		public Spell R;
 
-		public static int Delay = 300;
-		public static int DelayTick_Ron = 0;
-		public static int DelayTick_Roff = 0;
-		public Swain()
+		public int Delay = 300;
+		public int DelayTick_Ron = 0;
+		public int DelayTick_Roff = 0;
+        public Swain()
+            : base()
 		{
-			Name = "Swain";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -65,7 +61,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 625);
 
@@ -77,7 +73,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R, 650);
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
@@ -100,7 +96,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			Cast_R_off();
 
@@ -139,7 +135,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Cast_R_off()
+		private void Cast_R_off()
 		{
 			if(!R.IsReady())
 				return;
@@ -157,7 +153,7 @@ namespace UltimateCarry
 				R.Cast();
 		}
 
-		private static void Cast_R_on()
+		private void Cast_R_on()
 		{
 			if(!R.IsReady() || Environment.TickCount - DelayTick_Ron <= Delay)
 				return;

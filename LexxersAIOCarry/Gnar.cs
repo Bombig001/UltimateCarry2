@@ -10,37 +10,32 @@ namespace UltimateCarry
 {
  class Gnar : Champion
 	{
-		public static Spell QMini;
-		public static Spell QMega;
-		public static Spell WMega;
-		public static Spell EMini;
-		public static Spell EMega;
-		public static Spell RMega;
+		public Spell QMini;
+		public Spell QMega;
+		public Spell WMega;
+		public Spell EMini;
+		public Spell EMega;
+		public Spell RMega;
 
-		public static Spell Q;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
+		public Spell Q;
+		public Spell W;
+		public Spell E;
+		public Spell R;
 
-		public static string TransformSoon = "gnartransformsoon";
-		public static string Transformed = "gnartransform";
-		public static int GnarState = 1;
+		public string TransformSoon = "gnartransformsoon";
+		public string Transformed = "gnartransform";
+		public int GnarState = 1;
 
-		public Gnar()
+        public Gnar() : base()
 		{
-			Name = "Gnar";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
-			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -67,7 +62,7 @@ namespace UltimateCarry
 	
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			QMini = new Spell(SpellSlot.Q, 1100f);
 			QMini.SetSkillshot(0.066f, 60f, 1400f, true, SkillshotType.SkillshotLine);
@@ -85,7 +80,7 @@ namespace UltimateCarry
 			R = RMega;
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			CheckState();
 			switch(GnarState)
@@ -137,15 +132,15 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastREnemy()
+		private void CastREnemy()
 		{
 			if (!R.IsReady())
 				return;
-			foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+            foreach (var target in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(R.Width)))
 				CastRToCollision(GetCollision(target));
 		}
 
-		private static void CastRToCollision(int collisionId)
+		private void CastRToCollision(int collisionId)
 		{
 			if (collisionId == -1)
 				return;
@@ -165,7 +160,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static int GetCollision(Obj_AI_Hero enemy)
+		private int GetCollision(Obj_AI_Hero enemy)
 		{
 			var center = enemy.Position;
 			const int points = 36;
@@ -186,7 +181,7 @@ namespace UltimateCarry
 			return -1;
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -208,7 +203,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, RMega.Width, RMega.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -226,7 +221,7 @@ namespace UltimateCarry
 				
 		}
 
-		private static void CastQMinion()
+		private void CastQMinion()
 		{
 			if(!Q.IsReady())
 				return;
@@ -249,7 +244,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWEnemy()
+		private void CastWEnemy()
 		{
 			if(!W.IsReady())
 				return;
@@ -260,7 +255,7 @@ namespace UltimateCarry
 				W.Cast(target, Packets());
 		}
 
-		private static void CastWMinion()
+		private void CastWMinion()
 		{
 			if(!W.IsReady())
 				return;
@@ -283,7 +278,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastEEnemy()
+		private void CastEEnemy()
 		{
 			if(!E.IsReady())
 				return;
@@ -294,7 +289,7 @@ namespace UltimateCarry
 				E.Cast(target, Packets());
 		}
 
-		private static void CheckState()
+		private void CheckState()
 		{
 			var tempState = 1;
 			foreach(var buff in ObjectManager.Player.Buffs)

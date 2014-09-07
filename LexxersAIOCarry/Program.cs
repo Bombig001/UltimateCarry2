@@ -6,10 +6,11 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 48;
+		public const int LocalVersion = 49;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
+        public static Helper Helper;
 
 		// ReSharper disable once UnusedParameter.Local
 		private static void Main(string[] args)
@@ -20,6 +21,8 @@ namespace UltimateCarry
 		private static void Game_OnGameLoad(EventArgs args)
 		{
 			AutoUpdater.InitializeUpdater();
+
+            Helper = new Helper();
 
 			Menu = new Menu("UltimateCarry", "UltimateCarry_" + ObjectManager.Player.ChampionName, true);
 
@@ -42,7 +45,7 @@ namespace UltimateCarry
 			}
 			catch (Exception)
 			{
-				Champion = new Champion(); //Champ not supported
+				//Champion = new Champion(); //Champ not supported
 			}
 					
 			Menu.AddToMainMenu();
