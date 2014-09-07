@@ -102,7 +102,7 @@
       <HintPath>C:\LSharp\Assemblies\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>C:\LSharp\Assemblies\LeagueSharp.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\..\LSharp\Assemblies\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
