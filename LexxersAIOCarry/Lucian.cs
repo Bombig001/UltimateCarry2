@@ -8,34 +8,30 @@ namespace UltimateCarry
 {
 	class Lucian : Champion
 	{
-		public static Spell Q;
-		public static Spell Q2;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
+		public Spell Q;
+		public Spell Q2;
+		public Spell W;
+		public Spell E;
+		public Spell R;
 
-		public static bool RActive;
-		public static int SpellCastetTick;
-		public static bool CanUseSpells = true;
-		public static bool WaitingForBuff = false;
-		public static bool GainBuff = false;
+		public bool RActive;
+		public int SpellCastetTick;
+		public bool CanUseSpells = true;
+		public bool WaitingForBuff = false;
+		public bool GainBuff = false;
 
-		public Lucian()
+        public Lucian()
+            : base()
 		{
-			Name = "Lucian";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -67,7 +63,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 675);
 			Q.SetTargetted(0.35f, float.MaxValue);
@@ -85,7 +81,7 @@ namespace UltimateCarry
 			R.SetSkillshot(0.01f, 110, 2800f, true, SkillshotType.SkillshotLine);
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			BuffCheck();
 			UltCheck();
@@ -129,7 +125,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -151,7 +147,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if(!Q.IsReady() || !CanUseSpells)
 				return;
@@ -178,7 +174,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastQMinion()
+		private void CastQMinion()
 		{
 			if(!Q.IsReady() || !CanUseSpells)
 				return;
@@ -188,7 +184,7 @@ namespace UltimateCarry
 			if(lastHit)
 			{
 				var minion =
-					allMinions.First(minionn => minionn.Distance(ObjectManager.Player) <= Q.Range && minionn.Health <= DamageLib.getDmg(minionn, DamageLib.SpellType.Q));
+					allMinions.FirstOrDefault(minionn => minionn.Distance(ObjectManager.Player) <= Q.Range && minionn.Health <= DamageLib.getDmg(minionn, DamageLib.SpellType.Q));
 				if(minion == null)
 					return;
 				Q.CastOnUnit(minion, Packets());
@@ -197,7 +193,7 @@ namespace UltimateCarry
 			else if(laneClear)
 			{
 				var minion =
-				allMinions.First(
+                allMinions.FirstOrDefault(
 					minionn => minionn.Distance(ObjectManager.Player) <= Q.Range);
 				if(minion == null)
 					return;
@@ -206,7 +202,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWEnemy()
+		private void CastWEnemy()
 		{
 			if(!W.IsReady() || !CanUseSpells)
 				return;
@@ -229,13 +225,13 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWMinion()
+		private void CastWMinion()
 		{
 			if (!W.IsReady() || !CanUseSpells)
 				return;
 			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range + 100, MinionTypes.All,
 				MinionTeam.NotAlly);
-			var minion = allMinions.First(minionn => minionn.IsValidTarget(W.Range));
+            var minion = allMinions.FirstOrDefault(minionn => minionn.IsValidTarget(W.Range));
 			if (minion != null)
 			{
 				W.Cast(minion.Position, Packets());
@@ -243,7 +239,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastREnemy()
+		private void CastREnemy()
 		{
 			if((Program.Menu.Item("useR_TeamFight_2").GetValue<bool>() && (Q.IsReady() || W.IsReady() || E.IsReady())) || (!R.IsReady() || !CanUseSpells))
 				return;
@@ -256,7 +252,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastE()
+		private void CastE()
 		{
 			if(!E.IsReady() || !CanUseSpells)
 				return;
@@ -286,7 +282,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void UsedSkill()
+		private void UsedSkill()
 		{
 			if(!CanUseSpells)
 				return;
@@ -294,7 +290,7 @@ namespace UltimateCarry
 			SpellCastetTick = Environment.TickCount;
 		}
 
-		private static void UltCheck()
+		private void UltCheck()
 		{
 			var tempultactive = false;
 			foreach(var buff in ObjectManager.Player.Buffs.Where(buff => buff.Name == "LucianR"))
@@ -312,7 +308,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void BuffCheck()
+		private void BuffCheck()
 		{
 			if(CanUseSpells == false && WaitingForBuff == false && GainBuff == false)
 				WaitingForBuff = true;

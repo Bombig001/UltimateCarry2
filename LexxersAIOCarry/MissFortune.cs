@@ -8,28 +8,24 @@ namespace UltimateCarry
 {
 	internal class MissFortune : Champion
 	{
-		public static Spell Q;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
-		public static int UltTick;
-		public MissFortune()
+		public Spell Q;
+		public Spell W;
+		public Spell E;
+		public Spell R;
+		public int UltTick;
+        public MissFortune()
+            : base()
 		{
-			Name = "MissFortune";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(Name + " Plugin Loaded!");
 			Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -56,7 +52,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 650);
 			Q.SetTargetted(0.29f, 1400f);
@@ -70,7 +66,7 @@ namespace UltimateCarry
 			R.SetSkillshot(0.333f, 200, float.MaxValue, false, SkillshotType.SkillshotLine);
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -101,7 +97,7 @@ namespace UltimateCarry
 				}
 			}
 		}
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			if (IsShooting())
 				return;
@@ -143,16 +139,16 @@ namespace UltimateCarry
 			}
 		}
 
-		private static bool IsShooting()
+		private bool IsShooting()
 		{
 			return Environment.TickCount - UltTick < 250 || ObjectManager.Player.HasBuff("missfortunebulletsound");
 		}
 
-		private static void CastREnemyAmount()
+		private void CastREnemyAmount()
 		{
 			if(!R.IsReady())
 				return;
-			foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
+			foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(R.Range)))
 			{
 				if (R.CastIfWillHit(enemy, Program.Menu.Item("useR_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets()))
 				{
@@ -165,29 +161,29 @@ namespace UltimateCarry
 		}
 		
 
-		private static void CastEEnemyBind()
+		private void CastEEnemyBind()
 		{
 			if(!E.IsReady())
 				return;
-			foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) && hero.IsValidTarget(E.Range + (E.Width / 2)))))
+            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) && hero.IsValidTarget(E.Range + (E.Width / 2)))))
 			{
 				E.Cast(enemy.Position, Packets());
 				return;
 			}
 		}
 
-		private static void CastEEnemyAmount()
+		private void CastEEnemyAmount()
 		{
 			if(!E.IsReady())
 				return;
-			foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(E.Range + (E.Width / 2))))
+            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(E.Range + (E.Width / 2))))
 			{
 				E.CastIfWillHit(enemy, Program.Menu.Item("useE_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets());
 				return;
 			}
 		}
 
-		private static void CastW()
+		private void CastW()
 		{
 			if(!W.IsReady())
 				return;
@@ -205,8 +201,7 @@ namespace UltimateCarry
 			W.Cast();
 		}
 
-		private static
-			void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -224,7 +219,7 @@ namespace UltimateCarry
 				Q.CastOnUnit(nearstMinion[0], Packets());
 		}
 
-		private static void CastQMinion()
+		private void CastQMinion()
 		{
 			if(!Q.IsReady())
 				return;
@@ -236,7 +231,7 @@ namespace UltimateCarry
 				Q.CastOnUnit(nearstMinion[0],Packets());
 		}
 
-		private static void CastEMinion()
+		private void CastEMinion()
 		{
 			if(!E.IsReady())
 				return;

@@ -9,44 +9,40 @@ namespace UltimateCarry
 {
 	class Zed : Champion 
 	{
-		public static Spell Q;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
+		public Spell Q;
+		public Spell W;
+		public Spell E;
+		public Spell R;
 
-		public static Obj_AI_Minion CloneW = null;
-		public static bool CloneWCreated = false;
-		public static bool CloneWFound = false;
-		public static int CloneWTick = 0;
-		public static int WCastTick = 0;
+		public Obj_AI_Minion CloneW = null;
+		public bool CloneWCreated = false;
+		public bool CloneWFound = false;
+		public int CloneWTick = 0;
+		public int WCastTick = 0;
 
 		public static Obj_AI_Minion CloneR = null;
-		public static bool CloneRCreated = false;
-		public static bool CloneRFound = false;
-		public static int CloneRTick = 0;
-		public static int RCastTick = 0;
-		public static Vector3 CloneRNearPosition;
+		public bool CloneRCreated = false;
+		public bool CloneRFound = false;
+		public int CloneRTick = 0;
+		public int RCastTick = 0;
+		public Vector3 CloneRNearPosition;
 
-		public static int Delay2 = 300;
-		public static int DelayTick2 = 0;
+		public int Delay2 = 300;
+		public int DelayTick2 = 0;
 
-		public Zed()
+        public Zed()
+            : base()
 		{
-			Name = "Zed";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			GameObject.OnCreate += OnSpellCast;
-			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -79,7 +75,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 900);
 			Q.SetSkillshot(0.235f, 50f, 1700, false, SkillshotType.SkillshotLine);
@@ -91,7 +87,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R, 600);
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 
 			if(CloneWCreated && !CloneWFound)
@@ -174,7 +170,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if (!Q.IsReady())
 				return;
@@ -196,7 +192,7 @@ namespace UltimateCarry
 				}
 
 			if(CloneW != null)
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(CloneW.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+                foreach (var hero in Program.Helper._enemyTeam.Where(hero => (hero.Distance(CloneW.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					Q.Cast(hero.Position, Packets());
 					return;
@@ -204,11 +200,11 @@ namespace UltimateCarry
 
 			if(CloneR == null )
 				return;
-			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(CloneR.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+            foreach (var hero in Program.Helper._enemyTeam.Where(hero => (hero.Distance(CloneR.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
 				Q.Cast(hero.Position, Packets());
 		}
 
-		private static void CastQMinion()
+		private void CastQMinion()
 		{
 			if(!Q.IsReady())
 				return;
@@ -231,7 +227,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWEnemy()
+		private void CastWEnemy()
 		{
 
 			if(Program.Menu.Item("useR_TeamFight").GetValue<bool>())
@@ -273,7 +269,7 @@ namespace UltimateCarry
 		
 
 
-		private static void CastE()
+		private void CastE()
 		{
 			if(!E.IsReady())
 				return;
@@ -290,14 +286,14 @@ namespace UltimateCarry
 				return;
 			}
 			if(CloneW != null)
-				if(ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+                if (Program.Helper._enemyTeam.Any(hero => (hero.Distance(CloneW.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					E.Cast();
 					return;
 				}
 
 			if(CloneR != null)
-				if(ObjectManager.Get<Obj_AI_Hero>().Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+                if (Program.Helper._enemyTeam.Any(hero => (hero.Distance(CloneR.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
 				{
 					E.Cast();
 					return;
@@ -315,7 +311,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastR()
+		private void CastR()
 		{
 			if(!R.IsReady())
 				return;
@@ -341,7 +337,7 @@ namespace UltimateCarry
 						R.Cast();
 		}
 
-		private static bool IsTeleportToClone(string spell)
+		private bool IsTeleportToClone(string spell)
 		{
 			if (spell == "W")
 				if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2")
@@ -351,12 +347,12 @@ namespace UltimateCarry
 			return ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
 		}
 
-		private static bool IsEnoughEnergy(float energy)
+		private bool IsEnoughEnergy(float energy)
 		{
 			return energy <= ObjectManager.Player.Mana;
 		}
 
-		private static float GetCost(SpellSlot spell)
+		private float GetCost(SpellSlot spell)
 		{
 			if(SpellSlot.Q == spell)
 				return 50 + (5 * Q.Level);
@@ -367,7 +363,7 @@ namespace UltimateCarry
 			return 0;
 		}
 
-		private static void SearchForClone(string p)
+		private void SearchForClone(string p)
 		{
 			Obj_AI_Minion shadow;
 			if(p != null && p == "W")
@@ -390,7 +386,7 @@ namespace UltimateCarry
 			CloneRTick = Environment.TickCount;
 		}
 
-		private static void OnSpellCast(GameObject sender, EventArgs args)
+		private void OnSpellCast(GameObject sender, EventArgs args)
 		{
 			var spell = (Obj_SpellMissile)sender;
 			var unit = spell.SpellCaster.Name;

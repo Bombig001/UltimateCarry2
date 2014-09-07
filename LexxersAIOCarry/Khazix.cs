@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
@@ -12,28 +9,23 @@ namespace UltimateCarry
 	class Khazix : Champion
 	{
 
-		public static Spell Q;
-		public static Spell W;
-		public static Spell E;
-		public static Spell R;
+		public Spell Q;
+		public Spell W;
+		public Spell E;
+		public Spell R;
 
-		public Khazix()
+        public Khazix() : base()
 		{
-			Name = "KhaZix";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(Name + " Plugin Loaded!");
 			Orbwalking.AfterAttack += Orbwalking_AfterAttack;
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
@@ -60,7 +52,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 325f);
 
@@ -73,7 +65,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R);
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -91,7 +83,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
+		private void Orbwalking_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -114,7 +106,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			EvolutionCheck();
 
@@ -139,7 +131,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastEEnemy()
+		private void CastEEnemy()
 		{
 			if(!E.IsReady())
 				return;
@@ -150,7 +142,7 @@ namespace UltimateCarry
 				E.Cast(E.GetPrediction(target).CastPosition, Packets());
 		}
 
-		private static void CastEMinion()
+		private void CastEMinion()
 		{
 			if(!E.IsReady())
 				return;
@@ -161,7 +153,7 @@ namespace UltimateCarry
 			E.Cast(castPostion.Position, Packets());
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -171,7 +163,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void CastQMinion()
+		private void CastQMinion()
 		{
 			if(!Q.IsReady())
 				return;
@@ -196,7 +188,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWEnemy()
+		private void CastWEnemy()
 		{
 			if(!W.IsReady())
 				return;
@@ -213,18 +205,18 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWMinion()
+		private void CastWMinion()
 		{
 			if(!W.IsReady())
 				return;
 			var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, W.Range + 50, MinionTypes.All,
 				MinionTeam.NotAlly);
-			var minion = allMinions.First(minionn => minionn.IsValidTarget(W.Range));
+			var minion = allMinions.FirstOrDefault(minionn => minionn.IsValidTarget(W.Range));
 			if(minion != null)
 				W.Cast(minion.Position, Packets());
 		}
 
-		private static void EvolutionCheck()
+		private void EvolutionCheck()
 		{
 			if(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Name == "khazixqlong" && Q.Range < 374f)
 				Q.Range = 375f;

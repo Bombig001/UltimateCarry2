@@ -12,23 +12,19 @@ namespace UltimateCarry
 		public static Spell W;
 		public static Spell R;
 
-		public Morgana()
+        public Morgana()
+            : base()
 		{
-			Name = "Morgana";
-			Chat.Print(Name + " Plugin Loading ...");
 			LoadMenu();
 			LoadSpells();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket;
-			Chat.Print(Name + " Plugin Loaded!");
 		}
 
-		private static void LoadMenu()
+		private void LoadMenu()
 		{
-			MenuBasics();
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight_Gapcloser", "Use Q Gapcloser").SetValue(true));
@@ -56,7 +52,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 1300);
 			Q.SetSkillshot(0.234f, 70f, 1200f, true, SkillshotType.SkillshotLine);
@@ -67,7 +63,7 @@ namespace UltimateCarry
 			R = new Spell(SpellSlot.R, 600);
 		}
 
-		private static void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 			switch(Program.Orbwalker.ActiveMode)
 			{
@@ -98,7 +94,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if(Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
@@ -116,7 +112,7 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 		}
 
-		private static void CastQEnemy()
+		private void CastQEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -127,40 +123,40 @@ namespace UltimateCarry
 				Q.Cast(target, Packets());
 		}
 
-		private static void CastQEnemyGapClose()
+		private void CastQEnemyGapClose()
 		{
 			if(!Q.IsReady())
 				return;
-			foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(400)).Where(enemy => enemy.IsValidTarget(Q.Range) && Q.GetPrediction(enemy).Hitchance >= HitChance.High))
+            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(400)).Where(enemy => enemy.IsValidTarget(Q.Range) && Q.GetPrediction(enemy).Hitchance >= HitChance.High))
 			{
 				Q.Cast(enemy, Packets());
 				return;
 			}
 		}
 
-		private static void CastWEnemyBind()
+		private void CastWEnemyBind()
 		{
 			if(!W.IsReady())
 				return;
-			foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) || hero.HasBuffOfType(BuffType.Taunt) && hero.IsValidTarget(W.Range + (W.Width / 2)))))
+            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun) || hero.HasBuffOfType(BuffType.Taunt) && hero.IsValidTarget(W.Range + (W.Width / 2)))))
 			{
 				W.Cast(enemy.Position, Packets());
 				return;
 			}
 		}
 
-		private static void CastWEnemyAmount()
+		private void CastWEnemyAmount()
 		{
 			if(!W.IsReady())
 				return;
-			foreach(var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(W.Range + (W.Width / 2))))
+            foreach (var enemy in Program.Helper._enemyTeam.Where(hero => hero.IsValidTarget(W.Range + (W.Width / 2))))
 			{
 				W.CastIfWillHit(enemy,Program.Menu.Item("useW_TeamFight_willhit").GetValue<Slider>().Value -1, Packets());
 				return;
 			}
 		}
 
-		private static void CastREnemyAmount()
+		private void CastREnemyAmount()
 		{
 			if(!R.IsReady())
 				return;
@@ -170,7 +166,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastWMinion()
+		private void CastWMinion()
 		{
 			if (!W.IsReady())
 				return;

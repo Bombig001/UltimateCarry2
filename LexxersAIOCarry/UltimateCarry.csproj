@@ -64,6 +64,7 @@
     <Compile Include="Ezreal.cs" />
     <Compile Include="Gnar.cs" />
     <Compile Include="HtmlColor.cs" />
+    <Compile Include="Karthus.cs" />
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="Lulu.cs" />
@@ -83,9 +84,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Riven.cs" />
     <Compile Include="Swain.cs" />
     <Compile Include="Teemo.cs" />
     <Compile Include="Thresh.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Zed.cs" />
     <Compile Include="Zyra.cs" />
   </ItemGroup>
@@ -98,9 +101,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\LSharp\Assemblies\System\LeagueSharp.dll</HintPath>
     </Reference>
-    <Reference Include="LeagueSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\LSharp\Assemblies\System\LeagueSharp.Common.dll</HintPath>
+    <Reference Include="LeagueSharp.Common">
+      <HintPath>C:\LSharp\Assemblies\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

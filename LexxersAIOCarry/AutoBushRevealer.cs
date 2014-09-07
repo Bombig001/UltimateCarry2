@@ -7,17 +7,6 @@ using SharpDX;
 
 namespace UltimateCarry
 {
-    class PlayerInfo
-    {
-        public Obj_AI_Hero Player;
-        public int LastSeen;
-
-        public PlayerInfo(Obj_AI_Hero player)
-        {
-            Player = player;
-        }
-    }
-
     class AutoBushRevealer
     {
         List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>>() //insertion order
@@ -35,7 +24,6 @@ namespace UltimateCarry
         };
         
         int _lastTimeWarded;
-        private List<PlayerInfo> _playerInfo = new List<PlayerInfo>();
         Menu _menu;
 
         public AutoBushRevealer()
@@ -48,8 +36,6 @@ namespace UltimateCarry
 
             foreach(var ward in _wards)
                 useWardsMenu.AddItem(new MenuItem("AutoBush" + ward.Key, ward.Value).SetValue(true));
-
-            _playerInfo = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy).Select(x => new PlayerInfo(x)).ToList();
 
 			Game.OnGameUpdate += Game_OnGameUpdate;
         }
@@ -69,14 +55,11 @@ namespace UltimateCarry
 
         void Game_OnGameUpdate(EventArgs args)
         {
-            var time = Environment.TickCount;
-
-            foreach (PlayerInfo playerInfo in _playerInfo.Where(x => x.Player.IsVisible))
-                playerInfo.LastSeen = time;
+            int time = Environment.TickCount;
 
             if (_menu.Item("AutoBushEnabled").GetValue<bool>() && _menu.Item("AutoBushKey").GetValue<KeyBind>().Active)
 			{
-				foreach(Obj_AI_Hero enemy in _playerInfo.Where(x =>
+                foreach (Obj_AI_Hero enemy in Program.Helper._enemyInfo.Where(x =>
 					x.Player.IsValid &&
 					!x.Player.IsVisible &&
 					!x.Player.IsDead &&
