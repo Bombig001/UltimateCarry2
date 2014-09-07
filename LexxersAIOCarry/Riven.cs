@@ -50,8 +50,8 @@ namespace UltimateCarry
             Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useW_LaneClear", "Use W").SetValue(true));
 
             Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
-            Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Animation").SetValue(true));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "ROFL Combo").SetValue(true));
+            Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Move").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "Cancle Q Laugh").SetValue(true));
 
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
@@ -210,7 +210,7 @@ namespace UltimateCarry
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-                    Game.Say("/l");
+                    Program.Orbwalker.SetOrbwalkingPoint( Game.CursorPos );
             }
 
             if (args.Animation == "Spell1b")
@@ -219,7 +219,7 @@ namespace UltimateCarry
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-                    Game.Say("/l");
+					Program.Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
             }
 
             if (args.Animation == "Spell1c")
@@ -228,7 +228,7 @@ namespace UltimateCarry
 				if(Program.Menu.Item("QLaugh").GetValue<bool>())
 					Game.Say("/laugh");
                 if (Program.Menu.Item("CancleQAnimation").GetValue<bool>())
-                    Game.Say("/l");
+					Program.Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
             }
         }
 
