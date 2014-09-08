@@ -161,7 +161,8 @@ namespace UltimateCarry
 			var castPostion = MinionManager.GetBestLineFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), Q.Width, Q.Range);
 			if(Q.IsCharging)
 				Q.Cast(castPostion.Position, Packets());
-			Q.StartCharging();
+			else
+				Q.StartCharging();
 		}
 
 		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
