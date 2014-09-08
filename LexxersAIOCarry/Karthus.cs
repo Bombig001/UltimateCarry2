@@ -113,7 +113,7 @@ namespace UltimateCarry
 
                     if(IsInPassiveForm())
                         if(!Combo())
-                            LaneClear();
+                            LaneClear(true);
 
 					break;
 			}
