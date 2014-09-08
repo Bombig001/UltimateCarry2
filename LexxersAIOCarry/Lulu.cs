@@ -92,7 +92,7 @@ namespace UltimateCarry
 		
 		}
 
-		private Vector3 PixPosition()
+		private static Vector3 PixPosition()
 		{
 			foreach (var pix in ObjectManager.Get<Obj_AI_Minion>().Where(pix => pix.Name == "RobotBuddy" && pix.IsAlly))
 				return pix.Position;

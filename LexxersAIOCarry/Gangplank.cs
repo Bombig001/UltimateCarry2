@@ -26,8 +26,11 @@ namespace UltimateCarry
 		private static void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 625);
+
 			W = new Spell(SpellSlot.W);
+
 			E = new Spell(SpellSlot.E,1150);
+
 			R = new Spell(SpellSlot.R);
 			R.SetSkillshot(0.7f,200,float.MaxValue,false,SkillshotType.SkillshotCircle);
 		}

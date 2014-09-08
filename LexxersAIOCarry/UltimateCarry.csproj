@@ -90,6 +90,7 @@
     <Compile Include="Teemo.cs" />
     <Compile Include="Thresh.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Xerath.cs" />
     <Compile Include="Zed.cs" />
     <Compile Include="Zyra.cs" />
   </ItemGroup>

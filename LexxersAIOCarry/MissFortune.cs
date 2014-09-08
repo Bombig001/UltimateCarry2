@@ -12,7 +12,8 @@ namespace UltimateCarry
 		public Spell W;
 		public Spell E;
 		public Spell R;
-		public int UltTick;
+		public static int UltTick;
+
         public MissFortune()
         {
 			LoadMenu();
@@ -21,6 +22,7 @@ namespace UltimateCarry
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
+			Game.OnGameSendPacket += GameOnOnGameSendPacket;
 			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
 
@@ -141,7 +143,15 @@ namespace UltimateCarry
 			}
 		}
 
-		private bool IsShooting()
+		private static void GameOnOnGameSendPacket(GamePacketEventArgs args)
+		{
+			if(args.PacketData[0] == Packet.C2S.Move.Header && IsShooting())
+			{
+				args.Process = false;
+			}
+		}
+
+		private static bool IsShooting()
 		{
 			return Environment.TickCount - UltTick < 250 || ObjectManager.Player.HasBuff("missfortunebulletsound");
 		}
@@ -150,18 +160,17 @@ namespace UltimateCarry
 		{
 			if(!R.IsReady())
 				return;
-			foreach (var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(R.Range)))
-			{
-				if (R.CastIfWillHit(enemy, Program.Menu.Item("useR_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets()))
-				{
-					Program.Orbwalker.SetAttacks(false);
-					Program.Orbwalker.SetMovement(false);
-					UltTick = Environment.TickCount;
-					return;
-				}
-			}
+			if(
+				!Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(R.Range))
+					.Any(
+						enemy =>
+							R.CastIfWillHit(enemy, Program.Menu.Item("useR_TeamFight_willhit").GetValue<Slider>().Value - 1, Packets())))
+				return;
+			Program.Orbwalker.SetAttacks(false);
+			Program.Orbwalker.SetMovement(false);
+			UltTick = Environment.TickCount;
 		}
-		
+
 
 		private void CastEEnemyBind()
 		{

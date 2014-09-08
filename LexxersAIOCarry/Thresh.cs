@@ -229,6 +229,11 @@ namespace UltimateCarry
 						if(p.Distance(friend.Position) <= bestcastposition.Distance(friend.Position))
 							bestcastposition = p;
 					}
+					if(friend.Distance(ObjectManager.Player) <= W.Range)
+					{
+						W.Cast(bestcastposition, Packets());
+						return;
+					}
 				}
 				if(bestcastposition.Distance(new Vector3(0f, 0f, 0f)) >= 100)
 					W.Cast(bestcastposition, Packets());
