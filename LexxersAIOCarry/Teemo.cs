@@ -24,7 +24,7 @@ namespace UltimateCarry
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Orbwalking.AfterAttack += Orbwalking_AfterAttack;
 			ShroomPositions = new ShroomTables();
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
 		private void LoadMenu()

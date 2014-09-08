@@ -16,7 +16,12 @@ namespace UltimateCarry
             MenuBasics();
         }
 
-		public static bool Packets()
+        public void PluginLoaded()
+        {
+            Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+        }
+
+		public bool Packets()
 		{
 			return Program.Menu.Item("usePackets").GetValue<bool>();
 		}

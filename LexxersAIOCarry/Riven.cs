@@ -30,7 +30,7 @@ namespace UltimateCarry
             Game.OnGameUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnPlayAnimation += OnAnimation;
             Orbwalking.AfterAttack += Orbwalking_AfterAttack;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
         }
 
         private void LoadMenu()
