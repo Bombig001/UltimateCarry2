@@ -82,7 +82,7 @@ namespace UltimateCarry
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
 		void Game_OnGameUpdate(EventArgs args)
@@ -110,13 +110,20 @@ namespace UltimateCarry
 				default:
                     Program.Orbwalker.SetAttacks(true);
 					RegulateEState();
+
+                    if(IsInPassiveForm())
+                        if(!Combo())
+                            LaneClear(true);
+
 					break;
 			}
 
 		}
 
-		void Combo()
+		bool Combo()
 		{
+            bool anyQTarget = false;
+
 			if(_menu.Item("comboW").GetValue<bool>())
 				CastW(SimpleTs.GetTarget(_spellW.Range, SimpleTs.DamageType.Magical), _menu.Item("comboWPercent").GetValue<Slider>().Value);
 
@@ -143,8 +150,18 @@ namespace UltimateCarry
 					RegulateEState();
 			}
 
-			if(_menu.Item("comboQ").GetValue<bool>() && _spellQ.IsReady())
-				CastQ(SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical));
+            if (_menu.Item("comboQ").GetValue<bool>() && _spellQ.IsReady())
+            {
+                var target = SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical);
+
+                if(target != null)
+                {
+                    anyQTarget = true;
+                    CastQ(target);
+                }
+            }
+
+            return anyQTarget;
 		}
 
         void Harass()
@@ -153,10 +170,10 @@ namespace UltimateCarry
                 CastQ(SimpleTs.GetTarget(_spellQ.Range, SimpleTs.DamageType.Magical), _menu.Item("harassQPercent").GetValue<Slider>().Value);
         }
 
-        void LaneClear()
+        void LaneClear(bool ignoreConfig = false)
         {
-            var farmQ = _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 1 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
-            var farmE = _menu.Item("farmE").GetValue<bool>();
+            var farmQ = ignoreConfig || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 1 || _menu.Item("farmQ").GetValue<StringList>().SelectedIndex == 2;
+            var farmE = ignoreConfig || _menu.Item("farmE").GetValue<bool>();
 
             List<Obj_AI_Base> minions;
 
@@ -223,7 +240,7 @@ namespace UltimateCarry
                     if (Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1800))
                         cast = false;
 
-                if (cast && !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800)) //any other enemies around? dont ult
+                if (cast && (IsInPassiveForm() || !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800))) //any other enemies around? dont ult unless in passive form
                     _spellR.Cast(ObjectManager.Player.Position, Packets());
             }
         }

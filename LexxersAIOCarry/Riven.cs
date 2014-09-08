@@ -6,6 +6,7 @@ using Color = System.Drawing.Color;
 
 namespace UltimateCarry
 {
+<<<<<<< HEAD
 	class Riven : Champion
 	{
 		public static Spell Q;
@@ -35,6 +36,54 @@ namespace UltimateCarry
 			Game.OnGameProcessPacket += OnGameProcessPacket;
 			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
 		}
+=======
+    class Riven : Champion
+    {
+        public Spell Q;
+        public Spell W;
+        public Spell E;
+        public Spell R;
+        public Spell Rstart;
+        public Obj_AI_Hero Player = ObjectManager.Player;
+
+        public int StackPassive = 0;
+        public int QStage = 0;
+        public int QDelay = 300;
+        public int QTick = 0;
+        public int RDelay = 16000;
+        public int RTick = 0;
+        public Riven()
+        {
+            LoadMenu();
+            LoadSpells();
+
+            Drawing.OnDraw += Drawing_OnDraw;
+            Game.OnGameUpdate += Game_OnGameUpdate;
+            Obj_AI_Base.OnPlayAnimation += OnAnimation;
+            Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+			PluginLoaded();
+        }
+
+        private void LoadMenu()
+        {
+            Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
+            Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
+            Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
+            Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useE_TeamFight", "Use E").SetValue(true));
+            Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useR_TeamFight", "Use R").SetValue(true));
+
+            Program.Menu.AddSubMenu(new Menu("Harass", "Harass"));
+            Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useQ_Harass", "Use Q").SetValue(true));
+            Program.Menu.SubMenu("Harass").AddItem(new MenuItem("useW_Harass", "Use W").SetValue(true));
+
+            Program.Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+            Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useQ_LaneClear", "Use Q").SetValue(true));
+            Program.Menu.SubMenu("LaneClear").AddItem(new MenuItem("useW_LaneClear", "Use W").SetValue(true));
+
+            Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
+            Program.Menu.SubMenu("Passive").AddItem(new MenuItem("CancleQAnimation", "Cancle Q Move").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("QLaugh", "Cancle Q Laugh").SetValue(false));
+>>>>>>> origin/master
 
 		private void LoadMenu()
 		{

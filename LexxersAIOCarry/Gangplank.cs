@@ -20,10 +20,10 @@ namespace UltimateCarry
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 625);
 
@@ -130,7 +130,7 @@ namespace UltimateCarry
 			}
 		}
 
-		private static void CastE()
+		private void CastE()
 		{
 			if(!E.IsReady())
 				return;
@@ -157,7 +157,7 @@ namespace UltimateCarry
 				E.Cast();
 		}
 
-		private static void CheckWStun()
+		private void CheckWStun()
 		{
 			if(!W.IsReady())
 				return;
@@ -167,7 +167,7 @@ namespace UltimateCarry
 				W.Cast();
 		}
 
-		private static void QEnemy()
+		private void QEnemy()
 		{
 			if(!Q.IsReady())
 				return;
@@ -176,7 +176,7 @@ namespace UltimateCarry
 				Q.Cast(target, Packets());
 		}
 
-		private static void QLasthitMinion()
+		private void QLasthitMinion()
 		{
 			if(!Q.IsReady())
 				return;

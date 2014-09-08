@@ -32,7 +32,7 @@ namespace UltimateCarry
 			LoadSpells();
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
 		private static void LoadMenu()

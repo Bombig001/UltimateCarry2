@@ -23,7 +23,7 @@ namespace UltimateCarry
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Game.OnGameSendPacket += Game_OnGameSendPacket2;
 			Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
 		private void LoadMenu()
@@ -57,7 +57,7 @@ namespace UltimateCarry
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_R", "Draw R").SetValue(true));
 		}
 
-		private static void LoadSpells()
+		private void LoadSpells()
 		{
 			Q = new Spell(SpellSlot.Q, 1550);
 			Q.SetSkillshot(0.6f, 100, float.MaxValue, false, SkillshotType.SkillshotLine);
@@ -73,7 +73,7 @@ namespace UltimateCarry
 			R.SetSkillshot(0.7f, 120, float.MaxValue, false, SkillshotType.SkillshotCircle);
 		}
 
-		private  void Game_OnGameUpdate(EventArgs args)
+		private void Game_OnGameUpdate(EventArgs args)
 		{
 
 			R_Check();
@@ -134,7 +134,7 @@ namespace UltimateCarry
 			return 2000 + (1200*R.Level);
 		}
 
-		private static void QEnemy()
+		private void QEnemy()
 		{
 			if (!Q.IsReady())
 				return;
@@ -165,7 +165,7 @@ namespace UltimateCarry
 				Q.StartCharging();
 		}
 
-		private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
+		private void Interrupter_OnPosibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
 		{
 			if(!Program.Menu.Item("useE_Interupt").GetValue<bool>())
 				return;
@@ -173,18 +173,18 @@ namespace UltimateCarry
 				E.Cast(unit, Packets());
 		}
 
-		private static void Game_OnGameSendPacket2(GamePacketEventArgs args)
+		private void Game_OnGameSendPacket2(GamePacketEventArgs args)
 		{
 			if(args.PacketData[0] == Packet.C2S.Move.Header && IsShooting())
 				args.Process = false;
 		}
 
-		private static bool IsShooting()
+		private bool IsShooting()
 		{
 			return Environment.TickCount - UltTick < 250 || ObjectManager.Player.HasBuff("XerathLocusOfPower2");
 		}
 
-		private static void Drawing_OnDraw(EventArgs args)
+		private void Drawing_OnDraw(EventArgs args)
 		{
 			if (Program.Menu.Item("Draw_Disabled").GetValue<bool>())
 				return;
