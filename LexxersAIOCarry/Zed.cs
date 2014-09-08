@@ -179,9 +179,11 @@ namespace UltimateCarry
 				if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
 					if(R.IsReady() && CloneR == null && Q.IsReady() && E.IsReady() && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W) + GetCost(SpellSlot.E) + GetCost(SpellSlot.R)))
 						return;
-			
-			if (W.IsReady() && CloneW == null)
-				return;
+
+			if((Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed && Program.Menu.Item("useW_Harass").GetValue<bool>() ||
+				(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo  && Program.Menu.Item("useW_TeamFight").GetValue<bool>())))
+				if (W.IsReady() && CloneW == null)
+					return;
 
 			var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
 			if (target != null)
