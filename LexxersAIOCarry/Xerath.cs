@@ -46,9 +46,12 @@ namespace UltimateCarry
 
 			Program.Menu.AddSubMenu(new Menu("Passive", "Passive"));
 			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useE_Interupt", "Use E Interrupt").SetValue(true));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_KS", "Use R for KS").SetValue(true));
-			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_safe", "R if no enemy in X range").SetValue(new Slider(500, 900, 0)));
-		
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_KS", "Use R for KS").SetValue((new KeyBind("T".ToCharArray()[0], KeyBindType.Press))));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_safe", "Saferange").SetValue(new Slider(700, 2000, 0)));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_Killabletext", "Write if is killable").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_Killableping", "Ping if is killable").SetValue(true));
+			Program.Menu.SubMenu("Passive").AddItem(new MenuItem("useR_warning", "warn if active").SetValue(false));
+			
 			Program.Menu.AddSubMenu(new Menu("Drawing", "Drawing"));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Disabled", "Disable All").SetValue(false));
 			Program.Menu.SubMenu("Drawing").AddItem(new MenuItem("Draw_Q", "Draw Q").SetValue(true));
@@ -89,13 +92,13 @@ namespace UltimateCarry
 						Cast_BasicLineSkillshot_Enemy(E, SimpleTs.DamageType.Magical);
 					break;
 				case Orbwalking.OrbwalkingMode.Mixed:
-					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() && ManaManagerAllowCast(Q) && ManaManagerAllowCast( Q))
+					if(Program.Menu.Item("useQ_Harass").GetValue<bool>() && (ManaManagerAllowCast(Q) || Q.IsCharging) )
 						QEnemy();
 					if(Program.Menu.Item("useW_Harass").GetValue<bool>() && ManaManagerAllowCast(W))
 						Cast_BasicCircleSkillshot_Enemy(W, SimpleTs.DamageType.Magical);
 					break;
 				case Orbwalking.OrbwalkingMode.LaneClear:
-					if (Program.Menu.Item("useQ_LaneClear").GetValue<bool>() && ManaManagerAllowCast(Q))
+					if(Program.Menu.Item("useQ_LaneClear").GetValue<bool>() && (ManaManagerAllowCast(Q) || Q.IsCharging))
 						QFarm();
 					if(Program.Menu.Item("useW_LaneClear").GetValue<bool>() && ManaManagerAllowCast(Q))
 						Cast_BasicCircleSkillshot_AOE_Farm(W);
@@ -105,6 +108,8 @@ namespace UltimateCarry
 
 		private void R_Check()
 		{
+			if (!Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active)
+				return;
 			if (!R.IsReady() && !IsShooting() )
 				return;
 			if (Utility.CountEnemysInRange(Program.Menu.Item("useR_safe").GetValue<Slider>().Value) >= 1 && !IsShooting())
@@ -131,7 +136,7 @@ namespace UltimateCarry
 
 		private float GetRRange()
 		{
-			return 2000 + (1200*R.Level);
+			return 2000 + (1100 * R.Level);
 		}
 
 		private void QEnemy()
@@ -155,13 +160,16 @@ namespace UltimateCarry
 		{
 			if(!Q.IsReady())
 				return;
-			var minions = MinionManager.GetMinions(ObjectManager.Player.Position, Q.ChargedMaxRange , MinionTypes.All, MinionTeam.NotAlly);
+			var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.ChargedMaxRange,MinionTypes.All,MinionTeam.NotAlly );
 			if(minions.Count <= 0)
 				return;
-			var castPostion = MinionManager.GetBestLineFarmLocation(minions.Select(minion => minion.ServerPosition.To2D()).ToList(), Q.Width, Q.Range);
 			if(Q.IsCharging)
-				Q.Cast(castPostion.Position, Packets());
-			else
+			{
+				var locQ = Q.GetLineFarmLocation(minions);
+				if(minions.Count == minions.Count(m => ObjectManager.Player.Distance(m) < Q.Range) && locQ.MinionsHit > 0 && locQ.Position.IsValid())
+					Q.Cast(locQ.Position);
+			}
+			else if(minions.Count > 0)
 				Q.StartCharging();
 		}
 
@@ -204,8 +212,29 @@ namespace UltimateCarry
 			if (Program.Menu.Item("Draw_R").GetValue<bool>())
 				if (R.Level > 0)
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
+			
+			var victims = "";
+			foreach(EnemyInfo target in Program.Helper.EnemyInfo.Where(x =>
+			 x.Player.IsVisible && x.Player.IsValidTarget(GetRRange()) && DamageLib.getDmg(x.Player, DamageLib.SpellType.R)* 0.9 >= x.Player.Health ))
+			{
+				victims += target.Player.ChampionName + " ";
 
+				if(!Program.Menu.Item("useR_Killableping").GetValue<bool>() ||
+					(target.LastPinged != 0 && Environment.TickCount - target.LastPinged <= 11000))
+					continue;
+				if(!(ObjectManager.Player.Distance(target.Player) > 1800) ||
+					(!target.Player.IsVisible))
+					continue;
+				Program.Helper.Ping(target.Player.Position);
+				target.LastPinged = Environment.TickCount;
+			}
+			if(victims != "" && Program.Menu.Item("useR_Killabletext").GetValue<bool>())
+				if(!Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active && R.IsReady())
+					Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, Color.GreenYellow, "[Press " + Convert.ToChar( Program.Menu.Item("useR_KS").GetValue<KeyBind>().Key)  + "] Ult can kill: " + victims);
+			if (victims == "")
+				if(Program.Menu.Item("useR_warning").GetValue<bool>() && Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active)
+					Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, Color.OrangeRed , "Warning: [Press " + Convert.ToChar(Program.Menu.Item("useR_KS").GetValue<KeyBind>().Key) + "] to disable KS ");
+			
 		}
 	}
-	
 }
