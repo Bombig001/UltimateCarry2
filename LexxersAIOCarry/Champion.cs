@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -146,7 +147,7 @@ namespace UltimateCarry
 		{
 			if(!spell.IsReady() || !ManaManagerAllowCast(spell))
 				return;
-			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range, MinionTypes.All, MinionTeam.NotAlly);
+			var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range, MinionTypes.All, MinionTeam.NotAlly,MinionOrderTypes.MaxHealth );
 			foreach(var minion in allMinions)
 			{
 				if(!minion.IsValidTarget())

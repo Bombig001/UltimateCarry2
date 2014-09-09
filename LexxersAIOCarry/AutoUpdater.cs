@@ -1,5 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text;
+using LeagueSharp;
 
 namespace UltimateCarry
 {
@@ -24,8 +28,8 @@ namespace UltimateCarry
 
 		private static void bgw_DoWork(object sender, DoWorkEventArgs e)
 		{
-			var myUpdater = new Updater("https://raw.githubusercontent.com/LXMedia1/Leage-Sharp/master/Versions/UltimateCarry.ver",
-					"https://github.com/LXMedia1/Leage-Sharp/raw/master/UltimateCarry.exe", Localversion);
+			var myUpdater = new Updater("http://goo.gl/FtiO31",
+					"http://goo.gl/P4UNE6", Localversion);
 			if (myUpdater.NeedUpdate)
 			{
 				Chat.Print("UltimateCarry is Updating ...");
@@ -44,10 +48,11 @@ namespace UltimateCarry
 	internal class Updater
 	{
 		private readonly string _updatelink;
+		private WebHeaderCollection header = new WebHeaderCollection();
 
 		private readonly System.Net.WebClient _wc = new System.Net.WebClient
 		{
-			Proxy = null
+			Proxy = null,
 		};
 		public bool NeedUpdate = false;
 
@@ -60,17 +65,17 @@ namespace UltimateCarry
 
 		public bool Update()
 		{
+			_wc.Encoding = UTF8Encoding.Default;
+			_wc.Headers["User-Agent"] = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.9) Gecko/20100824 Firefox/3.6.9";
+			_wc.Headers["Accept-Language"] = "en-us,en;q=0.5";
+			_wc.Headers["Accept-Charset"] = "ISO-8859-1,utf-8;q=0.7,*;q=0.7";
+			_wc.Headers["Refererr"] = "www.UltimateCarry" + ObjectManager.Player.ChampionName + ".info";
+
 			try
 			{
-				if(
-					System.IO.File.Exists(
-						System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak"))
-				{
-					System.IO.File.Delete(
-						System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak");
-				}
+				
 				System.IO.File.Move(System.Reflection.Assembly.GetExecutingAssembly().Location,
-					System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + ".bak.v" + (Program.LocalVersion -1));
+					 System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location) + RandomNumber(1000,9999)+".bak");
 				_wc.DownloadFile(_updatelink,
 					System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location));
 				return true;
@@ -80,6 +85,12 @@ namespace UltimateCarry
 				Chat.Print("UltimateCarry-Updater Error: " + ex.Message);
 				return false;
 			}
+
+		}
+		private int RandomNumber(int min, int max)
+		{
+			var random = new Random();
+			return random.Next(min, max);
 		}
 	}
 }

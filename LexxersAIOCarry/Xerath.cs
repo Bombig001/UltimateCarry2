@@ -120,7 +120,7 @@ namespace UltimateCarry
 			{
 				lowesttarget[0] = enemy;
 			}
-			if(lowesttarget[0] != null && lowesttarget[0].Health < (DamageLib.getDmg(lowesttarget[0], DamageLib.SpellType.R) * 0.9) && Environment.TickCount -UltTick  >= 500) 
+			if(lowesttarget[0] != null && lowesttarget[0].Health < (DamageLib.getDmg(lowesttarget[0], DamageLib.SpellType.R) * 0.9) && Environment.TickCount -UltTick  >= 700) 
 			{
 				R.Cast(lowesttarget[0], Packets());
 				UltTick = Environment.TickCount;
@@ -229,12 +229,17 @@ namespace UltimateCarry
 				target.LastPinged = Environment.TickCount;
 			}
 			if(victims != "" && Program.Menu.Item("useR_Killabletext").GetValue<bool>())
-				if(!Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active && R.IsReady())
+				if (!Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active && R.IsReady())
+				{
+					Drawing.DrawLine(Drawing.Width * 0.44f - 50, Drawing.Height * 0.7f - 2, Drawing.Width * 0.44f + 350, Drawing.Height * 0.7f - 2, 25, Color.Black);		
 					Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, Color.GreenYellow, "[Press " + Convert.ToChar( Program.Menu.Item("useR_KS").GetValue<KeyBind>().Key)  + "] Ult can kill: " + victims);
+				}
 			if (victims == "")
-				if(Program.Menu.Item("useR_warning").GetValue<bool>() && Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active)
-					Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, Color.OrangeRed , "Warning: [Press " + Convert.ToChar(Program.Menu.Item("useR_KS").GetValue<KeyBind>().Key) + "] to disable KS ");
-			
+				if (Program.Menu.Item("useR_warning").GetValue<bool>() && Program.Menu.Item("useR_KS").GetValue<KeyBind>().Active)
+				{
+					Drawing.DrawLine(Drawing.Width * 0.44f - 50, Drawing.Height * 0.7f - 2, Drawing.Width * 0.44f + 350, Drawing.Height * 0.7f - 2, 25, Color.Black);		
+					Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, Color.OrangeRed, "Warning: [Press " + Convert.ToChar(Program.Menu.Item("useR_KS").GetValue<KeyBind>().Key) + "] to disable KS ");
+				}
 		}
 	}
 }
