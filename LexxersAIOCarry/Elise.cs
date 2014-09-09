@@ -31,6 +31,7 @@ namespace UltimateCarry
 
 		private void LoadMenu()
 		{
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("Sorry", "Sorry cant let you"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("Sorry1", "disable spells :P"));
@@ -68,7 +69,7 @@ namespace UltimateCarry
 			WHuman.SetSkillshot(0.3f, 10, float.MaxValue, true, SkillshotType.SkillshotLine);
 
 			EHuman = new Spell(SpellSlot.E, 1075);
-			EHuman.SetSkillshot(0.25f, 70, 1450, true, SkillshotType.SkillshotLine);
+			EHuman.SetSkillshot(0.25f, 70, float.MaxValue, true, SkillshotType.SkillshotLine);
 
 			QSpider = new Spell(SpellSlot.Q,475);
 
@@ -271,7 +272,9 @@ namespace UltimateCarry
 
 		private bool Humanform()
 		{
-			return ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Name == "EliseHumanQ";
+		
+
+			return ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Name   == "EliseHumanQ";
 		}
 	}
 }

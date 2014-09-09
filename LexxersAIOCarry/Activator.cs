@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -19,7 +20,7 @@ namespace UltimateCarry
 
 		public Activator()
 		{
-			Program.Menu.AddSubMenu(new Menu("Supported Items", "supportedextras"));
+			Program.Menu.AddSubMenu(new Menu("Summoners / Items", "supportedextras"));
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Active", "ItemsActive"));
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Defensive", "ItemsDefensive"));
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Neutral", "ItemsNeutral"));
@@ -41,6 +42,7 @@ namespace UltimateCarry
 			Check_Active_Items();
 			Check_AntiStun_Me();
 			Check_AntiStun_Friend();
+			Check_MURAMANA();
 		}
 
 		private static void Check_Active_Items()
@@ -54,6 +56,60 @@ namespace UltimateCarry
 			Check_BILGEWATER();
 			Check_BOTRK();
 			Check_YOMO();
+		}
+
+		private static IEnumerable<Item> GetallItems()
+		{
+			var list = new List<Item>
+			{
+				new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
+				new Item(3137, "Dervish Blade", "2,3", "Defensive"),
+				new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive"),
+				new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750),
+				new Item(3146, "Hextech Gunblade", "1,2,3,4", "Active"),
+				new Item(3074, "Ravenous Hydra", "1,2,3,4", "Active"),
+				new Item(3077, "Tiamat", "1,2,3,4", "Active"),
+				new Item(3144, "Bilgewater Cutlass", "1,2,3,4", "Active", 450),
+				new Item(3128, "Deathfire Grasp", "1,4", "Active", 750),
+				new Item(3153, "Blade of the Ruined King", "1,2,3,4", "Active", 450),
+				new Item(3142, "Youmuu's Ghostblade","1,2,3,4", "Active", (int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)),
+				new Item(3042,	"Muramana","1,4","Neutral"),
+				new Item(3043,	"Muramana","2,3","Neutral")
+			};
+
+			return list;
+		}
+
+		private static void Check_MURAMANA()
+		{
+			try
+			{
+				var itemList = new List<Item>
+				{
+					new Item(3042,	"Muramana","1,4","Neutral"),
+					new Item(3043,	"Muramana","2,3","Neutral")
+				};
+				var MuramanaActive = false;
+				var MuramanaNeeded = false;
+				foreach (var item in from item in itemList.Where( item => item.IsMap() && Items.CanUseItem(item.Id) && item.IsEnabled()) let firstOrDefault = ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)item.Id) where firstOrDefault != null select item)
+				{
+					if (ObjectManager.Player.Buffs.Where(buff => ObjectManager.Player.HasBuff(item.Name)).Any())
+						MuramanaActive = true;
+
+					if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+						if (Utility.CountEnemysInRange((int) Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1)
+							MuramanaNeeded = true;
+					if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear )
+						if(Utility.CountEnemysInRange((int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1 || MinionManager.GetMinions(ObjectManager.Player.Position,Orbwalking.GetRealAutoAttackRange(ObjectManager.Player),MinionTypes.All,MinionTeam.NotAlly).Count >= 1)
+							MuramanaNeeded = true;
+
+					if((MuramanaNeeded && !MuramanaActive) || (!MuramanaNeeded && MuramanaActive))
+						Items.UseItem(item.Id);
+				}
+			}
+			catch
+			{
+			}
 		}
 
 		private static void Check_YOMO()
@@ -396,26 +452,6 @@ namespace UltimateCarry
 			catch
 			{
 			}
-		}
-
-		private static IEnumerable<Item> GetallItems()
-		{
-			var list = new List<Item>
-			{
-				new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
-				new Item(3137, "Dervish Blade", "2,3", "Defensive"),
-				new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive"),
-				new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750),
-				new Item(3146, "Hextech Gunblade", "1,2,3,4", "Active"),
-				new Item(3074, "Ravenous Hydra", "1,2,3,4", "Active"),
-				new Item(3077, "Tiamat", "1,2,3,4", "Active"),
-				new Item(3144, "Bilgewater Cutlass", "1,2,3,4", "Active", 450),
-				new Item(3128, "Deathfire Grasp", "1,4", "Active", 750),
-				new Item(3153, "Blade of the Ruined King", "1,2,3,4", "Active", 450),
-				new Item(3142, "Youmuu's Ghostblade","1,2,3,4", "Active", (int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player))
-			};
-
-			return list;
 		}
 
 		internal class SmiteTarget
