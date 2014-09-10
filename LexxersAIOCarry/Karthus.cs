@@ -299,7 +299,7 @@ namespace UltimateCarry
 
 		static bool IsInPassiveForm()
 		{
-			return !ObjectManager.Player.IsHPBarRendered;
+            return false;// !ObjectManager.Player.IsHPBarRendered;
 		}
 
 		void Drawing_OnDraw(EventArgs args)
