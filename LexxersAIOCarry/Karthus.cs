@@ -290,7 +290,7 @@ namespace UltimateCarry
 
 		float GetDynamicQWidth(Obj_AI_Base target)
 		{
-			return Math.Max(100, (1f - (ObjectManager.Player.Distance(target) / _spellQ.Range)) * SpellQWidth);
+			return Math.Max(30, (1f - (ObjectManager.Player.Distance(target) / _spellQ.Range)) * SpellQWidth);
 		}
 
 		static bool IsInPassiveForm()
