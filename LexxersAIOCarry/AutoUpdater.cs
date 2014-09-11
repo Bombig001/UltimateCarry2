@@ -66,10 +66,10 @@ namespace UltimateCarry
 		public bool Update()
 		{
 			_wc.Encoding = UTF8Encoding.Default;
-			_wc.Headers["User-Agent"] = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.9) Gecko/20100824 Firefox/3.6.9";
+			_wc.Headers["User-Agent"] = "UltimateCarry Client";
 			_wc.Headers["Accept-Language"] = "en-us,en;q=0.5";
 			_wc.Headers["Accept-Charset"] = "ISO-8859-1,utf-8;q=0.7,*;q=0.7";
-			_wc.Headers["Refererr"] = "www.UltimateCarry" + ObjectManager.Player.ChampionName + ".info";
+			_wc.Headers["Referrer"] = "http://www." + ObjectManager.Player.ChampionName + ".info";
 
 			try
 			{

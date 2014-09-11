@@ -68,6 +68,7 @@
     <Compile Include="HtmlColor.cs" />
     <Compile Include="Karthus.cs" />
     <Compile Include="Khazix.cs" />
+    <Compile Include="LeeSin.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="Lulu.cs" />
     <Compile Include="MissFortune.cs" />

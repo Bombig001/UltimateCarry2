@@ -235,9 +235,9 @@ namespace UltimateCarry
 		public bool EnoughManaFor(SpellSlot spell, SpellSlot spell2 = SpellSlot.Unknown, SpellSlot spell3 = SpellSlot.Unknown, SpellSlot spell4 = SpellSlot.Unknown)
 		{
 			var cost1 = ObjectManager.Player.Spellbook.GetSpell(spell).ManaCost;
-			var cost2 = 0.0;
-			var cost3 = 0.0;
-			var cost4 = 0.0;
+			var cost2 = 0f;
+			var cost3 = 0f;
+			var cost4 = 0f;
 			if(spell2 != SpellSlot.Unknown)
 				cost2 = ObjectManager.Player.Spellbook.GetSpell(spell2).ManaCost;
 			if(spell3 != SpellSlot.Unknown)

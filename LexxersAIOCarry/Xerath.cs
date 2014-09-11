@@ -214,7 +214,8 @@ namespace UltimateCarry
 					Utility.DrawCircle(ObjectManager.Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
 			
 			var victims = "";
-			foreach(EnemyInfo target in Program.Helper.EnemyInfo.Where(x =>
+			
+			foreach(var target in Program.Helper.EnemyInfo.Where(x =>
 			 x.Player.IsVisible && x.Player.IsValidTarget(GetRRange()) && DamageLib.getDmg(x.Player, DamageLib.SpellType.R)* 0.9 >= x.Player.Health ))
 			{
 				victims += target.Player.ChampionName + " ";

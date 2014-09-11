@@ -20,6 +20,7 @@ namespace UltimateCarry
 
 		private static void Game_OnGameLoad(EventArgs args)
 		{
+			Chat.Print(ObjectManager.Player.ChampionName);
 			AutoUpdater.InitializeUpdater();
 
             Helper = new Helper();

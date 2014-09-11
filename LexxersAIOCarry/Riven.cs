@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace UltimateCarry
@@ -33,7 +34,7 @@ namespace UltimateCarry
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			Obj_AI_Base.OnPlayAnimation += OnAnimation;
 			Game.OnGameProcessPacket += OnGameProcessPacket;
-			Chat.Print(ObjectManager.Player.ChampionName + " Plugin Loaded!");
+			PluginLoaded();
 		}
 
 		private void LoadMenu()
