@@ -17,10 +17,6 @@ namespace UltimateCarry
 	 * 
 	 * Ult KS:
 	 * - don't KS anymore if enemy is recalling and would arrive base before ult went through (have to include BaseUlt functionality)
-	 * 
-	 * Prediction:
-	 * - improve Q prediction even more by checking if enemy is melee, then adjust Q width (Obj.IsMelee --> what about champs with melee/ranged forms?)
-	 * - change dynamix width to a fixed widths at fixed ranges? -> If in <400 range, width = 160, if >400, width = 20
 	* */
 
 	class Karthus : Champion
@@ -69,6 +65,7 @@ namespace UltimateCarry
 
 			var miscMenu = _menu.AddSubMenu(new Menu("Misc", "Misc"));
 			miscMenu.AddItem(new MenuItem("ultKS", "Ultimate KS").SetValue(true));
+            miscMenu.AddItem(new MenuItem("autoCast", "Auto Combo/LaneClear if dead").SetValue(false));
 
 			_spellQ = new Spell(SpellSlot.Q, 875);
 			_spellW = new Spell(SpellSlot.W, 1000);
@@ -76,7 +73,7 @@ namespace UltimateCarry
 			_spellR = new Spell(SpellSlot.R, 20000f);
 
 			_spellQ.SetSkillshot(1f, 160, float.MaxValue, false, SkillshotType.SkillshotCircle);
-			_spellW.SetSkillshot(.5f, 80, float.MaxValue, false, SkillshotType.SkillshotCircle);
+			_spellW.SetSkillshot(.5f, 70, float.MaxValue, false, SkillshotType.SkillshotCircle);
 			_spellE.SetSkillshot(1f, 505, float.MaxValue, false, SkillshotType.SkillshotCircle);
 			_spellR.SetSkillshot(3f, float.MaxValue, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
@@ -111,9 +108,10 @@ namespace UltimateCarry
                     Program.Orbwalker.SetAttacks(true);
 					RegulateEState();
 
-                    if(IsInPassiveForm())
-                        if(!Combo())
-                            LaneClear(true);
+                    if (_menu.Item("autoCast").GetValue<bool>())
+                        if(IsInPassiveForm())
+                            if(!Combo())
+                                LaneClear(true);
 
 					break;
 			}
@@ -234,26 +232,14 @@ namespace UltimateCarry
                 ((!x.Player.IsVisible && time - x.LastSeen < 10000) || (x.Player.IsVisible && x.Player.IsValidTarget())) &&
                 DamageLib.getDmg(x.Player, DamageLib.SpellType.R) >= Program.Helper.GetTargetHealth(x, (int)(_spellR.Delay * 1000f))))
             {
-                var cast = true;
-
                 if (target.Player.IsVisible || (!target.Player.IsVisible && time - target.LastSeen < 2750)) //allies still attacking target? prevent overkill
                     if (Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1800))
-                        cast = false;
+                        continue;
 
-                if (cast && (IsInPassiveForm() || !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800))) //any other enemies around? dont ult unless in passive form
+                if (IsInPassiveForm() || !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800)) //any other enemies around? dont ult unless in passive form
                     _spellR.Cast(ObjectManager.Player.Position, Packets());
             }
         }
-
-		void CastQ(Obj_AI_Base target, int minManaPercent = 0)
-		{
-			if(!_spellQ.IsReady() || !(GetManaPercent() >= minManaPercent))
-				return;
-			if(target == null)
-				return;
-			_spellQ.Width = GetDynamicQWidth(target);
-			_spellQ.CastIfHitchanceEquals(target, HitChance.High, Packets());
-		}
 
         void RegulateEState(bool ignoreTargetChecks = false)
         {
@@ -267,6 +253,16 @@ namespace UltimateCarry
                 return;
             _spellE.Cast(ObjectManager.Player.Position, Packets());
             _comboE = false;
+        }
+
+        void CastQ(Obj_AI_Base target, int minManaPercent = 0)
+        {
+            if (!_spellQ.IsReady() || !(GetManaPercent() >= minManaPercent))
+                return;
+            if (target == null)
+                return;
+            _spellQ.Width = GetDynamicQWidth(target);
+            _spellQ.CastIfHitchanceEquals(target, HitChance.High, Packets());
         }
 
 		void CastQ(Vector2 pos, int minManaPercent = 0)
@@ -294,12 +290,12 @@ namespace UltimateCarry
 
 		float GetDynamicQWidth(Obj_AI_Base target)
 		{
-			return Math.Max(25, (1f - (ObjectManager.Player.Distance(target) / _spellQ.Range)) * SpellQWidth);
+			return Math.Max(100, (1f - (ObjectManager.Player.Distance(target) / _spellQ.Range)) * SpellQWidth);
 		}
 
 		static bool IsInPassiveForm()
 		{
-            return false;// !ObjectManager.Player.IsHPBarRendered;
+            return false; //!ObjectManager.Player.IsHPBarRendered;
 		}
 
 		void Drawing_OnDraw(EventArgs args)
@@ -329,7 +325,7 @@ namespace UltimateCarry
 					(target.LastPinged != 0 && Environment.TickCount - target.LastPinged <= 11000))
 					continue;
 				if(!(ObjectManager.Player.Distance(target.Player) > 1800) ||
-					(!target.Player.IsVisible && (target.Player.IsVisible || time - target.LastSeen <= 2750)))
+					(!target.Player.IsVisible && time - target.LastSeen <= 2750))
 					continue;
 				Program.Helper.Ping(target.Player.Position);
 				target.LastPinged = Environment.TickCount;

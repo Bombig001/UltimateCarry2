@@ -16,7 +16,7 @@ namespace UltimateCarry
 		public static SpellSlot Barrier = SpellSlot.Unknown;
 		public static SpellSlot Heal = SpellSlot.Unknown;
 		public static SpellSlot Dot = SpellSlot.Unknown;
-		public static SpellSlot Exhoust = SpellSlot.Unknown;
+		public static SpellSlot Exhaust = SpellSlot.Unknown;
 
 		public Activator()
 		{
@@ -98,9 +98,6 @@ namespace UltimateCarry
 
 					if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
 						if (Utility.CountEnemysInRange((int) Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1)
-							MuramanaNeeded = true;
-					if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear )
-						if(Utility.CountEnemysInRange((int)Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1 || MinionManager.GetMinions(ObjectManager.Player.Position,Orbwalking.GetRealAutoAttackRange(ObjectManager.Player),MinionTypes.All,MinionTeam.NotAlly).Count >= 1)
 							MuramanaNeeded = true;
 
 					if((MuramanaNeeded && !MuramanaActive) || (!MuramanaNeeded && MuramanaActive))
@@ -215,65 +212,66 @@ namespace UltimateCarry
 			}
 		}
 
+        static List<Item> antiStunItems = new List<Item>
+		{
+			new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
+			new Item(3137, "Dervish Blade", "2,3", "Defensive"),
+			new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive")
+		};
+
 		private static void Check_AntiStun_Me()
 		{
 			try
 			{
-				// remove deathmark from zed 
-				var itemList = new List<Item>
-				{
-					new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
-					new Item(3137, "Dervish Blade", "2,3", "Defensive"),
-					new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive")
-				};
+                // remove deathmark from zed 
+                Item item = antiStunItems.Where(x => x.IsMap() && x.IsEnabled() && Items.CanUseItem(x.Id) && ObjectManager.Player.HasBuffOfType(BuffType.Snare) || ObjectManager.Player.HasBuffOfType(BuffType.Stun)).FirstOrDefault();
 
-				foreach(Item item in from item in itemList
-									 where item.IsMap()
-									 where Items.CanUseItem(item.Id)
-									 where ObjectManager.Player.HasBuffOfType(BuffType.Snare) || ObjectManager.Player.HasBuffOfType(BuffType.Stun)
-									 where item.IsEnabled()
-									 select item)
-				{
-					Items.UseItem(item.Id);
-					return;
-				}
+                if(item != null)
+                {
+                    Items.UseItem(item.Id);
+                }
 			}
 			catch
 			{
 			}
 		}
+
+        static Item antiStunFriend = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
 
 		private static void Check_AntiStun_Friend()
 		{
 			try
 			{
 				// todo remove deathmark from zed 
-				var item = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
-				var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= item.Range && Items.CanUseItem(item.Id) && item.IsMap() && item.IsEnabled());
+                var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= antiStunFriend.Range && Items.CanUseItem(antiStunFriend.Id) && antiStunFriend.IsMap() && antiStunFriend.IsEnabled());
 				if(friend == null)
 					return;
-				Items.UseItem(item.Id, friend);
+                Items.UseItem(antiStunFriend.Id, friend);
 			}
 			catch
 			{
 			}
-
-
 		}
+
+        static SpellSlot GetSummonerSpellSlot(String name)
+        {
+            SpellDataInst spell = ObjectManager.Player.SummonerSpellbook.Spells.Where(x => x.Name.ToLower() == name).FirstOrDefault();
+
+            if (spell != null)
+                return spell.Slot;
+
+            return SpellSlot.Unknown;
+        }
 
 		internal static void AddSummonerMenu()
 		{
 			var spells = ObjectManager.Player.SummonerSpellbook.Spells;
-			foreach(var spell in spells.Where(spell => spell.Name.ToLower() == "summonersmite"))
-				Smite = spell.Slot;
-			foreach(var spell in spells.Where(spell => spell.Name.ToLower() == "summonerbarrier"))
-				Barrier = spell.Slot;
-			foreach(var spell in spells.Where(spell => spell.Name.ToLower() == "summonerheal"))
-				Heal = spell.Slot;
-			foreach(var spell in spells.Where(spell => spell.Name.ToLower() == "summonerdot"))
-				Dot = spell.Slot;
-			foreach(var spell in spells.Where(spell => spell.Name.ToLower() == "summonerexhaust"))
-				Exhoust = spell.Slot;
+
+            Smite = GetSummonerSpellSlot("summonersmite");
+            Barrier = GetSummonerSpellSlot("summonerbarrier");
+            Heal = GetSummonerSpellSlot("summonerheal");
+            Dot = GetSummonerSpellSlot("summonerdot");
+            Exhaust = GetSummonerSpellSlot("summonerexhaust");
 
 			if(Smite != SpellSlot.Unknown)
 			{
@@ -305,7 +303,7 @@ namespace UltimateCarry
 				Program.Menu.SubMenu("supportedextras").SubMenu("sumDot").AddItem(new MenuItem("useDot2", "Use Dot on Lowest Health").SetValue(false));
 			}
 
-			if(Exhoust == SpellSlot.Unknown)
+			if(Exhaust == SpellSlot.Unknown)
 				return;
 			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Exhaust", "sumExhaust"));
 			Program.Menu.SubMenu("supportedextras").SubMenu("sumExhaust").AddItem(new MenuItem("useExhaust", "Use Exhaust").SetValue(true));
@@ -403,20 +401,13 @@ namespace UltimateCarry
 					}
 				if(!Program.Menu.Item("useDot2").GetValue<bool>())
 					return;
-				Obj_AI_Hero lowhealthEnemy = null;
-				foreach(var enemy in Program.Helper.EnemyTeam.Where(enemy => enemy.IsValidTarget(range) && (enemy.Health / enemy.MaxHealth * 100 <= 60)))
-				{
-					if(lowhealthEnemy != null)
-					{
-						if(lowhealthEnemy.Health > enemy.Health)
-							lowhealthEnemy = enemy;
-					}
-					else
-						lowhealthEnemy = enemy;
-				}
-				if(lowhealthEnemy == null)
-					return;
-				ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, lowhealthEnemy);
+
+                Obj_AI_Hero lowestHealthEnemy = Program.Helper.EnemyTeam.Where(enemy => enemy.IsValidTarget(range) && enemy.Health / enemy.MaxHealth * 100 <= 60).OrderBy(enemy => enemy.Health).FirstOrDefault();
+
+                if (lowestHealthEnemy == null)
+                    return;
+
+                ObjectManager.Player.SummonerSpellbook.CastSpell(Dot, lowestHealthEnemy);
 			}
 			catch
 			{
@@ -427,27 +418,22 @@ namespace UltimateCarry
 		{
 			try
 			{
-				if(Exhoust == SpellSlot.Unknown ||
+                if (Exhaust == SpellSlot.Unknown ||
 				   (!Program.Menu.Item("useExhaust").GetValue<bool>() ||
-					ObjectManager.Player.SummonerSpellbook.CanUseSpell(Exhoust) !=
+                    ObjectManager.Player.SummonerSpellbook.CanUseSpell(Exhaust) !=
 					SpellState.Ready) || Program.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
 					return;
-				Obj_AI_Hero maxDpsHero = null;
+
 				float maxDps = 0;
 				const int range = 550;
-				foreach(var enemy in Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range + 200)))
-				{
-					var dps = enemy.BaseAttackDamage * enemy.AttackSpeedMod;
-					if(maxDpsHero != null && !(maxDps < dps))
-						continue;
-					maxDps = dps;
-					maxDpsHero = enemy;
-				}
-				if(maxDpsHero == null)
-					return;
+
+                Obj_AI_Hero maxDpsHero = Program.Helper.EnemyTeam.Where(hero => hero.IsValidTarget(range + 200)).OrderByDescending(x => x.BaseAttackDamage * x.AttackSpeedMod).FirstOrDefault();
+
+                if (maxDpsHero == null)
+                    return;
 
 				if(Program.Helper.OwnTeam.Where(hero => hero.IsAlly && hero.Distance(ObjectManager.Player) <= range).Any(friend => friend.Health <= maxDps * 3))
-					ObjectManager.Player.SummonerSpellbook.CastSpell(Exhoust, maxDpsHero);
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(Exhaust, maxDpsHero);
 			}
 			catch
 			{
@@ -459,25 +445,12 @@ namespace UltimateCarry
 
 			private static readonly string[] MinionNames = { "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith" };
 
+            const int smiteRange = 600;
+
 			public static Obj_AI_Minion GetNearest(Vector3 pos)
 			{
-				var minions = ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValid && MinionNames.Any(name => minion.Name.StartsWith(name)));
-				var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
-				var sMinion = objAiMinions.FirstOrDefault();
-				double? nearest = null;
-				var index = 0;
-				for(; index < objAiMinions.Length; index++)
-				{
-					var minion = objAiMinions[index];
-					var distance = Vector3.Distance(pos, minion.Position);
-					if(nearest != null && !(nearest > distance))
-						continue;
-					nearest = distance;
-					sMinion = minion;
-				}
-				return sMinion;
-
-			}
+                return ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValid && minion.IsValidTarget(smiteRange) && MinionNames.Any(name => minion.Name.StartsWith(name))).FirstOrDefault();
+            }
 
 			public static double Damage()
 			{
