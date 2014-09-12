@@ -109,8 +109,9 @@ namespace UltimateCarry
             {
                 MinionManager.FarmLocation farmLocation = _spellQ.GetLineFarmLocation(minions);
 
-                if (farmLocation.MinionsHit >= 2 || jungleMobs)
-                    CastQ(farmLocation.Position);
+                if (farmLocation.Position.IsValid())
+                    if (farmLocation.MinionsHit >= 2 || jungleMobs)
+                        CastQ(farmLocation.Position);
             }
 
             minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, _spellW.Range, MinionTypes.All, MinionTeam.NotAlly);
