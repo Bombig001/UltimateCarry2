@@ -929,7 +929,7 @@ namespace UltimateCarry
 
 		private Obj_AI_Base getQ2Target()
 		{
-			return ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy).FirstOrDefault(enemy => enemy.Buffs.Any(buff => buff.Name == "BlindMonkQOne"));
+			return ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy).FirstOrDefault(enemy => enemy.Buffs.Any(buff => buff.Name == "BlindMonkQOne" || buff.Name == "blindmonkqonechaos"));
 		}
 
 		private bool FlashReady()
