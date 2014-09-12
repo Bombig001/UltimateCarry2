@@ -230,18 +230,18 @@ namespace UltimateCarry
 
                 bool enoughMana = ObjectManager.Player.Mana > ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ManaCost + ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).ManaCost;
 
-                if (_menu.Item("comboROnlyUserInitiate").GetValue<bool>() || !(_spellQ.IsReady() && _spellE.IsReady()) || !enoughMana) //dont initiate if user doesnt want to, also dont initiate if Q and E isnt ready or not enough mana
+                if (_menu.Item("comboROnlyUserInitiate").GetValue<bool>() || !(_spellQ.IsReady() && _spellE.IsReady()) || !enoughMana) //dont initiate if user doesnt want to, also dont initiate if Q and E isnt ready or not enough mana for QER combo
                     return false;
 
                 var friendsNearMouse = Program.Helper.OwnTeam.Where(x => x.IsMe || x.Distance(mousePos) < 650); //me and friends near mouse (already in fight)
 
-                if (enemiesNearMouse.Count() == 1)
+                if (enemiesNearMouse.Count() == 1) //x vs 1 enemy
                 {
                     Obj_AI_Hero enemy = enemiesNearMouse.FirstOrDefault();
 
-                    int enemiesUnderTower = enemiesNearMouse.Count(x => Utility.UnderTurret(x));
+                    bool underTower = Utility.UnderTurret(enemy);
 
-                    return GetComboDamage(enemy) / enemy.Health >= (enemiesUnderTower > 0 ? 1.25f : 1);
+                    return GetComboDamage(enemy) / enemy.Health >= (underTower ? 1.25f : 1); //if enemy under tower, only initiate if combo damage is >125% of enemy health
                 }
                 else //fight if enemies low health or 2 friends vs 3 enemies and 3 friends vs 3 enemies, but not 2vs4
                 {
