@@ -210,9 +210,9 @@ namespace UltimateCarry
             double comboDamage = (float)DamageLib.GetComboDamage(target, GetSpellCombo());
 
             if (_itemDFG.IsReady())
-                comboDamage += DamageLib.getDmg(target, DamageLib.SpellType.DFG) / 1.2;
+                comboDamage = comboDamage * 1.2 + DamageLib.getDmg(target, DamageLib.SpellType.DFG);
 
-            return (float)(comboDamage * (_itemDFG.IsReady() ? 1.2d : 1) + DamageLib.getDmg(target, DamageLib.SpellType.AD));
+            return (float)(comboDamage + DamageLib.getDmg(target, DamageLib.SpellType.AD));
         }
 
         bool OkToUlt()
