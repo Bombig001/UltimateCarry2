@@ -14,6 +14,7 @@ Included Champions
 * Gnar
 * Karthus
 * Khazix
+* LeeSin
 * Lucian
 * Lulu
 * MissFortune

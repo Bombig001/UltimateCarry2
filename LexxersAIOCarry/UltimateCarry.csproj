@@ -70,6 +70,7 @@
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="Lulu.cs" />
+	<Compile Include="LeeSin.cs" />
     <Compile Include="MissFortune.cs" />
     <Compile Include="Morgana.cs" />
     <Compile Include="Overlay.cs" />

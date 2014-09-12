@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -89,18 +88,18 @@ namespace UltimateCarry
 					new Item(3042,	"Muramana","1,4","Neutral"),
 					new Item(3043,	"Muramana","2,3","Neutral")
 				};
-				var MuramanaActive = false;
-				var MuramanaNeeded = false;
+				var muramanaActive = false;
+				var muramanaNeeded = false;
 				foreach (var item in from item in itemList.Where( item => item.IsMap() && Items.CanUseItem(item.Id) && item.IsEnabled()) let firstOrDefault = ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)item.Id) where firstOrDefault != null select item)
 				{
-					if (ObjectManager.Player.Buffs.Where(buff => ObjectManager.Player.HasBuff(item.Name)).Any())
-						MuramanaActive = true;
+					if (ObjectManager.Player.Buffs.Any(buff => ObjectManager.Player.HasBuff(item.Name)))
+						muramanaActive = true;
 
 					if(Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
 						if (Utility.CountEnemysInRange((int) Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)) >= 1)
-							MuramanaNeeded = true;
+							muramanaNeeded = true;
 
-					if((MuramanaNeeded && !MuramanaActive) || (!MuramanaNeeded && MuramanaActive))
+					if((muramanaNeeded && !muramanaActive) || (!muramanaNeeded && muramanaActive))
 						Items.UseItem(item.Id);
 				}
 			}
@@ -212,7 +211,7 @@ namespace UltimateCarry
 			}
 		}
 
-        static List<Item> antiStunItems = new List<Item>
+        static readonly List<Item> AntiStunItems = new List<Item>
 		{
 			new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"),
 			new Item(3137, "Dervish Blade", "2,3", "Defensive"),
@@ -224,7 +223,7 @@ namespace UltimateCarry
 			try
 			{
                 // remove deathmark from zed 
-                Item item = antiStunItems.Where(x => x.IsMap() && x.IsEnabled() && Items.CanUseItem(x.Id) && ObjectManager.Player.HasBuffOfType(BuffType.Snare) || ObjectManager.Player.HasBuffOfType(BuffType.Stun)).FirstOrDefault();
+                var item = AntiStunItems.FirstOrDefault(x => x.IsMap() && x.IsEnabled() && Items.CanUseItem(x.Id) && ObjectManager.Player.HasBuffOfType(BuffType.Snare) || ObjectManager.Player.HasBuffOfType(BuffType.Stun));
 
                 if(item != null)
                 {
@@ -236,31 +235,27 @@ namespace UltimateCarry
 			}
 		}
 
-        static Item antiStunFriend = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
+        static readonly Item AntiStunFriend = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750);
 
 		private static void Check_AntiStun_Friend()
 		{
 			try
 			{
 				// todo remove deathmark from zed 
-                var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= antiStunFriend.Range && Items.CanUseItem(antiStunFriend.Id) && antiStunFriend.IsMap() && antiStunFriend.IsEnabled());
+                var friend = Program.Helper.OwnTeam.FirstOrDefault(hero => !hero.IsDead && (hero.HasBuffOfType(BuffType.Snare) || hero.HasBuffOfType(BuffType.Stun)) && hero.Distance(ObjectManager.Player) <= AntiStunFriend.Range && Items.CanUseItem(AntiStunFriend.Id) && AntiStunFriend.IsMap() && AntiStunFriend.IsEnabled());
 				if(friend == null)
 					return;
-                Items.UseItem(antiStunFriend.Id, friend);
+                Items.UseItem(AntiStunFriend.Id, friend);
 			}
 			catch
 			{
 			}
 		}
 
-        static SpellSlot GetSummonerSpellSlot(String name)
+        public static SpellSlot GetSummonerSpellSlot(String name)
         {
-            SpellDataInst spell = ObjectManager.Player.SummonerSpellbook.Spells.Where(x => x.Name.ToLower() == name).FirstOrDefault();
-
-            if (spell != null)
-                return spell.Slot;
-
-            return SpellSlot.Unknown;
+            var spell = ObjectManager.Player.SummonerSpellbook.Spells.FirstOrDefault(x => x.Name.ToLower() == name);
+            return spell != null ? spell.Slot : SpellSlot.Unknown;
         }
 
 		internal static void AddSummonerMenu()
@@ -445,11 +440,11 @@ namespace UltimateCarry
 
 			private static readonly string[] MinionNames = { "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith" };
 
-            const int smiteRange = 600;
+            const int SmiteRange = 600;
 
 			public static Obj_AI_Minion GetNearest(Vector3 pos)
 			{
-                return ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValid && minion.IsValidTarget(smiteRange) && MinionNames.Any(name => minion.Name.StartsWith(name))).FirstOrDefault();
+                return ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(minion => minion.IsValid && minion.IsValidTarget(SmiteRange) && MinionNames.Any(name => minion.Name.StartsWith(name)));
             }
 
 			public static double Damage()

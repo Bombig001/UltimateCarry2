@@ -6,7 +6,7 @@ namespace UltimateCarry
 {
 	class Program
 	{
-		public const int LocalVersion = 63;
+		public const int LocalVersion = 64;
 		public static Champion Champion;
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;
@@ -20,7 +20,6 @@ namespace UltimateCarry
 
 		private static void Game_OnGameLoad(EventArgs args)
 		{
-			Chat.Print(ObjectManager.Player.ChampionName);
 			AutoUpdater.InitializeUpdater();
 
             Helper = new Helper();
