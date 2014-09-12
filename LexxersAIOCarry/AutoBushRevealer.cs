@@ -9,7 +9,7 @@ namespace UltimateCarry
 {
     class AutoBushRevealer
     {
-	    readonly List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>> //insertion order
+	    static readonly List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>> //insertion order
         {
             new KeyValuePair<int, String>(3340, "Warding Totem Trinket"),
             new KeyValuePair<int, String>(3361, "Greater Stealth Totem Trinket"),
@@ -43,6 +43,11 @@ namespace UltimateCarry
         InventorySlot GetWardSlot()
         {
 	        return _wards.Select(x => x.Key).Where(id => _menu.Item("AutoBush" + id).GetValue<bool>() && Items.CanUseItem(id)).Select(wardId => ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId) wardId)).FirstOrDefault();
+        }
+
+        static public InventorySlot GetAnyWardSlot()
+        {
+            return _wards.Select(x => x.Key).Where(Items.CanUseItem).Select(wardId => ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)wardId)).FirstOrDefault();
         }
 
 	    Obj_AI_Base GetNearObject(String name, Vector3 pos, int maxDistance)

@@ -10,20 +10,6 @@ namespace UltimateCarry
 {
 	class LeeSin : Champion
 	{
-		readonly List<KeyValuePair<int, String>> _wards = new List<KeyValuePair<int, String>> //insertion order
-        {
-            new KeyValuePair<int, String>(3340, "Warding Totem Trinket"),
-            new KeyValuePair<int, String>(3361, "Greater Stealth Totem Trinket"),
-            new KeyValuePair<int, String>(3205, "Quill Coat"),
-            new KeyValuePair<int, String>(3207, "Spirit Of The Ancient Golem"),
-            new KeyValuePair<int, String>(3154, "Wriggle's Lantern"),
-            new KeyValuePair<int, String>(2049, "Sight Stone"),
-            new KeyValuePair<int, String>(2045, "Ruby Sightstone"),
-            new KeyValuePair<int, String>(3160, "Feral Flare"),
-            new KeyValuePair<int, String>(2050, "Explorer's Ward"),
-            new KeyValuePair<int, String>(2044, "Stealth Ward"),
-        };
-
 		public Spell Q1;
 		public Spell Q2;
 		public Spell W1;
@@ -305,7 +291,7 @@ namespace UltimateCarry
 
 			var rtarget = SimpleTs.GetTarget(Q1.Range, SimpleTs.DamageType.Physical);
 
-			var wardSlot = GetWardSlot();
+			var wardSlot = AutoBushRevealer.GetAnyWardSlot();
 
 			var wardpos = Getwardposition(rtarget);
 
@@ -377,9 +363,9 @@ namespace UltimateCarry
 					W1.CastOnUnit(jumpobj, Packets());
 					return;
 				}
-				if(GetWardSlot() != null)
+				if(AutoBushRevealer.GetAnyWardSlot() != null)
 				{
-					GetWardSlot().UseItem(wardpos);
+                    AutoBushRevealer.GetAnyWardSlot().UseItem(wardpos);
 				}
 			}
 
@@ -435,13 +421,6 @@ namespace UltimateCarry
 						E2.Cast();
 			}
 		}
-
-		InventorySlot GetWardSlot()
-		{
-			return _wards.Select(x => x.Key).Where(Items.CanUseItem).Select(wardId => ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)wardId)).FirstOrDefault();
-		}
-
-
 
 		private Obj_AI_Base GetJumpObject(Vector3 pos)
 		{
