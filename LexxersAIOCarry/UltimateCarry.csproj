@@ -57,16 +57,19 @@
   <ItemGroup>
     <Compile Include="Activator.cs" />
     <Compile Include="Ahri.cs" />
+    <Compile Include="Ashe.cs" />
     <Compile Include="AutoBushRevealer.cs" />
     <Compile Include="AutoUpdater.cs" />
     <Compile Include="BaseUlt.cs" />
     <Compile Include="Champion.cs" />
     <Compile Include="Chat.cs" />
+    <Compile Include="Draven.cs" />
     <Compile Include="Elise.cs" />
     <Compile Include="Ezreal.cs" />
     <Compile Include="Gangplank.cs" />
     <Compile Include="Gnar.cs" />
     <Compile Include="HtmlColor.cs" />
+    <Compile Include="Jinx.cs" />
     <Compile Include="Karthus.cs" />
     <Compile Include="Khazix.cs" />
     <Compile Include="Lucian.cs" />

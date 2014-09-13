@@ -22,6 +22,7 @@ namespace UltimateCarry
 	class Karthus : Champion
 	{
 		readonly Menu _menu;
+        BaseUlt BaseUlt;
 
 		private readonly Spell _spellQ;
 		private readonly Spell _spellW;
@@ -76,6 +77,8 @@ namespace UltimateCarry
 			_spellW.SetSkillshot(.5f, 70, float.MaxValue, false, SkillshotType.SkillshotCircle);
 			_spellE.SetSkillshot(1f, 505, float.MaxValue, false, SkillshotType.SkillshotCircle);
 			_spellR.SetSkillshot(3f, float.MaxValue, float.MaxValue, false, SkillshotType.SkillshotCircle);
+
+            BaseUlt = new BaseUlt();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
@@ -229,14 +232,15 @@ namespace UltimateCarry
                 x.Player.IsValid &&
                 !x.Player.IsDead &&
                 x.Player.IsEnemy &&
+                !(x.RecallInfo.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted && x.RecallInfo.GetRecallCountdown() < 3100) && //let BaseUlt handle this one
                 ((!x.Player.IsVisible && time - x.LastSeen < 10000) || (x.Player.IsVisible && x.Player.IsValidTarget())) &&
                 DamageLib.getDmg(x.Player, DamageLib.SpellType.R) >= Program.Helper.GetTargetHealth(x, (int)(_spellR.Delay * 1000f))))
             {
                 if (target.Player.IsVisible || (!target.Player.IsVisible && time - target.LastSeen < 2750)) //allies still attacking target? prevent overkill
-                    if (Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1800))
+                    if (Program.Helper.OwnTeam.Any(x => !x.IsMe && x.Distance(target.Player) < 1600))
                         continue;
 
-                if (IsInPassiveForm() || !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1800)) //any other enemies around? dont ult unless in passive form
+                if (IsInPassiveForm() || !Program.Helper.EnemyTeam.Any(x => x.IsValid && !x.IsDead && (x.IsVisible || (!x.IsVisible && time - Program.Helper.GetPlayerInfo(x).LastSeen < 2750)) && ObjectManager.Player.Distance(x) < 1600)) //any other enemies around? dont ult unless in passive form
                     _spellR.Cast(ObjectManager.Player.Position, Packets());
             }
         }

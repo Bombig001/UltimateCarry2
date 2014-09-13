@@ -13,6 +13,8 @@ namespace UltimateCarry
         public int LastSeen;
         public int LastPinged;
 
+        public RecallInfo RecallInfo;
+
         public EnemyInfo(Obj_AI_Hero player)
         {
             Player = player;
@@ -58,6 +60,14 @@ namespace UltimateCarry
             var predictedhealth = playerInfo.Player.Health + playerInfo.Player.HPRegenRate * ((Environment.TickCount - playerInfo.LastSeen + additionalTime) / 1000f);
 
             return predictedhealth > playerInfo.Player.MaxHealth ? playerInfo.Player.MaxHealth : predictedhealth;
+        }
+
+        public static T GetSafeMenuItem<T>(MenuItem item)
+        {
+            if (item != null)
+                return item.GetValue<T>();
+
+            return default(T);
         }
 
         public void Ping(Vector3 pos)

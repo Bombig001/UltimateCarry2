@@ -11,11 +11,14 @@ namespace UltimateCarry
 		public Spell W;
 		public Spell E;
 		public Spell R;
+        BaseUlt BaseUlt;
 
 		public Ezreal()
 		{
 			LoadMenu();
 			LoadSpells();
+
+            BaseUlt = new BaseUlt();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
