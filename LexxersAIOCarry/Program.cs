@@ -36,11 +36,12 @@ namespace UltimateCarry
 			var potionManager = new PotionManager();
 			var activator = new Activator();
             var bushRevealer = new AutoBushRevealer();
+
+            new BaseUlt();
 		
-			var championName = ObjectManager.Player.ChampionName;
 			try
 			{
-				var handle = System.Activator.CreateInstance(null, "UltimateCarry." + championName);
+				var handle = System.Activator.CreateInstance(null, "UltimateCarry." + ObjectManager.Player.ChampionName);
 				Champion = (Champion) handle.Unwrap();
 			}
 			catch (Exception)

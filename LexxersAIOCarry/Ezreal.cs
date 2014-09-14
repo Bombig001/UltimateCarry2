@@ -17,8 +17,6 @@ namespace UltimateCarry
 			LoadMenu();
 			LoadSpells();
 
-            new BaseUlt();
-
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
 			PluginLoaded();

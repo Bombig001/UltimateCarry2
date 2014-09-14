@@ -69,6 +69,7 @@ namespace UltimateCarry
 	class BaseUlt
 	{
         private static Menu _menu;
+        private bool _compatibleChamp;
         private static Vector3 _enemySpawnPos;
         private static int _ultCasted;
         private static Spell _ult;
@@ -96,10 +97,11 @@ namespace UltimateCarry
 
             var teamUlt = _menu.AddSubMenu(new Menu("Team Baseult Friends", "TeamUlt"));
 
-            List<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().ToList();
+            _compatibleChamp = IsCompatibleChamp(ObjectManager.Player.ChampionName);
 
-            foreach (Obj_AI_Hero champ in Program.Helper.OwnTeam.Where(x => !x.IsMe && IsCompatibleChamp(x.ChampionName)))
-                teamUlt.AddItem(new MenuItem(champ.ChampionName, champ.ChampionName + " friend with Baseult?").SetValue(false).DontSave());
+            if (_compatibleChamp)
+                foreach (Obj_AI_Hero champ in Program.Helper.OwnTeam.Where(x => !x.IsMe && IsCompatibleChamp(x.ChampionName)))
+                    teamUlt.AddItem(new MenuItem(champ.ChampionName, champ.ChampionName + " friend with Baseult?").SetValue(false).DontSave());
 
             _enemySpawnPos = ObjectManager.Get<GameObject>().First(x => x.Type == GameObjectType.obj_SpawnPoint && x.Team != ObjectManager.Player.Team).Position;
 
@@ -114,7 +116,9 @@ namespace UltimateCarry
 
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnGameUpdate += Game_OnGameUpdate;
+
+            if (_compatibleChamp)
+                Game.OnGameUpdate += Game_OnGameUpdate;
 
             Chat.Print("BaseUlt Loaded!");
         }
