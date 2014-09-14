@@ -19,7 +19,7 @@ namespace UltimateCarry
 			AutoPriority,
 		}
 
-		private static readonly string[] Modelist = {Mode.LowHP.ToString(), Mode.MostAD.ToString(), Mode.MostAP.ToString(), Mode.Closest.ToString(), Mode.NearMouse.ToString(), Mode.LessAttack.ToString(), Mode.LessCast.ToString()};
+		private static readonly string[] Modelist = { Mode.AutoPriority.ToString(), Mode.LowHP.ToString(), Mode.MostAD.ToString(), Mode.MostAP.ToString(), Mode.Closest.ToString(), Mode.NearMouse.ToString(), Mode.LessAttack.ToString(), Mode.LessCast.ToString() };
  
 		private static double _lasttick;
 
@@ -30,7 +30,7 @@ namespace UltimateCarry
 
 		public Obj_AI_Hero Target;
 		private Obj_AI_Hero _maintarget;
-		private Mode _mode;
+		private static Mode _mode;
 		private float _range;
 		private bool _update = true;
 
@@ -207,7 +207,7 @@ namespace UltimateCarry
 			return _mode;
 		}
 		
-		public void SetTargetingMode(Mode mode)
+		public static void SetTargetingMode(Mode mode)
 		{
 			_mode = mode;
 		}
@@ -219,8 +219,8 @@ namespace UltimateCarry
 
 		public static void AddtoMenu(Menu config)
 		{
-			config.AddItem(new MenuItem("AutoPriority", "Auto priorities").SetValue(true));
-			config.AddItem(new MenuItem("Sep", ""));
+			//config.AddItem(new MenuItem("AutoPriority", "Auto priorities").SetValue(true));
+			//config.AddItem(new MenuItem("Sep", ""));
 			config.AddItem(new MenuItem("empty1", "if Auto priorities is ON"));
 			config.AddItem(new MenuItem("empty2", "Changes have no effect"));
 			config.AddItem(new MenuItem("hint", "Low Number = High Prio"));
@@ -236,7 +236,9 @@ namespace UltimateCarry
 			config.AddItem(new MenuItem("Sep2", ""));
 			foreach (var mod in Modelist)
 			{
-				config.AddItem(new MenuItem("UC_TSPriority_" + mod, mod).SetValue(false));
+				config.AddItem(mod == "AutoPriority"
+					? new MenuItem("UC_TSPriority_" + mod, mod).SetValue(true).DontSave()
+					: new MenuItem("UC_TSPriority_" + mod, mod).SetValue(false).DontSave());
 				Program.Menu.Item("UC_TSPriority_" + mod).ValueChanged += Modswitch;
 			}
 		}
@@ -246,10 +248,29 @@ namespace UltimateCarry
 			if(!e.GetNewValue<bool>())
 				return;
 			var item = (MenuItem)sender;
-			foreach(var mod in Modelist.Where(mod => mod != item.DisplayName))
+			foreach (var mod in Modelist)
 			{
-				Program.Menu.Item("UC_TSPriority_" + mod).SetValue(false);
+				if (mod != item.DisplayName)
+					Program.Menu.Item("UC_TSPriority_" + mod).SetValue(false);
 			}
+			if(item.DisplayName == Mode.AutoPriority.ToString())
+				SetTargetingMode(Mode.AutoPriority);
+			if(item.DisplayName == Mode.Closest.ToString())
+				SetTargetingMode(Mode.Closest);
+			if(item.DisplayName == Mode.LessAttack.ToString())
+				SetTargetingMode(Mode.LessAttack);
+			if(item.DisplayName == Mode.LessCast.ToString())
+				SetTargetingMode(Mode.LessCast);
+			if(item.DisplayName == Mode.LowHP.ToString())
+				SetTargetingMode(Mode.LowHP);
+			if(item.DisplayName == Mode.MostAD.ToString())
+				SetTargetingMode(Mode.MostAD);
+			if(item.DisplayName == Mode.MostAP.ToString())
+				SetTargetingMode(Mode.MostAP);
+			if(item.DisplayName == Mode.NearMouse.ToString())
+				SetTargetingMode(Mode.NearMouse);
+
+			Chat.Print("UC-Targetselector: Switch Targetingmode to " + item.DisplayName);
 		}
 	}
 }
