@@ -27,6 +27,11 @@ namespace UltimateCarry
 
 		private void LoadMenu()
 		{
+			Program.Menu.AddSubMenu(new Menu("TestTS", "TestTS"));
+			UcTargetSelector.AddtoMenu(Program.Menu.SubMenu("TestTS"));
+			
+
+
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));
