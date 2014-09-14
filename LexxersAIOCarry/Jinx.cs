@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UltimateCarry
+﻿namespace UltimateCarry
 {
     class Jinx : Champion
     {
-        BaseUlt BaseUlt;
-
-        public Jinx()
+	    public Jinx()
         {
-            BaseUlt = new BaseUlt();
+            new BaseUlt();
         }
     }
 }

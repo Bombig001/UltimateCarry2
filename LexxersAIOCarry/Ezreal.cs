@@ -11,14 +11,13 @@ namespace UltimateCarry
 		public Spell W;
 		public Spell E;
 		public Spell R;
-        BaseUlt BaseUlt;
 
 		public Ezreal()
 		{
 			LoadMenu();
 			LoadSpells();
 
-            BaseUlt = new BaseUlt();
+            new BaseUlt();
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
@@ -27,11 +26,6 @@ namespace UltimateCarry
 
 		private void LoadMenu()
 		{
-			Program.Menu.AddSubMenu(new Menu("TestTS", "TestTS"));
-			UcTargetSelector.AddtoMenu(Program.Menu.SubMenu("TestTS"));
-			
-
-
 			Program.Menu.AddSubMenu(new Menu("TeamFight", "TeamFight"));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useQ_TeamFight", "Use Q").SetValue(true));
 			Program.Menu.SubMenu("TeamFight").AddItem(new MenuItem("useW_TeamFight", "Use W").SetValue(true));

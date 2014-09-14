@@ -20,8 +20,7 @@ namespace UltimateCarry
 		}
 
 		private static readonly string[] Modelist = {Mode.LowHP.ToString(), Mode.MostAD.ToString(), Mode.MostAP.ToString(), Mode.Closest.ToString(), Mode.NearMouse.ToString(), Mode.LessAttack.ToString(), Mode.LessCast.ToString()};
-
-
+ 
 		private static double _lasttick;
 
 		private static readonly string[] AP = { "Ahri", "Akali", "Anivia", "Annie", "Brand", "Cassiopeia", "Diana", "FiddleSticks", "Fizz", "Gragas", "Heimerdinger", "Karthus", "Kassadin", "Katarina", "Kayle", "Kennen", "Leblanc", "Lissandra", "Lux", "Malzahar", "Mordekaiser", "Morgana", "Nidalee", "Orianna", "Ryze", "Sion", "Swain", "Syndra", "Teemo", "TwistedFate", "Veigar", "Viktor", "Vladimir", "Xerath", "Ziggs", "Zyra", "Velkoz" };
@@ -30,7 +29,6 @@ namespace UltimateCarry
 		private static readonly string[] Bruiser = { "Darius", "Elise", "Evelynn", "Fiora", "Gangplank", "Gnar", "Jayce", "Pantheon", "Irelia", "JarvanIV", "Jax", "Khazix", "LeeSin", "Nocturne", "Olaf", "Poppy", "Renekton", "Rengar", "Riven", "Shyvana", "Trundle", "Tryndamere", "Udyr", "Vi", "MonkeyKing", "XinZhao", "Aatrox", "Rumble", "Shaco", "MasterYi" };
 
 		public Obj_AI_Hero Target;
-		private bool _drawcircle;
 		private Obj_AI_Hero _maintarget;
 		private Mode _mode;
 		private float _range;
@@ -41,7 +39,6 @@ namespace UltimateCarry
 			_range = range;
 			_mode = mode;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnWndProc += Game_OnWndProc;
 		}
 		private void Game_OnWndProc(WndEventArgs args)
@@ -61,12 +58,6 @@ namespace UltimateCarry
 					}
 					break;
 			}
-		}
-
-		private void Drawing_OnDraw(EventArgs args)
-		{
-			if(!ObjectManager.Player.IsDead && _drawcircle && Target != null && Target.IsVisible && !Target.IsDead)
-				Drawing.DrawCircle(Target.Position, 125, System.Drawing.Color.White);
 		}
 
 		private void Game_OnGameUpdate(EventArgs args)
@@ -188,11 +179,6 @@ namespace UltimateCarry
 				return 3;
 			
 			return Bruiser.Contains(championName) ? 4 : 5;
-		}
-
-		public void SetDrawCircleOfTarget(bool draw)
-		{
-			_drawcircle = draw;
 		}
 		
 		public void OverrideTarget(Obj_AI_Hero newtarget)
